@@ -1,5 +1,2 @@
-/vendor
-/composer.lock
-/docs
-/build
-
+/vendor/
+composer.lock
