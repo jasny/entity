@@ -1,6 +1,6 @@
 <?php
 
-namespace Jasny\DB\Entity\ChangeAware;
+namespace Jasny\Entity;
 
 use SebastianBergmann\Comparator\Factory as ComparatorFactory;
 use SebastianBergmann\Comparator\ComparisonFailure;
@@ -12,7 +12,7 @@ use SebastianBergmann\Comparator\ComparisonFailure;
  * @license https://raw.github.com/jasny/db-mongo/master/LICENSE MIT
  * @link    https://jasny.github.io/db-mongo
  */
-trait Implementation
+trait ChangeAwarenessTrait
 {
     /**
      * @var array
@@ -91,7 +91,6 @@ trait Implementation
     }
     
     
-    
     /**
      * Get the values that have changed
      * 
@@ -102,7 +101,9 @@ trait Implementation
         $values = [];
         
         foreach ($this->getValues() as $prop => $value) {
-            if ($this->hasModified($prop)) $values[$prop] = $value;
+            if ($this->hasModified($prop)) {
+                $values[$prop] = $value;
+            }
         }
         
         return $values;

@@ -9,7 +9,7 @@ use PHPUnit_Framework_TestCase as TestCase;
 /**
  * @covers Jasny\Entity\JsonSerializeTrait
  */
-class JsonSerializeTraitTest extends TestCase
+class SetterTraitTest extends TestCase
 {
     /**
      * @var EntityInterface

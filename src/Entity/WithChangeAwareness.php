@@ -1,11 +1,11 @@
 <?php
 
-namespace Jasny\DB\Entity;
+namespace Jasny\Entity;
 
 /**
  * Entity knows if and which properties has changed
  */
-interface ChangeAware
+interface WithChangeAwareness
 {
     /**
      * Check if the entity is new
@@ -36,4 +36,11 @@ interface ChangeAware
      * @return array
      */
     public function getChanges();
+    
+    /**
+     * Get a copy of the entity without the modifications.
+     * 
+     * @return static
+     */
+    public function getUnmodifiedCopy();
 }

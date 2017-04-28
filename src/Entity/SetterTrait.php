@@ -4,6 +4,7 @@ namespace Jasny\Entity;
 
 use stdClass;
 use InvalidArgumentException;
+use function Jasny\expect_type;
 
 /**
  * Set properties of the entity
@@ -40,7 +41,7 @@ trait SetterTrait
      */
     protected function setPublicProperties($data)
     {
-        validate_argument($data, ['array', stdClass::class]);
+        expect_type($data, ['array', stdClass::class]);
         
         if (!is_array($data) && !$data instanceof stdClass) {
             $type = (is_object($data) ? get_class($data) . ' ' : '') . gettype($data);

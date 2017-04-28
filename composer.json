@@ -18,10 +18,9 @@
     },
     "require": {
         "php": ">=7.0.0",
-        "jasny/validation-result": "~1.0.0",
         "jasny/meta": "^3.0.0",
         "jasny/typecast": "^2.1.0",
-        "sebastian/comparator": "~1.2"
+        "jasny/php-functions": "^3.1"
     },
     "require-dev": {
         "jasny/php-code-quality": "^2.0"

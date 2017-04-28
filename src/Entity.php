@@ -2,6 +2,7 @@
 
 namespace Jasny;
 
+use stdClass;
 use Jasny\EntityInterface;
 use Jasny\Entity\SetterTrait;
 use Jasny\Entity\SetStateTrait;
