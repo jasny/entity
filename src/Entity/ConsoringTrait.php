@@ -15,13 +15,13 @@ trait Implementation
      * @var boolean
      * @ignore
      */
-    private $__censor_default = false;
+    private $i__censor_default = false;
     
     /**
      * @var array
      * @ignore
      */
-    private $__censored = [];
+    private $i__censored = [];
     
     
     /**
