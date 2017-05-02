@@ -5,7 +5,7 @@ namespace Jasny\Entity;
 /**
  * Interface for entities that support lazy loading.
  */
-interface LazyLoadingInterface
+interface WithLazyLoading
 {
     /**
      * Check if the object is a ghost.

@@ -33,7 +33,7 @@ interface EntityInterface extends JsonSerializable
      * 
      * @return array
      */
-    public function toArray();
+    public function toArray(): array;
     
     /**
      * Convert data into an entity.

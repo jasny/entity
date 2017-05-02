@@ -1,11 +1,11 @@
 <?php
 
-namespace Jasny\DB\Entity;
+namespace Jasny\Entity;
 
 /**
  * Entity supports validation
  */
-interface Validation extends \Jasny\DB\Entity
+interface WithValidation
 {
     /**
      * Validate the entity

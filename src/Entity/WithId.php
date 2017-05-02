@@ -1,15 +1,11 @@
 <?php
 
-namespace Jasny\DB\Entity;
+namespace Jasny\Entity;
 
 /**
  * Entity has a unique identifier
- * 
- * @author  Arnold Daniels <arnold@jasny.net>
- * @license https://raw.github.com/jasny/db/master/LICENSE MIT
- * @link    https://jasny.github.com/db
  */
-interface Identifiable extends \Jasny\DB\Entity
+interface WithId
 {
     /**
      * Get entity id.

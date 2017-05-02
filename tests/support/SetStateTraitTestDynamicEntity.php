@@ -3,15 +3,24 @@
 namespace Jasny;
 
 use Jasny\EntityInterface;
-use Jasny\Entity\SetStateTrait;
+use Jasny\Entity;
 
 /**
  * @ignore
  */
-abstract class SetStateTraitTestEntity implements EntityInterface, Entity\WithDynamicProperties
+class SetStateTraitTestDynamicEntity implements EntityInterface, Entity\WithDynamicProperties
 {
-    use SetStateTrait;
+    use Entity\SetStateTrait,
+        Entity\SetterTrait;
     
     public $foo;
     public $num;
+    
+    public function jsonSerialize()
+    {
+    }
+
+    public function toArray(): array
+    {
+    }
 }

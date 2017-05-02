@@ -1,20 +1,11 @@
 <?php
 
-namespace Jasny\DB\Entity;
-
-use Jasny\DB\Entity;
-use Jasny\DB\Entity\Redactable;
+namespace Jasny\Entity;
 
 /**
  * Entity can be enriched with related data.
- * 
- * @internal This interface should extend Redactable. This is done for BC.
- * 
- * @author  Arnold Daniels <arnold@jasny.net>
- * @license https://raw.github.com/jasny/db/master/LICENSE MIT
- * @link    https://jasny.github.com/db
  */
-interface Enrichable extends Entity, Redactable
+interface WithEnriching
 {
     /**
      * Enrich entity with related data.

@@ -2,8 +2,7 @@
 
 namespace Jasny\DB\Entity\Redactable;
 
-use stdClass;
-use Jasny\DB\Entity\Enrichable;
+use Jasny\Entity;
 use Jasny\Meta\Introspection;
 
 /**
@@ -95,7 +94,11 @@ trait Implementation
         $censored = $this->hasMarkedAsCensored($property);
         
         if (!isset($censored) && $this instanceof Introspection) {
-            $censored = static::meta()->ofProperty($property)->censor;
+            $censored = static::meta()->ofProperty($property)['censor'];
+        }
+        
+        if (!isset($censored)) {
+            $censored = $this->isCensoredByDefault();
         }
         
         return (boolean)$censored;
@@ -110,10 +113,6 @@ trait Implementation
      */
     public function without(...$properties)
     {
-        if (is_array($properties) && count($properties) === 1 && is_array($properties[0])) {
-            $properties = $properties[0]; // BC v2.2
-        }
-        
         foreach ((array)$properties as $property) {
             $this->markAsCensored($property, true);
         }
@@ -130,38 +129,10 @@ trait Implementation
      */
     public function withOnly(...$properties)
     {
-        if (is_array($properties) && count($properties) === 1 && is_array($properties[0])) {
-            $properties = $properties[0]; // BC v2.2
-        }
-
         $this->censorByDefault(true);
         
-        if ($this instanceof Enrichable) {
+        if ($this instanceof Entity\WithEnriching) {
             $this->with($properties);
         }
-    }
-
-    
-    /**
-     * Filter object for json serialization
-     * 
-     * @param stdClass $object
-     * @return stdClass
-     */
-    protected function jsonSerializeFilterCensored(stdClass $object)
-    {
-        foreach ($object as $property => $value) {
-            $censored = $this->hasMarkedAsCensored($property);
-            
-            if (!isset($censored)) {
-                $censored = $this->isCensoredByDefault();
-            }
-            
-            if ($censored) {
-                unset($object->$property);
-            }
-        }
-        
-        return $object;
     }
 }

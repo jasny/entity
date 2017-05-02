@@ -30,7 +30,9 @@ trait Implementation
         $key = [];
         
         foreach (static::meta()->ofProperties() as $prop => $meta) {
-            if (isset($meta['id'])) $key[] = $prop;
+            if (isset($meta['id'])) {
+                $key[] = $prop;
+            }
         }
         
         return empty($key) ? null : (count($key) === 1 ? $key[0] : $key);
@@ -50,35 +52,5 @@ trait Implementation
         $typecast->alias('static', get_class($this));
         
         return $typecast;
-    }
-    
-
-    /**
-     * Filter object for json serialization.
-     * @deprecated
-     * 
-     * @param stdClass $object
-     * @return stdClass
-     */
-    protected function jsonSerializeFilter(stdClass $object)
-    {
-        return $this->jsonSerializeFilterByMeta($object);
-    }
-
-    /**
-     * Filter object for json serialization
-     * 
-     * @param stdClass $object
-     * @return stdClass
-     */
-    protected function jsonSerializeFilterByMeta(stdClass $object)
-    {
-        foreach (static::meta()->ofProperties() as $prop => $meta) {
-            if ($meta['censored']) {
-                unset($object->$prop);
-            }
-        }
-        
-        return $object;
     }
 }

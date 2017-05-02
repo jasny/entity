@@ -3,7 +3,7 @@
 namespace Jasny\Entity;
 
 use stdClass;
-use InvalidArgumentException;
+use Jasny\Entity;
 use function Jasny\expect_type;
 
 /**
@@ -43,14 +43,12 @@ trait SetterTrait
     {
         expect_type($data, ['array', stdClass::class]);
         
-        if (!is_array($data) && !$data instanceof stdClass) {
-            $type = (is_object($data) ? get_class($data) . ' ' : '') . gettype($data);
-            throw new InvalidArgumentException("Expected an array or stdClass object, but got a $type");
-        }
-        
         $set = function($entity) use ($data) {
             foreach ($data as $key => $value) {
-                if (!ctype_alpha($key[0]) || (!property_exists($entity, $key) && !$entity instanceof Dynamic)) {
+                if (
+                    !preg_match('/^[a-zA-Z]\w+$/', $key) ||
+                    (!property_exists($entity, $key) && !$entity instanceof Entity\WithDynamicProperties)
+                ) {
                     continue;
                 }
                 
