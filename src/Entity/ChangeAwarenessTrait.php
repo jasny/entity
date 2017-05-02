@@ -2,39 +2,27 @@
 
 namespace Jasny\Entity;
 
-use SebastianBergmann\Comparator\Factory as ComparatorFactory;
+use Jasny\Entity\Comparator\Factory as ComparatorFactory;
 use SebastianBergmann\Comparator\ComparisonFailure;
+use Jasny\Meta\Introspection;
 
 /**
  * Implementation for change aware entities.
- * 
- * @author  Arnold Daniels <arnold@jasny.net>
- * @license https://raw.github.com/jasny/db-mongo/master/LICENSE MIT
- * @link    https://jasny.github.io/db-mongo
  */
 trait ChangeAwarenessTrait
 {
     /**
-     * @var array
+     * @var static
      */
-    private $persistedData__;
+    private $i__persisted;
 
     /**
-     * Set the current data as persisted data
+     * Mark the current values of the entity as being persisted.
+     * Persisted mean that these values have been written to a DB, REST endpoint of other data store.
      */
-    protected function markAsPersisted()
+    public function markAsPersisted()
     {
-        $this->persistedData__ = $this->toData();
-    }
-    
-    /**
-     * Get the persisted data
-     * 
-     * @return array
-     */
-    protected function getPersistedData()
-    {
-        return $this->persistedData__;
+        $this->i__persisted = clone $this;
     }
     
     
@@ -45,7 +33,7 @@ trait ChangeAwarenessTrait
      */
     public function isNew()
     {
-        return $this->getPersistedData() === null;
+        return !isset($this->i__persisted);
     }
     
     /**
@@ -55,7 +43,7 @@ trait ChangeAwarenessTrait
      */
     public function isModified()
     {
-        return $this->hasModified($this);
+        return $this->compareHasModified($this->i__persisted, $this);
     }
     
     /**
@@ -66,19 +54,36 @@ trait ChangeAwarenessTrait
      */
     public function hasModified($property)
     {
-        if ($property === $this) {
-            $original = $this->getPersistedData();
-            $current = $this->toData();
-        } else {
-            $persisted = static::fromData($this->getPersistedData() ?: []);
-
-            $original = isset($persisted->$property) ? $persisted->$property : null;
-            $current = isset($this->$property) ? $this->$property : null;
+        $original = isset($this->i__persisted->$property) ? $this->i__persisted->$property : null;
+        $current = isset($this->$property) ? $this->$property : null;
+        
+        return $this->compareHasModified($original, $current);
+    }
+    
+    /**
+     * Get the comparator factory
+     * 
+     * @return ComparatorFactory
+     */
+    protected function getComparatorFactory()
+    {
+        return new ComparatorFactory();
+    }
+    
+    /**
+     * Compare the original value with the current value.
+     * 
+     * @param mixed $original
+     * @param mixed $current
+     * @return boolean
+     */
+    protected function compareHasModified($original, $current)
+    {
+        if ($original === $current) {
+            return false;
         }
         
-        if ($original === $current) return false;
-        
-        $factory = new ComparatorFactory();
+        $factory = $this->getComparatorFactory();
         $comparator = $factory->getComparatorFor($original, $current);
         
         try {
@@ -90,7 +95,6 @@ trait ChangeAwarenessTrait
         return false;        
     }
     
-    
     /**
      * Get the values that have changed
      * 
@@ -98,14 +102,29 @@ trait ChangeAwarenessTrait
      */
     public function getChanges()
     {
-        $values = [];
+        $changes = [];
+        $values = call_user_func('get_object_vars', $this);
         
-        foreach ($this->getValues() as $prop => $value) {
+        foreach ($values as $prop => $value) {
+            if ($this instanceof Introspection && static::meta()->ofProperty($prop)['ignore']) {
+                continue;
+            }
+            
             if ($this->hasModified($prop)) {
-                $values[$prop] = $value;
+                $changes[$prop] = $value;
             }
         }
         
-        return $values;
+        return $changes;
+    }
+    
+    /**
+     * Get a copy of the entity without the modifications.
+     * 
+     * @return static
+     */
+    public function getUnmodifiedCopy()
+    {
+        return clone $this->i__persisted;
     }
 }

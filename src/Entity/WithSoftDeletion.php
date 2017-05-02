@@ -1,15 +1,11 @@
 <?php
 
-namespace Jasny\DB\Entity;
+namespace Jasny\Entity;
 
 /**
  * Entity can be restored after deletion.
- * 
- * @author  Arnold Daniels <arnold@jasny.net>
- * @license https://raw.github.com/jasny/db/master/LICENSE MIT
- * @link    https://jasny.github.com/db
  */
-interface SoftDeletion extends \Jasny\DB\Entity\ActiveRecord, \Jasny\DB\SoftDeletion
+interface SoftDeletion
 {
     /**
      * Checks if entity has been deleted
@@ -30,7 +26,7 @@ interface SoftDeletion extends \Jasny\DB\Entity\ActiveRecord, \Jasny\DB\SoftDele
      * Purge deleted entity.
      * 
      * @return $this
-     * @throws \Exception if entity ism't deleted
+     * @throws \RuntimeException if entity isn't deleted
      */
     public function purge();
 }

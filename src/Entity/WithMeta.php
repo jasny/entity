@@ -1,9 +1,9 @@
 <?php
 
-namespace Jasny\DB\Entity;
+namespace Jasny\Entity;
 
-use Jasny\Meta\Introspection,
-    Jasny\Meta\TypeCasting;
+use Jasny\Meta\Introspection;
+use Jasny\Meta\TypeCasting;
 
 /**
  * Description of Meta

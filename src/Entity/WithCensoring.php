@@ -1,13 +1,11 @@
 <?php
 
-namespace Jasny\DB\Entity;
-
-use Jasny\DB\Entity;
+namespace Jasny\Entity;
 
 /**
  * Entity can censor properties for output
  */
-interface Redactable extends Entity
+interface WithCensoring
 {
     /**
      * Check if a propery is censored

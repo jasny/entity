@@ -1,10 +1,10 @@
 <?php
 
-namespace Jasny\DB\Entity;
+namespace Jasny\Entity;
 
 /**
  * Indicates that undefined properties may added to the entity.
  */
-interface DynamicInterface
+interface WithDynamicProperties
 {
 }
