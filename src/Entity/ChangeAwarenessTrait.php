@@ -52,7 +52,7 @@ trait ChangeAwarenessTrait
      * @param string $property
      * @return boolean
      */
-    public function hasModified($property)
+    public function hasModified(string $property)
     {
         $original = isset($this->i__persisted->$property) ? $this->i__persisted->$property : null;
         $current = isset($this->$property) ? $this->$property : null;
@@ -95,12 +95,13 @@ trait ChangeAwarenessTrait
         return false;        
     }
     
+    
     /**
      * Get the values that have changed
      * 
      * @return array
      */
-    public function getChanges()
+    public function getChanges(): array
     {
         $changes = [];
         $values = call_user_func('get_object_vars', $this);
@@ -121,10 +122,10 @@ trait ChangeAwarenessTrait
     /**
      * Get a copy of the entity without the modifications.
      * 
-     * @return static
+     * @return static|null
      */
     public function getUnmodifiedCopy()
     {
-        return clone $this->i__persisted;
+        return isset($this->i__persisted) ? clone $this->i__persisted : null;
     }
 }

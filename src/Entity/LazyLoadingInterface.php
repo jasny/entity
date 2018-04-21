@@ -2,17 +2,19 @@
 
 namespace Jasny\Entity;
 
+use Jasny\EntityInterface;
+
 /**
  * Interface for entities that support lazy loading.
  */
-interface WithLazyLoading
+interface LazyLoadingInterface extends EntityInterface
 {
     /**
      * Check if the object is a ghost.
      * 
      * @return boolean
      */
-    public function isGhost();
+    public function isGhost(): bool;
     
     /**
      * Expand a ghost.
@@ -20,5 +22,5 @@ interface WithLazyLoading
      * 
      * @return $this
      */
-    public function expand();
+    public function expand(): self;
 }

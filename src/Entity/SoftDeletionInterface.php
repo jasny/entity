@@ -2,17 +2,19 @@
 
 namespace Jasny\Entity;
 
+use Jasny\EntityInterface;
+
 /**
  * Entity can be restored after deletion.
  */
-interface SoftDeletion
+interface SoftDeletionInterface extends EntityInterface
 {
     /**
      * Checks if entity has been deleted
      * 
      * @return boolean
      */
-    public function isDeleted();
+    public function isDeleted(): bool;
     
     /**
      * Restore deleted entity.
@@ -20,7 +22,7 @@ interface SoftDeletion
      * 
      * @return $this
      */
-    public function undelete();
+    public function undelete(): self;
     
     /**
      * Purge deleted entity.
@@ -28,5 +30,5 @@ interface SoftDeletion
      * @return $this
      * @throws \RuntimeException if entity isn't deleted
      */
-    public function purge();
+    public function purge(): self;
 }

@@ -1,18 +1,16 @@
 <?php
 
-namespace Jasny\DB;
+namespace Jasny;
 
-use Jasny\DB\Entity;
-use Jasny\DB\Data;
+use Jasny\Entity;
 use Jasny\Meta\Introspection;
-use Jasny\DB\TypeCast;
+use Jasny\TypeCast;
 
 /**
- * An Entity Set is an array of the same entities.
- * 
- * Calling a method on an entity set will call the method on all entities.
+ * An entity collection that works as a set, so unordered with unique items.
+ * @see https://en.wikipedia.org/wiki/Set_(abstract_data_type)
  */
-class EntitySet implements \IteratorAggregate, \ArrayAccess, \Countable, \JsonSerializable, Data
+class EntitySet implements \IteratorAggregate, \ArrayAccess, \Countable, \JsonSerializable
 {
     /**
      * Flag to allow duplicate entities

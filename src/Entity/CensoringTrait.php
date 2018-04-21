@@ -1,17 +1,17 @@
 <?php
 
-namespace Jasny\DB\Entity\Redactable;
+namespace Jasny\Entity;
 
-use Jasny\Entity;
+use Jasny\Entity\EnrichingInterface;
 use Jasny\Meta\Introspection;
 
 /**
  * Entity can be enriched with related data
  */
-trait Implementation
+trait CensoringTrait
 {
     /**
-     * @var boolean
+     * @var bool
      * @ignore
      */
     private $i__censor_default = false;
@@ -26,9 +26,10 @@ trait Implementation
     /**
      * Set if properties are censored by default
      * 
-     * @param boolean $censored
+     * @param bool $censored
+     * @return void
      */
-    final protected function censorByDefault($censored)
+    final protected function censorByDefault(bool $censored)
     {
         $this->i__censor_default = $censored;
     }
@@ -36,20 +37,20 @@ trait Implementation
     /**
      * Get if properties are censored by default
      * 
-     * @return boolean
+     * @return bool
      */
-    final protected function isCensoredByDefault()
+    final protected function isCensoredByDefault(): bool
     {
         return $this->i__censor_default;
     }
     
     /**
-     * Set a censored property
+     * Mark a property to be censored (or not)
      * 
      * @param string $property
-     * @param boolean $censored
+     * @param bool   $censored
      */
-    final protected function markAsCensored($property, $censored)
+    final protected function markAsCensored(string $property, bool $censored)
     {
         $this->i__censored[$property] = $censored;
     }
@@ -57,16 +58,18 @@ trait Implementation
     /**
      * Check if a property is marked as censored
      * 
-     * @param string  $property
-     * @return boolean
+     * @param string $property
+     * @return bool|null
      */
-    final protected function hasMarkedAsCensored($property)
+    final protected function hasMarkedAsCensored(string $property)
     {
         return isset($this->i__censored[$property]) ? $this->i__censored[$property] : null;
     }
     
     /**
      * Remove all properties as censored list
+     * 
+     * @return void
      */
     final protected function resetMarkedAsCensored()
     {
@@ -76,8 +79,10 @@ trait Implementation
     
     /**
      * Get all properties that are marked as censored
+     * 
+     * @return string[]
      */
-    final protected function getAllMarkedAsCensored()
+    final protected function getAllMarkedAsCensored(): array
     {
        return $this->i__censored; 
     }
@@ -87,9 +92,9 @@ trait Implementation
      * Check if the property is censored for this Entity
      * 
      * @param string $property
-     * @return boolean
+     * @return bool
      */
-    public function hasCensored($property)
+    public function hasCensored(string $property): bool
     {
         $censored = $this->hasMarkedAsCensored($property);
         
@@ -101,7 +106,7 @@ trait Implementation
             $censored = $this->isCensoredByDefault();
         }
         
-        return (boolean)$censored;
+        return $censored;
     }
     
 
@@ -111,9 +116,9 @@ trait Implementation
      * @param string[] $properties
      * @return static
      */
-    public function without(...$properties)
+    public function without(string ...$properties): self
     {
-        foreach ((array)$properties as $property) {
+        foreach ($properties as $property) {
             $this->markAsCensored($property, true);
         }
         
@@ -127,12 +132,18 @@ trait Implementation
      * @param string[] $properties
      * @return static
      */
-    public function withOnly(...$properties)
+    public function withOnly(string ...$properties): self
     {
         $this->censorByDefault(true);
-        
-        if ($this instanceof Entity\WithEnriching) {
-            $this->with($properties);
+
+        if ($this instanceof EnrichingInterface) {
+            $this->with(...$properties);
+        } else {
+            foreach ($properties as $property) {
+                $this->markAsCensored($property, false);
+            }
         }
+        
+        return $this;
     }
 }

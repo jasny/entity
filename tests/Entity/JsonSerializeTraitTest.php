@@ -4,8 +4,7 @@ namespace Jasny\Entity;
 
 use JsonSerializable;
 use Jasny\EntityInterface;
-use Jasny\Entity\JsonSerializeTrait;
-use Jasny\Entity\LazyLoadInterface;
+use Jasny\Entity;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
@@ -14,13 +13,13 @@ use PHPUnit_Framework_TestCase as TestCase;
 class JsonSerializeTraitTest extends TestCase
 {
     /**
-     * @var EntityInterface
+     * @var EntityInterface|JsonSerializable
      */
     protected $entity;
     
     public function setUp()
     {
-        $this->entity = $this->getMockForTrait(JsonSerializeTrait::class);
+        $this->entity = $this->getMockForTrait(Entity\JsonSerializeTrait::class);
     }
     
     public function testJsonSerialize()
@@ -66,23 +65,40 @@ class JsonSerializeTraitTest extends TestCase
     }
     
     
-    public function testJsonSerializeExpand()
+    protected function createLazyLoadingEntity(): JsonSerializable
     {
-        $object = new class implements JsonSerializable, LazyLoadingInterface {
-            use JsonSerializeTrait;
+        return new class implements JsonSerializable, Entity\WithLazyLoading {
+            use Entity\JsonSerializeTrait,
+                Entity\ToArrayTrait;
             
-            public function isGhost() {
+            public function isGhost()
+            {
                 return !isset($this->foo);
             }
             
-            public function expand() {
+            public function expand()
+            {
                 $this->foo = 'bar';
             }
         };
+    }
+    
+    public function testJsonSerializeExpand()
+    {
+        $entity = $this->createLazyLoadingEntity();
         
         $this->assertEquals(
             (object)['foo' => 'bar'],
-            $object->jsonSerialize()
+            $entity->jsonSerialize()
         );
+    }
+    
+    
+    /**
+     * @ignore
+     * @internal IDE is acting up because of anonymous class with use statement
+     */
+    public function toArray()
+    {
     }
 }

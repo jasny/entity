@@ -1,17 +1,16 @@
 <?php
 
-namespace Jasny\DB;
+namespace Jasny\EntityCollection;
 
-use Jasny\DB\EntitySet;
 use Jasny\Meta\Introspection;
 
 /**
- * Factory for EntitySet
+ * Factory for entity collections
  */
-class EntitySetFactory
+class Factory
 {
    /**
-     * EntitySet classes
+     * EntityCollection classes
      * @var string[]
      */
     protected $classes = [];

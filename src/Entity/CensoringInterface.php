@@ -2,10 +2,12 @@
 
 namespace Jasny\Entity;
 
+use Jasny\EntityInterface;
+
 /**
  * Entity can censor properties for output
  */
-interface WithCensoring
+interface CensoringInterface extends EntityInterface
 {
     /**
      * Check if a propery is censored
@@ -13,7 +15,7 @@ interface WithCensoring
      * @param string $property
      * @return boolean
      */
-    public function hasCensored($property);
+    public function hasCensored(string $property): bool;
     
     /**
      * Censor properties from entity.
@@ -21,14 +23,13 @@ interface WithCensoring
      * @param string[] $properties
      * @return $this
      */
-    public function without(...$properties);
+    public function without(string ...$properties): self;
     
     /**
-     * Censor all  only the specified properties.
-     * Enriches with related data if needed.
+     * Censor all except the specified properties.
      * 
      * @param string[] $properties
      * @return $this
      */
-    public function withOnly(...$properties);
+    public function withOnly(string ...$properties): self;
 }

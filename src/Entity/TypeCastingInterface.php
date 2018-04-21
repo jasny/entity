@@ -2,10 +2,12 @@
 
 namespace Jasny\Entity;
 
+use Jasny\EntityInterface;
+
 /**
  * Entity with typecasting
  */
-interface WithTypeCasting
+interface TypeCastingInterface extends EntityInterface
 {
     /**
      * Cast all properties of the entity.
@@ -13,5 +15,5 @@ interface WithTypeCasting
      * 
      * @return $this
      */
-    public function cast();
+    public function cast(): self;
 }
