@@ -1,17 +1,10 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace Jasny;
 
 /**
- * Description of EntityList
- *
- * @author arnold
+ * An entity collection that works as an ordered list.
+ * @see https://en.wikipedia.org/wiki/List_(abstract_data_type)
  */
 class EntityList
 {

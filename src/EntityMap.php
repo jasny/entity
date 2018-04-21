@@ -3,9 +3,8 @@
 namespace Jasny;
 
 /**
- * Description of EntityMap
- *
- * @author arnold
+ * An entity collection that works as a map, so a key/value pairs.
+ * @see https://en.wikipedia.org/wiki/Associative_array
  */
 class EntityMap
 {

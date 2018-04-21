@@ -7,7 +7,7 @@ use Jasny\Entity;
 /**
  * Cast entity to an array
  */
-class ToArrayTrait
+trait ToArrayTrait
 {
     /**
      * Cast the entity to an associative array.
