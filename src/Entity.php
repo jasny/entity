@@ -4,15 +4,15 @@ namespace Jasny;
 
 use stdClass;
 use Jasny\EntityInterface;
-use Jasny\Entity;
+use Jasny\Entity\{SetterTrait, ToAssocTrait, SetStateTrait, JsonSerializeTrait};
 
 /**
  * Base class for an entity
  */
 class Entity extends stdClass implements EntityInterface
 {
-    use Entity\SetterTrait,
-        Entity\ToArrayTrait,
-        Entity\SetStateTrait,
-        Entity\JsonSerializeTrait;
+    use SetterTrait,
+        ToAssocTrait,
+        SetStateTrait,
+        JsonSerializeTrait;
 }

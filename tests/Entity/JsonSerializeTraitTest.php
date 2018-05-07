@@ -69,7 +69,7 @@ class JsonSerializeTraitTest extends TestCase
     {
         return new class implements JsonSerializable, Entity\WithLazyLoading {
             use Entity\JsonSerializeTrait,
-                Entity\ToArrayTrait;
+                Entity\ToAssocTrait;
             
             public function isGhost()
             {

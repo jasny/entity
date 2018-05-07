@@ -1,5 +1,7 @@
 <?php
 
+namespace Jasny\Entity\Comparator;
+
 use SebastianBergmann\Comparator\Factory as Base;
 
 /**

@@ -3,11 +3,11 @@
 namespace Jasny\Entity;
 
 use Jasny\Entity;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use Jasny\Meta\Introspection;
 
 /**
- * @covers Jasny\Entity\ChangeAwarenessTrait
+ * @covers \Jasny\Entity\ChangeAwarenessTrait
  */
 class ChangeAwarenessTraitTest extends TestCase
 {
@@ -100,11 +100,15 @@ class ChangeAwarenessTraitTest extends TestCase
     }
     
     
-    protected function createIntrospectionEntity(): Entity\WithChangeAwareness
+    protected function createIntrospectionEntity(): Entity\ChangeAwarenessInterface
     {
-        return new class implements Entity\WithChangeAwareness, Introspection {
-            use Entity\ChangeAwarenessTrait,
-                Entity\IntrospectionTrait;
+        return new class implements Entity\ChangeAwarenessInterface, Introspection {
+            use Entity\SetStateTrait;
+            use Entity\JsonSerializeTrait;
+            use Entity\ToAssocTrait;
+            use Entity\SetterTrait;
+            use Entity\ChangeAwarenessTrait;
+            use Introspection\AnnotationsImplementation;
             
             public $foo;
             

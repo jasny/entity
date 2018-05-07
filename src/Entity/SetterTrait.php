@@ -3,7 +3,7 @@
 namespace Jasny\Entity;
 
 use stdClass;
-use Jasny\Entity;
+use Jasny\Entity\DynamicInterface;
 use function Jasny\expect_type;
 
 /**
@@ -17,7 +17,7 @@ trait SetterTrait
      * <code>
      *   $entity->set('foo', 22);
      *   $entity->set('bar', null);
-     *   $entity->set(['qux' => 100, '
+     *   $entity->set(['qux' => 100, 'clr' => 'red']);
      * </code>
      * 
      * @param string|array|stdClass $key     Property or set of values
@@ -26,6 +26,8 @@ trait SetterTrait
      */
     public function set($key, $value = null)
     {
+        expect_type($key, func_num_args() === 1 ? ['array', stdClass::class] : 'string');
+        
         $values = func_num_args() === 1 ? $key : [$key => $value];
         $this->setPublicProperties($values);
         
@@ -47,7 +49,7 @@ trait SetterTrait
             foreach ($data as $key => $value) {
                 if (
                     !preg_match('/^[a-zA-Z]\w+$/', $key) ||
-                    (!property_exists($entity, $key) && !$entity instanceof Entity\WithDynamicProperties)
+                    (!property_exists($entity, $key) && !$entity instanceof DynamicInterface)
                 ) {
                     continue;
                 }

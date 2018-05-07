@@ -2,9 +2,9 @@
 
 namespace Jasny\Entity;
 
-use Jasny\SetStateTraitTestEntity;
-use Jasny\SetStateTraitTestDynamicEntity;
-use PHPUnit_Framework_TestCase as TestCase;
+use Jasny\Support\TestEntity;
+use Jasny\Support\DynamicTestEntity;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers Jasny\Entity\SetStateTrait
@@ -13,26 +13,33 @@ class SetStateTraitTest extends TestCase
 {
     public function testSetState()
     {
-        $class = SetStateTraitTestEntity::class;
-        $entity = $class::__set_state(['foo' => 'bar', 'num' => 22, 'dyn' => 'woof']);
+        $entity = TestEntity::__set_state(['foo' => 'bar', 'num' => 22, 'dyn' => 'woof']);
         
-        $this->assertInstanceOf($class, $entity);
+        $this->assertInstanceOf(TestEntity::class, $entity);
         
-        $this->assertAttributeEquals('bar', 'foo', $entity);
-        $this->assertAttributeEquals(22, 'num', $entity);
+        $this->assertAttributeSame('bar', 'foo', $entity);
+        $this->assertAttributeSame(22, 'num', $entity);
         
         $this->assertObjectNotHasAttribute('dyn', $entity);
     }
     
     public function testSetStateWithDynamicEntity()
     {
-        $class = SetStateTraitTestDynamicEntity::class;
-        $entity = $class::__set_state(['foo' => 'bar', 'num' => 22, 'dyn' => 'woof']);
+        $entity = DynamicTestEntity::__set_state(['foo' => 'bar', 'num' => 22, 'dyn' => 'woof']);
         
-        $this->assertInstanceOf($class, $entity);
+        $this->assertInstanceOf(DynamicTestEntity::class, $entity);
         
-        $this->assertAttributeEquals('bar', 'foo', $entity);
-        $this->assertAttributeEquals(22, 'num', $entity);
-        $this->assertAttributeEquals('woof', 'dyn', $entity);
+        $this->assertAttributeSame('bar', 'foo', $entity);
+        $this->assertAttributeSame(22, 'num', $entity);
+        $this->assertAttributeSame('woof', 'dyn', $entity);
+    }
+    
+    public function testSetStateConstruct()
+    {
+        $entity = TestEntity::__set_state([]);
+        
+        $this->assertInstanceOf(TestEntity::class, $entity);
+        
+        $this->assertAttributeSame(0, 'num', $entity);
     }
 }

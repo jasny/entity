@@ -7,6 +7,6 @@ use Jasny\EntityInterface;
 /**
  * Indicates that undefined properties may added to the entity.
  */
-interface DynamicPropertiesInterface extends EntityInterface
+interface DynamicInterface extends EntityInterface
 {
 }
