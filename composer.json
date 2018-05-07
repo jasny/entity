@@ -1,10 +1,10 @@
 {
-    "name": "jasny/db",
+    "name": "jasny/entity",
     "type": "library",
-    "description": "Adds modern OOP DB patterns by extending PHP extensions",
-    "keywords": ["database", "db"],
+    "description": "Object representation for stateful entities",
+    "keywords": [],
     "license": "MIT",
-    "homepage": "http://jasny.github.com/db",
+    "homepage": "http://jasny.github.com/entity",
     "authors": [
         {
             "name": "Arnold Daniels",
@@ -13,17 +13,18 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/jasny/db/issues",
-        "source": "https://github.com/jasny/db"
+        "issues": "https://github.com/jasny/entity/issues",
+        "source": "https://github.com/jasny/entity"
     },
     "require": {
-        "php": ">=7.0.0",
+        "php": ">=7.1.0",
+        "ext-ds": "*",
         "jasny/meta": "^3.0.0",
         "jasny/typecast": "^2.1.0",
         "jasny/php-functions": "^3.1"
     },
     "require-dev": {
-        "jasny/php-code-quality": "^2.0"
+        "jasny/php-code-quality": "^2.3"
     },
     "autoload": {
         "psr-4": {
@@ -33,9 +34,6 @@
     "autoload-dev": {
         "psr-4": {
             "Jasny\\": "tests/"
-        },
-        "classmap": [
-            "tests/support"
-        ]
+        }
     }
 }

@@ -67,7 +67,7 @@ trait ChangeAwarenessTrait
      */
     protected function getComparatorFactory()
     {
-        return new ComparatorFactory();
+        return new Comparator\Factory();
     }
     
     /**

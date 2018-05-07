@@ -3,11 +3,12 @@
 namespace Jasny\Entity;
 
 use Jasny\EntityInterface;
-use Jasny\Entity\SetterTrait;
+use Jasny\Support\TestEntity;
+use Jasny\Support\DynamicTestEntity;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
- * @covers Jasny\Entity\JsonSerializeTrait
+ * @covers Jasny\Entity\SetterTrait
  */
 class SetterTraitTest extends TestCase
 {
@@ -18,34 +19,48 @@ class SetterTraitTest extends TestCase
     
     public function setUp()
     {
-        $this->entity = $this->getMockForTrait(SetterTrait::class);
+        $this->entity = new TestEntity();
     }
     
     public function testSetValue()
     {
         $this->entity->set('foo', 'bar');
         
-        $this->assertAttributeEquals('bar', 'foo', $this->entity);
+        $this->assertAttributeSame('bar', 'foo', $this->entity);
+        $this->assertAttributeSame(0, 'num', $this->entity);
     }
     
     public function testSetValueToNull()
     {
-        $this->entity->set('foo', null);
+        $this->entity->set('num', null);
         
-        $this->assertAttributeEquals(null, 'foo', $this->entity);
+        $this->assertAttributeSame(null, 'foo', $this->entity);
+        $this->assertAttributeSame(null, 'num', $this->entity);
     }
     
     public function testSetValues()
     {
-        $this->entity->set(['foo' => 'bar', 'color' => 'blue']);
+        $this->entity->set(['foo' => 'bar', 'num' => 100, 'dyn' => 'woof']);
         
-        $this->assertAttributeEquals('bar', 'foo', $this->entity);
-        $this->assertAttributeEquals('blue', 'color', $this->entity);
+        $this->assertAttributeSame('bar', 'foo', $this->entity);
+        $this->assertAttributeSame(100, 'num', $this->entity);
+        $this->assertObjectNotHasAttribute('dyn', $this->entity);
+    }
+    
+    public function testSetValuesDynamic()
+    {
+        $this->entity = new DynamicTestEntity();
+        
+        $this->entity->set(['foo' => 'bar', 'num' => 100, 'dyn' => 'woof']);
+        
+        $this->assertAttributeSame('bar', 'foo', $this->entity);
+        $this->assertAttributeSame(100, 'num', $this->entity);
+        $this->assertAttributeSame('woof', 'dyn', $this->entity);
     }
     
     /**
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessage Expected an array or stdClass object, but got a string
+     * @expectedException TypeError
+     * @expectedExceptionMessage Expected array or stdClass object, string given
      */
     public function testSetValueInvalidArgument()
     {

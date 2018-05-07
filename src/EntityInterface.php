@@ -19,21 +19,21 @@ interface EntityInterface extends JsonSerializable
      * <code>
      *   $entity->set('foo', 22);
      *   $entity->set('bar', null);
-     *   $entity->set(['qux' => 100, '
+     *   $entity->set(['qux' => 100, 'clr' => 'red']);
      * </code>
      * 
      * @param string|array|object $key
-     * @param mixed        $value
+     * @param mixed               $value
      * @return $this
      */
-    public function set($key, $value);
+    public function set($key, $value = null);
     
     /**
      * Cast the entity to an associative array.
      * 
      * @return array
      */
-    public function toArray(): array;
+    public function toAssoc(): array;
     
     /**
      * Convert data into an entity.

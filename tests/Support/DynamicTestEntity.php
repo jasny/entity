@@ -1,6 +1,6 @@
 <?php
 
-namespace Jasny;
+namespace Jasny\Support;
 
 use Jasny\EntityInterface;
 use Jasny\Entity;
@@ -8,13 +8,13 @@ use Jasny\Entity;
 /**
  * @ignore
  */
-class SetStateTraitTestEntity implements EntityInterface
+class DynamicTestEntity implements EntityInterface, Entity\DynamicInterface
 {
     use Entity\SetStateTrait,
         Entity\SetterTrait;
     
     public $foo;
-    public $num;
+    public $num = 0;
     
     public function jsonSerialize()
     {
