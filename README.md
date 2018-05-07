@@ -4,25 +4,10 @@ Jasny DB
 [![Build Status](https://travis-ci.org/jasny/entity.svg?branch=master)](https://travis-ci.org/jasny/entity)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/jasny/entity/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/jasny/entity/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/jasny/entity/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/jasny/entity/?branch=master)
-_SensioLabsInsight_
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/a1a1745c-1272-46a3-9567-7bbb52acda5a/mini.png)](https://insight.sensiolabs.com/projects/a1a1745c-1272-46a3-9567-7bbb52acda5a)
 [![BCH compliance](https://bettercodehub.com/edge/badge/jasny/entity?branch=master)](https://bettercodehub.com/)
 [![Packagist Stable Version](https://img.shields.io/packagist/v/jasny/entity.svg)](https://packagist.org/packages/jasny/entity)
 [![Packagist License](https://img.shields.io/packagist/l/jasny/entity.svg)](https://packagist.org/packages/jasny/entity)
-
-Jasny DB adds OOP design patterns to PHP's database extensions. It does this as a
-[data access layer](https://en.wikipedia.org/wiki/Data_access_layer) (*not* a DB abstraction layer). This allows you
-properly structure your model, while still using the methods and functionality of PHP's native database extensions.
-
-## Installation
-This library is not intended to be installed directly. The Jasny DB library contains design pattern definitions and
-implementations. It serves as an abstract base for concrete libraries implemented for specific PHP extensions.
-
-## Implementations
-
-* [Jasny\DB\MySQL](http://github.com/jasny/db-mysql) extends [mysqli](http://php.net/mysqli)
-* [Jasny\DB\Mongo](http://github.com/jasny/db-mongo) extends [mongo](http://php.net/mongo)
-* [Jasny\DB\REST](http://github.com/jasny/db-rest) for datasources implementing
-  [REST](http://en.wikipedia.org/wiki/Representational_state_transfer)
 
 ## Documentation
 
