@@ -9,7 +9,7 @@ use Jasny\Entity\Traits;
 /**
  * Base class for an entity.
  */
-class Entity extends stdClass implements EntityInterface
+abstract class Entity extends stdClass implements EntityInterface
 {
     use Traits\GetSetTrait;
     use Traits\IdentifiableTrait;
@@ -17,4 +17,12 @@ class Entity extends stdClass implements EntityInterface
     use Traits\LazyLoadingTrait;
     use Traits\SetStateTrait;
     use Traits\TriggerTrait;
+
+    /**
+     * On object destruction
+     */
+    public function __destruct()
+    {
+        $this->trigger('destruct');
+    }
 }

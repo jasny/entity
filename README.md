@@ -95,10 +95,6 @@ class Foo
 }
 ```
 
-#### Class annotations
-
-    * @entitySet - Default entity set for this class of Entities
-
 #### Property annotations
 
     * @var - (type casting) - Value type or class name
@@ -118,7 +114,7 @@ class Foo
 
 _† Requires support from the data gateway._
 
-Additional annotation may be specified.
+Additional annotation may be specified for both properties and the class.
 
 #### Caveat
 Metadata can be really powerful in generalizing and abstracting code. However you can quickly fall into the trap of
@@ -151,6 +147,7 @@ Entities have the following internal events
 * `toAssoc` - Payload: output values
 * `jsonSerialize` - Payload: output object
 * `expand`
+* `destruct`
 
 #### MetaCast
 
