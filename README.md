@@ -1,4 +1,4 @@
-Jasny DB
+Jasny Entity
 ========
 
 [![Build Status](https://travis-ci.org/jasny/entity.svg?branch=master)](https://travis-ci.org/jasny/entity)
@@ -9,24 +9,13 @@ Jasny DB
 [![Packagist Stable Version](https://img.shields.io/packagist/v/jasny/entity.svg)](https://packagist.org/packages/jasny/entity)
 [![Packagist License](https://img.shields.io/packagist/l/jasny/entity.svg)](https://packagist.org/packages/jasny/entity)
 
+
 ## Documentation
 
-Entity
----
+An entity is a "thing" you want to represent in a database or other data stores. It can be a new article on your blog,
+a user in your message board or a permission in your rights management system.
 
-An entity is a "thing" you want to represent in a database or other data storages. It can be a new article on your
-blog, a user in your message board or a permission in your rights management system.
-
-The properties of an entity object is a representation of the data. Entities usually also carry business logic.
-
-### Set values
-The `setValues()` methods is a a helper function for setting all the properties from an array and works like a
-[fluent interface](http://en.wikipedia.org/wiki/Fluent_interface).
-
-```php
-$foo = new Foo();
-$foo->setValues(['red' => 10, 'green' => 20, 'blue' => 30])->doSomething();
-```
+The properties of an entity object is a representation of persisted data.
 
 ### Instantiation
 Using the `new` keyword is reserved for creating a new entity.
@@ -34,17 +23,52 @@ Using the `new` keyword is reserved for creating a new entity.
 When the data of an entity is fetched, the `__set_state()` method is used to create the entity. This method sets the
 properties of the entity object before calling the constructor.
 
-Entity set
----
+#### Lazy loading
 
-Whenever an array of entities would be returned, Jasny DB will return an `EntitySet` object instead. An entity set
-can be used as array as well as object.
+Entities supports [lazy loading](http://en.wikipedia.org/wiki/Lazy_loading) of entities by allowing them to be created
+as ghost. A ghost only hold the identifier. When other properties are accessed it can load the rest of the data.
 
-_further documentation required_
+When a scalar value is [casted](#metacast) to an entity, a ghost of that entity is created.
 
 
-Metadata
----
+### Set values
+The `set()` method is a a helper function for setting all the properties from an array and works like a
+[fluent interface](http://en.wikipedia.org/wiki/Fluent_interface).
+
+```php
+$foo = new Foo();
+$foo->set('answer', 42);
+$foo->set(['red' => 10, 'green' => 20, 'blue' => 30]);
+
+$foo
+  ->set('destination', 'unknown')
+  ->doSomething();
+```
+
+#### Dynamic
+
+By default, values that are not defined in the entity class are ignored when setting the properties of the entity.
+Override the `isDynamic()` method to return `true` for the entity to allow undefined properties.  
+
+### Get values
+Properties SHOULD be declared public and may be accessed directly, especially for reading.
+
+#### toAssoc
+To cast an entity to an associated array, use the `toAssoc()` method.
+
+#### jsonSerialize
+Entities implement the `JsonSerializable` interface. When calling `json_serialize($entity)`, the `jsonSerialize()`
+method is automatically called. If will create a `stdClass` object with casted properties.
+
+#### Identifiable
+
+An entity class is marked as identifiable if it has an identifier property. By default we assume this property is
+called `id`. In order to select another property, overwrite the `getIdProperty()` method.
+
+You cat get the identity of the entity with the `getId()` method.  
+
+
+### Metadata
 
 An entity represents an element in the model. The [metadata](http://en.wikipedia.org/wiki/Metadata) holds 
 information about the structure of the entity. Metadata should be considered static as it describes all the
@@ -57,11 +81,11 @@ Jasny DB support defining metadata through annotations by using [Jasny\Meta](htt
 
 ```php
 /**
- * User entity
+ * Foo entity
  *
- * @entitySet UserSet
+ * @entitySet FooSet
  */
-class User
+class Foo
 {
    /**
     * @var string
@@ -71,13 +95,11 @@ class User
 }
 ```
 
-### Class annotations
+#### Class annotations
 
     * @entitySet - Default entity set for this class of Entities
 
-_Additional class annotations may be used by a specific Jasny DB driver._
-
-### Property annotations
+#### Property annotations
 
     * @var - (type casting) - Value type or class name
     * @type - (validation) - Value (sub)type
@@ -88,52 +110,101 @@ _Additional class annotations may be used by a specific Jasny DB driver._
     * @maxLength (validation) - Maximal length of a string
     * @options _values_ (validation) - Value should be one the the given options.
     * @pattern _regex_ (validation) - Value should match the regex pattern.
-    * @immutable (validation) - Property can't be changed after it is created.
-    * @unique (validation) - Entity should be unique accross it's dataset.
-    * @unique _field_ (validation) - Entity should be unique for a group. The group is identified by _field_.
-    * @censor (redact) - Skip property when outputting the entity.
+    * @immutable (validation †) - Property can't be changed after it is created.
+    * @unique (validation †) - Entity should be unique accross it's dataset.
+    * @unique _field_ (validation †) - Entity should be unique for a group. The group is identified by _field_.
+    * @censor (filter) - Skip property when outputting the entity.
+    * @skip (filter) - Skip property when storing the entity.
 
-_Additional property annotations may be used by a specific Jasny DB driver._
+_† Requires support from the data gateway._
 
-### Caveat
-Metadata can be really powerfull in generalizing and abstracting code. However you can quickly fall into the trap of
+Additional annotation may be specified.
+
+#### Caveat
+Metadata can be really powerful in generalizing and abstracting code. However you can quickly fall into the trap of
 coding through metadata. This tends to lead to code that's hard to read and maintain.
 
 Only use the metadata to abstract widely use functionality and use overloading to implement special cases.
 
 
-Type casting
----
+### Triggers
 
-Entities support type casting. This is done based on the metadata. Type casting is implemented by the
-[Jasny\Meta](http://www.github.com/jasny/meta) library.
+Entities have a method to register handlers for a specific trigger. Triggers may be called from methods of the entity or
+from outside services.
 
-### Internal types
-For [php internal types](http://php.net/types) normal [type juggling](http://php.net/type-juggling) is used. Values
-aren't blindly casted. For instance casting `"foo"` to an integer would trigger a warning and skip the casting.
+To call a trigger, specify the event type and (optionally) a payload. Events are typically named after the method that
+triggers them. If there is a before and after event use the syntax `before:event` and `after:event`.
 
-### Objects
-Casting a value to an `Identifiable` entity that supports [Lazy Loading](#lazy-loading), creates a ghost object.
-Entities that implement `ActiveRecord` or have a `DataMapper`, but do not support `LazyLoading` are fetched from the
-database.
+A handler must be a callback with the following signature:
 
-Casting a value to a non-identifiable entity will call the `Entity::fromData()` method.
+    handler(EntityInterface $entity, mixed $payload): mixed
 
-Casting to any other type of object will create a new object normally. For instance casting "bar" to `Foo` would result
-in `new Foo("bar")`.
+The handlers are executed in the order they are specified. The return value will be the payload for the subsequent
+handler.
 
+Entities have the following internal events
 
-Validation
----
+* `before:set` - Payload: input values
+* `after:set`
+* `before:reload` - Payload: input values
+* `after:reload`
+* `toAssoc` - Payload: output values
+* `jsonSerialize` - Payload: output object
+* `expand`
 
-Entities implementing the Validatable interface, can do some basic validation prior to saving them. This includes
-checking that all required properties have values, checking the variable type matches and checking if values are
-uniquely present in the database.
+#### MetaCast
 
-The `validate()` method will return a [`Jasny\ValidationResult`](https://github.com/jasny/validation-result#readme).
+Cast the values based on the [metadata](#metadata) of the entity based on the `@var` tag using the
+[Jasny TypeCast](https://github.com/jasny/typecast) library.
+
+This library has a custom type cast handler, that must be set for `EntityInterface` objects.
 
 ```php
-$validation = $entity->validate();
+$metaFactory = new Jasny\Meta\Factory\Annotations();
+
+$handlers = [EntityInterface::class, new Entity\TypeCastHandler()] + TypeCast::getDefaultHandlers();
+$typecast = new TypeCast($handlers);
+
+$entity->on("before:set", new MetaCast($metaFactory, $typecast));
+```  
+
+#### MetaFilter
+
+Filter values based on any tag of the metadata of the entity. Typically `@censor` is used to omit a property from output
+and `@skip` is used to omit a property from being stored.
+
+```php
+$metaFactory = new Jasny\Meta\Factory\Annotations();
+$entity->on("before:set", new MetaFilter('censor', $metaFactory));
+$entity->on("before:save", new MetaFilter('skip', $metaFactory));
+```
+
+#### MetaValidation
+
+Validate the entity based on the [metadata](#metadata). Validation may include checking that all required properties
+have values, checking the variable type matches and checking if values are uniquely present in the database.
+
+If validation fails 
+
+```php
+$metaFactory = new Jasny\Meta\Factory\Annotations();
+$entity->on("before:save", new MetaValidation($metaFactory));
+
+try {
+    $entity->set($values)->save();
+} catch (ValidationException $exception) {
+    http_response_code(400); // Bad Request
+    json_encode($exception->getErrors());
+    exit();
+}
+```
+
+You can also use the `MetaValidation` object directly. The `validate()` method will return a
+[`Jasny\ValidationResult`](https://github.com/jasny/validation-result#readme) rather than throw an exception.
+
+```php
+$metaFactory = new Jasny\Meta\Factory\Annotations();
+$validation = (new MetaValidation($metaFactory))->validate($entity);
 
 if ($validation->failed()) {
     http_response_code(400); // Bad Request
@@ -142,22 +213,16 @@ if ($validation->failed()) {
 }
 ```
 
-Lazy loading
----
+#### Redact
 
-Jasny DB supports [lazy loading](http://en.wikipedia.org/wiki/Lazy_loading) of entities by allowing them to be created
-as ghost. A ghost only hold a limited set of the entity's data, usually only the identifier. When other properties are
-accessed it will load the rest of the data.
+Omit specified properties. This is useful both for input data as for output.
 
-When a value is [casted](#type-casting) to an entity that supports lazy loading, a ghost of that entity is created.
+The Redact handler has 2 methods `without()` and `only()`. Using `without()` will omit the specified properties. Using
+`only()` method will omit all properties except the ones specified.
 
+```php
+$entity->on("before:set", (new Redact())->without('id', 'credits'));
+$entity->on("jsonSerialize", (new Redact())->only('id', 'type', 'description'));
+```
 
-Soft deletion
----
-
-Entities that support soft deletion are deleted in such a way that they can restored.
-
-Deleted entities may restored using `undelete()` or they can be permanently removed using `purge()`.
-
-The `isDeleted()` method check whether this document has been deleted.
-
+_This is an immutable object, both `without()` and `only()` create a new object._

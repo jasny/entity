@@ -8,7 +8,7 @@ use Jasny\Support\DynamicTestEntity;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
- * @covers Jasny\Entity\SetterTrait
+ * @covers Jasny\Entity\GetSetTrait
  */
 class SetterTraitTest extends TestCase
 {
