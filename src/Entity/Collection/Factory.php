@@ -10,7 +10,7 @@ use Jasny\Meta\Introspection;
 class Factory
 {
    /**
-     * EntityCollection classes
+     * Collection classes
      * @var string[]
      */
     protected $classes = [];
@@ -75,7 +75,7 @@ class Factory
                 "should be a class name (string) or a Closure";
             throw new \InvalidArgumentException($msg);
         }
-        
+
         $this->classes[$entityClass] = $entitySetClass;
     }
     

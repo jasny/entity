@@ -8,7 +8,7 @@ use Jasny\Entity;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
- * @covers Jasny\Entity\JsonSerializeTrait
+ * @covers Jasny\Entity\Json
  */
 class JsonSerializeTraitTest extends TestCase
 {
@@ -19,7 +19,7 @@ class JsonSerializeTraitTest extends TestCase
     
     public function setUp()
     {
-        $this->entity = $this->getMockForTrait(Entity\JsonSerializeTrait::class);
+        $this->entity = $this->getMockForTrait(Entity\Json::class);
     }
     
     public function testJsonSerialize()
@@ -52,7 +52,7 @@ class JsonSerializeTraitTest extends TestCase
     
     public function testJsonSerializeFilter()
     {
-        $this->entity = $this->getMockForTrait(JsonSerializeTrait::class, [], '', true, true, true, [
+        $this->entity = $this->getMockForTrait(Json::class, [], '', true, true, true, [
             'jsonSerializeFilterFoo',
             'jsonSerializeFilterBar'
         ]);
@@ -68,7 +68,7 @@ class JsonSerializeTraitTest extends TestCase
     protected function createLazyLoadingEntity(): JsonSerializable
     {
         return new class implements JsonSerializable, Entity\WithLazyLoading {
-            use Entity\JsonSerializeTrait,
+            use Entity\Json,
                 Entity\ToAssocTrait;
             
             public function isGhost()

@@ -104,7 +104,7 @@ class ChangeAwarenessTraitTest extends TestCase
     {
         return new class implements Entity\ChangeAwarenessInterface, Introspection {
             use Entity\SetStateTrait;
-            use Entity\JsonSerializeTrait;
+            use Entity\Json;
             use Entity\ToAssocTrait;
             use Entity\SetterTrait;
             use Entity\ChangeAwarenessTrait;

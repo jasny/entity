@@ -580,7 +580,7 @@ class EntitySet implements \IteratorAggregate, \ArrayAccess, \Countable, \JsonSe
     }
     
     /**
-     * Prepare for JSON serialization
+     * Prepare for JsonSerialize serialization
      * 
      * @return array
      */
