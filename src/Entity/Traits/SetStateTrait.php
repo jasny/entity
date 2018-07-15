@@ -3,6 +3,7 @@
 namespace Jasny\Entity\Traits;
 
 use ReflectionClass;
+use function Jasny\object_set_properties;
 
 /**
  * Entity::__set_state method
@@ -56,9 +57,8 @@ trait SetStateTrait
         return $this->i__new;
     }
 
-
     /**
-     * Create an entity from persisted datay
+     * Create an entity from persisted data
      *
      * @param array $data
      * @return static
@@ -70,6 +70,10 @@ trait SetStateTrait
         $entity = (new ReflectionClass($class))->newInstanceWithoutConstructor();
 
         object_set_properties($entity, $data, static::isDynamic());
+
+        if (method_exists($entity, '__construct')) {
+            $entity->__construct();
+        }
 
         $entity->markNew(false);
 
