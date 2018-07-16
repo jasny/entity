@@ -53,6 +53,16 @@ class EntitySet extends AbstractEntityCollection
     }
 
     /**
+     * Return a unique set of entities.
+     *
+     * @return $this
+     */
+    public function unique(): self
+    {
+        return $this;
+    }
+
+    /**
      * Get an entity from the set by id
      *
      * @param mixed|EntityInterface $entity   Entity id or Entity

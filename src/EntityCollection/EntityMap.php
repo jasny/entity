@@ -4,6 +4,7 @@ namespace Jasny\EntityCollection;
 
 use Jasny\EntityCollection\AbstractEntityCollection;
 use Jasny\EntityInterface;
+use BadMethodCallException;
 use OutOfBoundsException;
 
 /**
@@ -16,18 +17,22 @@ class EntityMap extends AbstractEntityCollection
      * Sort the entities as string or on a property.
      *
      * @param string $property
-     * @return $this
+     * @param int    $sortFlags
+     * @throws BadMethodCallException
      */
-    public function sort($property = null)
+    public function sort(string $property = null, int $sortFlags = SORT_REGULAR)
     {
-        uksort($this->entities, function($a, $b) use($property) {
-            $valA = isset($property) ? (isset($a->$property) ? $a->$property : null) : (string)$a;
-            $valB = isset($property) ? (isset($b->$property) ? $b->$property : null) : (string)$b;
+        throw new BadMethodCallException("Map should not be used as ordered list");
+    }
 
-            return strcmp($valA, $valB);
-        });
-
-        return $this;
+    /**
+     * Sort the entities as string or on a property.
+     *
+     * @throws BadMethodCallException
+     */
+    public function reverse()
+    {
+        throw new BadMethodCallException("Map should not be used as ordered list");
     }
 
 
