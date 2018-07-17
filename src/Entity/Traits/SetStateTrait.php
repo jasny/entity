@@ -82,10 +82,14 @@ trait SetStateTrait
 
     /**
      * Mark entity as persisted
+     *
+     * @return this
      */
-    public function markAsPersisted()
+    public function markAsPersisted(): self
     {
-        $this->isNew(false);
+        $this->markNew(false);
         $this->trigger('persisted');
+
+        return $this;
     }
 }
