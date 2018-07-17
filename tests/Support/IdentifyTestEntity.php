@@ -8,12 +8,12 @@ use Jasny\Entity;
 /**
  * @ignore
  */
-class IdentifiableTestEntity implements EntityInterface
+class IdentifyTestEntity implements EntityInterface
 {
     use Entity\Traits\SetStateTrait,
         Entity\Traits\GetSetTrait,
         Entity\Traits\TriggerTrait,
-        Entity\Traits\IdentifiableTrait,
+        Entity\Traits\IdentifyTrait,
         Entity\Traits\LazyLoadingTrait;
 
     public $id;

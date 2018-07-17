@@ -42,11 +42,11 @@ interface EntityInterface extends JsonSerializable
 
 
     /**
-     * Check if the entity is identifiable.
+     * Check if the entity has an id property
      *
      * @return bool
      */
-    public static function isIdentifiable(): bool;
+    public static function hasIdProperty(): bool;
 
     /**
      * Get entity id.
