@@ -10,7 +10,7 @@ use function Jasny\object_set_properties;
 
 /**
  * Entity lazy loading implementation
- * 
+ *
  * @author  Arnold Daniels <arnold@jasny.net>
  * @license https://raw.github.com/jasny/entity/master/LICENSE MIT
  * @link    https://jasny.github.com/entity
@@ -42,14 +42,14 @@ trait LazyLoadingTrait
 
     /**
      * Set the ghost state
-     * 
+     *
      * @param bool $state
      */
     final protected function markAsGhost(bool $state)
     {
         $this->i__ghost = $state;
     }
-    
+
     /**
      * Check if the object is a ghost.
      *

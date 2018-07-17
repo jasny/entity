@@ -8,8 +8,12 @@
     convertWarningsToExceptions="true"
 >
     <testsuites>
-        <testsuite>
+        <testsuite name="All tests">
             <directory>tests/</directory>
+        </testsuite>
+        <testsuite name="entity">
+            <directory>tests/Entity</directory>
+            <exclude>tests/Entity/ChangeAwarenessTraitTest.php</exclude>
         </testsuite>
     </testsuites>
     <filter>
@@ -19,6 +23,6 @@
     </filter>
     <logging>
         <log type="coverage-text" target="php://stdout"/>
-    </logging>    
+    </logging>
 </phpunit>
 
