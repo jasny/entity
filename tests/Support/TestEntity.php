@@ -10,17 +10,20 @@ use Jasny\Entity;
  */
 class TestEntity implements EntityInterface
 {
-    use Entity\SetStateTrait,
-        Entity\SetterTrait;
-    
+    use Entity\Traits\SetStateTrait,
+        Entity\Traits\GetSetTrait,
+        Entity\Traits\TriggerTrait,
+        Entity\Traits\IdentifiableTrait,
+        Entity\Traits\LazyLoadingTrait;
+
     public $foo;
     public $num;
-    
+
     public function __construct()
     {
         $this->num = $this->num ?? 0;
     }
-    
+
     public function jsonSerialize()
     {
     }
