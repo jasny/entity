@@ -2,6 +2,10 @@
 
 namespace Jasny\Entity\Traits;
 
+use stdClass;
+use JsonSerializable;
+use function Jasny\object_get_properties;
+
 /**
  * Entity json serialize implementation
  *
@@ -57,7 +61,7 @@ trait JsonSerializeTrait
 
         if ($value instanceof stdClass || is_array($value)) {
             foreach ($value as &$prop) {
-                $this->cast($prop); // Recursion
+                $this->jsonSerializeCast($prop); // Recursion
             }
         }
 
