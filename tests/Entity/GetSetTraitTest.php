@@ -23,6 +23,9 @@ class GetSetTraitTest extends TestCase
         $this->entity = new TestEntity();
     }
 
+    /**
+     * Test 'set' method for single value
+     */
     public function testSetValue()
     {
         $this->entity->set('foo', 'bar');
@@ -31,6 +34,9 @@ class GetSetTraitTest extends TestCase
         $this->assertAttributeSame(0, 'num', $this->entity);
     }
 
+    /**
+     * Test 'set' method with null value
+     */
     public function testSetValueToNull()
     {
         $this->entity->set('num', null);
@@ -39,6 +45,9 @@ class GetSetTraitTest extends TestCase
         $this->assertAttributeSame(null, 'num', $this->entity);
     }
 
+    /**
+     * Test 'set' method for multiple values
+     */
     public function testSetValues()
     {
         $this->entity->set(['foo' => 'bar', 'num' => 100, 'dyn' => 'woof']);
@@ -48,6 +57,9 @@ class GetSetTraitTest extends TestCase
         $this->assertObjectNotHasAttribute('dyn', $this->entity);
     }
 
+    /**
+     * Test 'set' method for multiple values and dynamic entity
+     */
     public function testSetValuesDynamic()
     {
         $this->entity = new DynamicTestEntity();
@@ -60,11 +72,31 @@ class GetSetTraitTest extends TestCase
     }
 
     /**
+     * Test 'set' method with invalid argument
+     *
      * @expectedException TypeError
      * @expectedExceptionMessage Expected array, string given
      */
     public function testSetValueInvalidArgument()
     {
         $this->entity->set('foo');
+    }
+
+    /**
+     * Test 'toAssoc' method
+     */
+    public function testToAssoc()
+    {
+        $expected = ['foo' => 'bar', 'num' => 23];
+
+        $entity = $this->createPartialMock(TestEntity::class, ['trigger']);
+        $entity->expects($this->once())->method('trigger')->with('toAssoc', $expected)->willReturn($expected);
+
+        $entity->foo = $expected['foo'];
+        $entity->num = $expected['num'];
+
+        $result = $entity->toAssoc();
+
+        $this->assertSame($expected, $result);
     }
 }
