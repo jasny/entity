@@ -26,6 +26,13 @@ trait LazyLoadingTrait
 
 
     /**
+     * Check if the entity can hold and use undefined properties.
+     *
+     * @return bool
+     */
+    abstract public static function isDynamic(): bool;
+
+    /**
      * Check if the entity is identifiable.
      *
      * @return bool
@@ -59,7 +66,6 @@ trait LazyLoadingTrait
     {
         return $this->i__ghost;
     }
-
 
     /**
      * Lazy load an entity, only the id is known.
@@ -112,15 +118,11 @@ trait LazyLoadingTrait
         $id = $this->getId();
         $idProp = static::getIdProperty();
 
-        if (!$data[$idProp] === $id) {
+        if ($data[$idProp] !== $id) {
             throw new InvalidArgumentException("Id in reload data doesn't match entity id");
         }
 
-        if (!static::isDynamic()) {
-            $data = array_only($data, array_keys(get_class_vars($class)));
-        }
-
-        object_set_properties($this, $data, true);
+        object_set_properties($this, $data, static::isDynamic());
 
         $this->trigger("after:reload");
 

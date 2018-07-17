@@ -9,7 +9,6 @@ use Jasny\Entity\LazyLoadingInterface;
 use Jasny\Entity\Traits\LazyLoadingTrait;
 use Jasny\Entity\Traits\JsonSerializeTrait;
 use Jasny\Entity\Traits\GetSetTrait;
-use Jasny\Support\LazyLoadingTestEntity;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -67,15 +66,5 @@ class JsonSerializeTraitTest extends TestCase
         $result = $entity->jsonSerialize();
 
         $this->assertEquals($expected, $result);
-    }
-
-    public function testJsonSerializeExpand()
-    {
-        $entity = new LazyLoadingTestEntity();
-
-        $this->assertEquals(
-            (object)['foo' => 'bar'],
-            $entity->jsonSerialize()
-        );
     }
 }
