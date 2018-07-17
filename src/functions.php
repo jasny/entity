@@ -42,9 +42,5 @@ function object_set_properties($object, array $data, bool $isDynamic): void
  */
 function object_get_properties($object): array
 {
-    if ($object instanceof LazyLoadingInterface && $object->isGhost()) {
-        $object->expand();
-    }
-
     return get_object_vars($object);
 }

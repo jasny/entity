@@ -23,10 +23,12 @@ interface LazyLoadingInterface
     public function isGhost();
 
     /**
-     * Expand a ghost.
-     * Does nothing is entity isn't a ghost.
+     * Reload with data from persisted storage.
      *
+     * @param array $values
      * @return $this
+     * @throws BadMethodCallException if entity is not identifiable
+     * @throws InvalidArgumentException if data doesn't belong to entity
      */
-    public function expand();
+    public function reload(array $values);
 }
