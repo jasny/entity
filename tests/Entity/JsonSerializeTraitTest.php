@@ -27,6 +27,9 @@ class JsonSerializeTraitTest extends TestCase
         $this->entity = $this->getMockForTrait(JsonSerializeTrait::class);
     }
 
+    /**
+     * Test 'jsonSerialize' method
+     */
     public function testJsonSerialize()
     {
         $this->entity->foo = 'bar';
@@ -40,6 +43,9 @@ class JsonSerializeTraitTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
+    /**
+     * Test 'jsonSerialize' method for DateTime value
+     */
     public function testJsonSerializeCastDateTime()
     {
         $data = (object)['date' => new \DateTime('2013-03-01 16:04:00 +01:00'), 'color' => 'pink'];
@@ -47,13 +53,16 @@ class JsonSerializeTraitTest extends TestCase
 
         $this->entity->date = $data->date;
         $this->entity->color = $data->color;
-        $this->entity->expects($this->once())->method('trigger')->with('jsonSerialize', $data)->willReturn($expected);
+        $this->entity->expects($this->once())->method('trigger')->with('jsonSerialize', $expected)->willReturn($expected);
 
         $result = $this->entity->jsonSerialize();
 
         $this->assertEquals($expected, $result);
     }
 
+    /**
+     * Test 'jsonSerialize' method for serializable value
+     */
     public function testJsonSerializeCastJsonSerializable()
     {
         $entity = $this->entity;
@@ -61,7 +70,23 @@ class JsonSerializeTraitTest extends TestCase
         $entity->foo->expects($this->once())->method('jsonSerialize')->willReturn('bar');
 
         $expected = (object)['foo' => 'bar'];
-        $entity->method('trigger')->with('jsonSerialize', (object)['foo' => $entity->foo])->willReturn($expected);
+        $entity->method('trigger')->with('jsonSerialize', $expected)->willReturn($expected);
+
+        $result = $entity->jsonSerialize();
+
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test 'jsonSerialize' method for iterable value
+     */
+    public function testJsonSerializeIterable()
+    {
+        $entity = $this->entity;
+        $entity->foo = new \ArrayObject(['zoo' => 'bar']);
+
+        $expected = (object)['foo' => ['zoo' => 'bar']];
+        $entity->method('trigger')->with('jsonSerialize', $expected)->willReturn($expected);
 
         $result = $entity->jsonSerialize();
 
