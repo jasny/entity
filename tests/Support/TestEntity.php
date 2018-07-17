@@ -13,7 +13,7 @@ class TestEntity implements EntityInterface
     use Entity\Traits\SetStateTrait,
         Entity\Traits\GetSetTrait,
         Entity\Traits\TriggerTrait,
-        Entity\Traits\IdentifiableTrait,
+        Entity\Traits\IdentifyTrait,
         Entity\Traits\LazyLoadingTrait;
 
     public $foo;

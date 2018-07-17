@@ -3,37 +3,37 @@
 namespace Jasny\Entity;
 
 use Jasny\Support\TestEntity;
-use Jasny\Support\IdentifiableTestEntity;
+use Jasny\Support\IdentifyTestEntity;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers Jasny\Entity\Traits\IdentifiableTrait
+ * @covers Jasny\Entity\Traits\IdentifyTrait
  * @group entity
  */
-class IdentifiableTraitTest extends TestCase
+class IdentifyTraitTest extends TestCase
 {
     /**
-     * Provide data for testing 'isIdentifiable' method
+     * Provide data for testing 'hasIdProperty' method
      *
      * @return array
      */
-    public function isIdentifiableProvider()
+    public function hasIdPropertyProvider()
     {
         return [
-            [IdentifiableTestEntity::class, true],
+            [IdentifyTestEntity::class, true],
             [TestEntity::class, false]
         ];
     }
 
     /**
-     * Test 'isIdentifiable' method
+     * Test 'hasIdProperty' method
      *
-     * @dataProvider isIdentifiableProvider
+     * @dataProvider hasIdPropertyProvider
      */
-    public function testIsIdentifiable($class, $expected)
+    public function testHasIdProperty($class, $expected)
     {
         $entity = $this->createPartialMock($class, []);
-        $result = $entity->isIdentifiable();
+        $result = $entity->hasIdProperty();
 
         $this->assertSame($expected, $result);
     }
@@ -43,7 +43,7 @@ class IdentifiableTraitTest extends TestCase
      */
     public function testGetId()
     {
-        $entity = $this->createPartialMock(IdentifiableTestEntity::class, []);
+        $entity = $this->createPartialMock(IdentifyTestEntity::class, []);
         $entity->id = 'foo';
 
         $result = $entity->getId();

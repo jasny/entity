@@ -4,7 +4,7 @@ namespace Jasny\Support;
 
 use Jasny\Entity\LazyLoadingInterface;
 use Jasny\Entity\Traits\JsonSerializeTrait;
-use Jasny\Entity\Traits\IdentifiableTrait;
+use Jasny\Entity\Traits\IdentifyTrait;
 use Jasny\Entity\Traits\LazyLoadingTrait;
 
 /**
@@ -12,7 +12,7 @@ use Jasny\Entity\Traits\LazyLoadingTrait;
  */
 class LazyLoadingTestEntity implements \JsonSerializable, LazyLoadingInterface {
     use JsonSerializeTrait;
-    use IdentifiableTrait;
+    use IdentifyTrait;
     use LazyLoadingTrait;
 
     public $id;

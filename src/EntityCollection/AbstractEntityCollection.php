@@ -24,7 +24,7 @@ class AbstractEntityCollection implements EntityCollectionInterface
      * @var string
      */
     protected $entityClass;
-    
+
     /**
      * @var Entity[]
      */
@@ -35,8 +35,8 @@ class AbstractEntityCollection implements EntityCollectionInterface
      * @var int|Closure
      */
     protected $totalCount;
-    
-    
+
+
     /**
      * Class constructor
      *
@@ -53,7 +53,7 @@ class AbstractEntityCollection implements EntityCollectionInterface
 
     /**
      * Factory method
-     * 
+     *
      * @param string                     $class     Class name
      * @param EntityInterface[]|iterable $entities  Array of entities
      * @param int|\Closure               $total     Total number of entities (if set is limited)
@@ -63,7 +63,7 @@ class AbstractEntityCollection implements EntityCollectionInterface
     public static function forClass(string $class, iterable $entities = [], $total = null): self
     {
         $refl = new ReflectionClass(get_called_class());
-        
+
         $entitySet = $refl->newInstanceWithoutConstructor();
 
         if (
@@ -76,9 +76,9 @@ class AbstractEntityCollection implements EntityCollectionInterface
 
         $args = func_get_args();
         array_shift($args);
-        
+
         $entitySet->__construct(...$args);
-        
+
         return $entitySet;
     }
 
@@ -98,14 +98,14 @@ class AbstractEntityCollection implements EntityCollectionInterface
             throw new InvalidArgumentException("$class is not an Entity");
         }
 
-        if (!$class::isIdentifiable()) {
+        if (!$class::hasIdProperty()) {
             throw new InvalidArgumentException("$class is not an identifiable, can't create a set");
         }
     }
 
     /**
      * Turn input into array of entities
-     * 
+     *
      * @param EntityInterface|mixed $entity
      */
     protected function assertEntity($entity)
@@ -122,7 +122,7 @@ class AbstractEntityCollection implements EntityCollectionInterface
 
     /**
      * Check if index is an integer and not out of bounds.
-     * 
+     *
      * @param int     $index
      * @param boolean $add     Indexed is used for adding an element
      */
@@ -131,15 +131,15 @@ class AbstractEntityCollection implements EntityCollectionInterface
         if (!is_int($index)) {
             throw new InvalidArgumentException("Only numeric keys are allowed");
         }
-        
+
         if ($index < 0 || $index > count($this->entities) - ($add ? 0 : 1)) {
             throw new OutOfBoundsException("Index '$index' is out of bounds");
         }
     }
-    
+
     /**
      * Get the class entities of this set (must) have
-     * 
+     *
      * @return string
      */
     public function getEntityClass(): string
@@ -149,7 +149,7 @@ class AbstractEntityCollection implements EntityCollectionInterface
 
     /**
      * Set the entities
-     * 
+     *
      * @param EntityInterface[]|iterable $entities
      * @return void
      */
@@ -161,20 +161,20 @@ class AbstractEntityCollection implements EntityCollectionInterface
         }
     }
 
-    
+
     /**
      * Get the iterator for looping through the set
-     * 
+     *
      * @return \ArrayIterator
      */
     public function getIterator()
     {
         return new ArrayIterator($this->entities);
     }
-    
+
     /**
      * Get the entities as array
-     * 
+     *
      * @return EntityInterface[]
      */
     public function toArray()
@@ -184,7 +184,7 @@ class AbstractEntityCollection implements EntityCollectionInterface
 
     /**
      * Count the number of entities
-     * 
+     *
      * @return int
      */
     public function count()
@@ -194,7 +194,7 @@ class AbstractEntityCollection implements EntityCollectionInterface
 
     /**
      * Count all the entities (if set was limited)
-     * 
+     *
      * @return int
      */
     public function countTotal()
@@ -202,7 +202,7 @@ class AbstractEntityCollection implements EntityCollectionInterface
         if ($this->totalCount instanceof Closure) {
             $this->totalCount = call_user_func($this->totalCount);
         }
-        
+
         return $this->totalCount ?? $this->count();
     }
 
@@ -226,7 +226,7 @@ class AbstractEntityCollection implements EntityCollectionInterface
      */
     protected function findEntityByRef(EntityInterface $entity)
     {
-        $hasId = $entity::isIdentifiable() && $entity->getId() !== null;
+        $hasId = $entity::hasIdProperty() && $entity->getId() !== null;
 
         foreach ($this->entities as $index => $cur) {
             if ($cur === $entity || ($hasId && $cur->getId() === $entity->getId())) {
@@ -253,7 +253,7 @@ class AbstractEntityCollection implements EntityCollectionInterface
 
     /**
      * Check if the entity exists in this set
-     * 
+     *
      * @param mixed|EntityInterface $entity
      * @return boolean
      */
@@ -264,7 +264,7 @@ class AbstractEntityCollection implements EntityCollectionInterface
 
     /**
      * Get an entity from the set by id
-     * 
+     *
      * @param mixed|EntityInterface $entity   Entity id or Entity
      * @return EntityInterface|null
      */
@@ -272,10 +272,10 @@ class AbstractEntityCollection implements EntityCollectionInterface
     {
         return $this->findEntity($entity)->current();
     }
-    
+
     /**
      * Add an entity to the set
-     * 
+     *
      * @param EntityInterface $entity
      * @return void
      */
@@ -283,10 +283,10 @@ class AbstractEntityCollection implements EntityCollectionInterface
     {
         $this->offsetSet(null, $entity);
     }
-    
+
     /**
      * Remove an entity from the set
-     * 
+     *
      * @param mixed|EntityInterface $entity
      * @return void
      */
@@ -296,7 +296,7 @@ class AbstractEntityCollection implements EntityCollectionInterface
             unset($this->entities[$index]);
         }
     }
-    
+
     /**
      * Return a unique set of entities.
      *
@@ -306,10 +306,10 @@ class AbstractEntityCollection implements EntityCollectionInterface
     {
         return $this;
     }
-    
+
     /**
      * Filter the elements
-     * 
+     *
      * @param array $filter
      * @param bool  $strict
      * @return static
@@ -320,7 +320,7 @@ class AbstractEntityCollection implements EntityCollectionInterface
 
         $filteredSet->entities = array_filter($this->entities, function($entity) use ($filter, $strict) {
             $valid = true;
-            
+
             foreach ($filter as $key => $value) {
                 $valid = $valid && !isset($entity->$key)
                     ? !isset($value)
@@ -329,16 +329,16 @@ class AbstractEntityCollection implements EntityCollectionInterface
                         (is_array($entity->$key) && in_array($value, $entity->$key, $strict))
                     );
             }
-            
+
             return $valid;
         });
-        
+
         return $filteredSet;
     }
 
     /**
      * Sort the entities as string or on a property.
-     * 
+     *
      * @param string $property
      * @return $this
      */
@@ -347,10 +347,10 @@ class AbstractEntityCollection implements EntityCollectionInterface
         usort($this->entities, function($a, $b) use($property) {
             $valA = isset($property) ? (isset($a->$property) ? $a->$property : null) : (string)$a;
             $valB = isset($property) ? (isset($b->$property) ? $b->$property : null) : (string)$b;
-            
+
             return strcmp($valA, $valB);
         });
-        
+
         return $this;
     }
 
@@ -455,7 +455,7 @@ class AbstractEntityCollection implements EntityCollectionInterface
 
     /**
      * Prepare for JsonSerialize serialization
-     * 
+     *
      * @return array
      */
     public function jsonSerialize()

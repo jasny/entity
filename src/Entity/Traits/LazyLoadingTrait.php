@@ -33,11 +33,11 @@ trait LazyLoadingTrait
     abstract public static function isDynamic(): bool;
 
     /**
-     * Check if the entity is identifiable.
+     * Check if the entity has an id property
      *
      * @return bool
      */
-    abstract public static function isIdentifiable(): bool;
+    abstract public static function hasIdProperty(): bool;
 
     /**
      * Get the id property of the entity.
@@ -79,7 +79,7 @@ trait LazyLoadingTrait
     {
         $class = get_called_class();
 
-        if (!static::isIdentifiable()) {
+        if (!static::hasIdProperty()) {
             throw new BadMethodCallException("$class entity is not identifiable");
         }
 
@@ -109,7 +109,7 @@ trait LazyLoadingTrait
     {
         $class = get_class($this);
 
-        if (!static::isIdentifiable()) {
+        if (!static::hasIdProperty()) {
             throw new BadMethodCallException("$class entity is not identifiable");
         }
 
