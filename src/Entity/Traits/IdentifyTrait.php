@@ -11,14 +11,14 @@ use BadMethodCallException;
  * @license https://raw.github.com/jasny/entity/master/LICENSE MIT
  * @link    https://jasny.github.com/entity
  */
-trait IdentifiableTrait
+trait IdentifyTrait
 {
     /**
-     * Check if the entity is identifiable.
+     * Check if the entity has an id property.
      *
      * @return bool
      */
-    public static function isIdentifiable(): bool
+    public static function hasIdProperty(): bool
     {
         return static::getIdProperty() !== null;
     }

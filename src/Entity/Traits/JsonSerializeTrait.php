@@ -2,6 +2,11 @@
 
 namespace Jasny\Entity\Traits;
 
+use stdClass;
+use DateTime;
+use JsonSerializable;
+use function Jasny\object_get_properties;
+
 /**
  * Entity json serialize implementation
  *
@@ -30,7 +35,7 @@ trait JsonSerializeTrait
     public function jsonSerialize(): stdClass
     {
         $object = (object)object_get_properties($this);
-        $this->jsonSerializeCast($object);
+        $object = $this->jsonSerializeCast($object);
 
         return $this->trigger('jsonSerialize', $object);
     }
@@ -41,7 +46,7 @@ trait JsonSerializeTrait
      * @param mixed $value
      * @return mixed
      */
-    protected function jsonSerializeCast(&$value)
+    protected function jsonSerializeCast($value)
     {
         if ($value instanceof DateTime) {
             return $value->format(DateTime::ISO8601);
@@ -57,7 +62,7 @@ trait JsonSerializeTrait
 
         if ($value instanceof stdClass || is_array($value)) {
             foreach ($value as &$prop) {
-                $this->cast($prop); // Recursion
+                $prop = $this->jsonSerializeCast($prop); // Recursion
             }
         }
 

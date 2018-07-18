@@ -2,6 +2,11 @@
 
 namespace Jasny\Entity\Traits;
 
+use Jasny\Entity\DynamicInterface;
+use function Jasny\expect_type;
+use function Jasny\object_set_properties;
+use function Jasny\object_get_properties;
+
 /**
  * Get and set entity properties
  *
@@ -19,18 +24,6 @@ trait GetSetTrait
      * @return mixed|void
      */
     abstract public function trigger(string $event, $payload = null);
-
-
-    /**
-     * Check if the entity can hold and use undefined properties.
-     *
-     * @return bool
-     */
-    public static function isDynamic(): bool
-    {
-        return false;
-    }
-
 
     /**
      * Cast the entity to an associative array.
@@ -63,8 +56,9 @@ trait GetSetTrait
         $payload = func_num_args() === 1 ? (array)$key : [$key => $value];
 
         $data = $this->trigger('before:set', $payload);
+        $isDynamic = $this instanceof DynamicInterface;
 
-        object_set_properties($this, $data, static::isDynamic());
+        object_set_properties($this, $data, $isDynamic);
 
         $this->trigger('after:set', $data);
 
