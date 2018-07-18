@@ -2,6 +2,10 @@
 
 namespace Jasny\Entity\Traits;
 
+use function Jasny\expect_type;
+use function Jasny\object_set_properties;
+use function Jasny\object_get_properties;
+
 /**
  * Get and set entity properties
  *

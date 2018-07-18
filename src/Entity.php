@@ -12,7 +12,7 @@ use Jasny\Entity\Traits;
 abstract class Entity extends stdClass implements EntityInterface
 {
     use Traits\GetSetTrait;
-    use Traits\IdentifiableTrait;
+    use Traits\IdentifyTrait;
     use Traits\JsonSerializeTrait;
     use Traits\LazyLoadingTrait;
     use Traits\SetStateTrait;
