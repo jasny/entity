@@ -4,11 +4,12 @@ namespace Jasny\Support;
 
 use Jasny\EntityInterface;
 use Jasny\Entity;
+use Jasny\Entity\DynamicInterface;
 
 /**
  * @ignore
  */
-class IdentifyTestEntity implements EntityInterface
+class IdentifyTestEntity implements EntityInterface, DynamicInterface
 {
     use Entity\Traits\SetStateTrait,
         Entity\Traits\GetSetTrait,

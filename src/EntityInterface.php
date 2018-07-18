@@ -12,13 +12,6 @@ use Jasny\ValidationInterface;
 interface EntityInterface extends JsonSerializable
 {
     /**
-     * Check if the entity can hold and use undefined properties.
-     *
-     * @return bool
-     */
-    public static function isDynamic(): bool;
-
-    /**
      * Set a value or multiple values.
      *
      * <code>

@@ -5,6 +5,7 @@ namespace Jasny\Entity\Traits;
 use BadMethodCallException;
 use InvalidArgumentException;
 use ReflectionClass;
+use Jasny\Entity\DynamicInterface;
 use function Jasny\array_only;
 use function Jasny\object_set_properties;
 
@@ -23,14 +24,6 @@ trait LazyLoadingTrait
      * @var bool
      */
     private $i__ghost = false;
-
-
-    /**
-     * Check if the entity can hold and use undefined properties.
-     *
-     * @return bool
-     */
-    abstract public static function isDynamic(): bool;
 
     /**
      * Check if the entity has an id property
@@ -122,7 +115,8 @@ trait LazyLoadingTrait
             throw new InvalidArgumentException("Id in reload data doesn't match entity id");
         }
 
-        object_set_properties($this, $data, static::isDynamic());
+        $isDynamic = $this instanceof DynamicInterface;
+        object_set_properties($this, $data, $isDynamic);
 
         $this->trigger("after:reload");
 
