@@ -3,6 +3,7 @@
 namespace Jasny\Entity;
 
 use Jasny\Support\LazyLoadingTestEntity;
+use Jasny\Support\IdentifyTestEntity;
 use Jasny\Support\DynamicTestEntity;
 use Jasny\Entity\Traits\LazyLoadingTrait;
 use PHPUnit\Framework\TestCase;
@@ -53,24 +54,9 @@ class LazyLoadingTraitTest extends TestCase
     }
 
     /**
-     * Provide data for testing 'reload' method
-     *
-     * @return array
+     * Test 'reload' method for non-dynamic entity
      */
-    public function reloadProvider()
-    {
-        return [
-            [true, 'bar_dynamic'],
-            [false, null]
-        ];
-    }
-
-    /**
-     * Test 'reload' method
-     *
-     * @dataProvider reloadProvider
-     */
-    public function testReload($isDynamic, $expectedBar)
+    public function testReload()
     {
         $values = ['id' => 'bla', 'foo' => 'kaz', 'bar' => 'bar_dynamic'];
 
@@ -80,17 +66,35 @@ class LazyLoadingTraitTest extends TestCase
 
         $entity->id = 'bla';
         $entity->foo = 'zoo';
-        $entity->isDynamic = $isDynamic;
 
         $result = $entity->reload($values);
 
         $this->assertSame($entity, $result);
         $this->assertSame('bla', $entity->getId());
         $this->assertSame('kaz', $entity->foo);
+        $this->assertFalse(isset($entity->bar));
+    }
 
-        $expectedBar ?
-            $this->assertSame($expectedBar, $entity->bar) :
-            $this->assertFalse(isset($entity->bar));
+    /**
+     * Test 'reload' method for dynamic entity
+     */
+    public function testReloadDynamic()
+    {
+        $values = ['id' => 'bla', 'foo' => 'kaz', 'bar' => 'bar_dynamic'];
+
+        $entity = $this->createPartialMock(IdentifyTestEntity::class, ['trigger']);
+        $entity->expects($this->at(0))->method('trigger')->with('before:reload', $values)->willReturn($values);
+        $entity->expects($this->at(1))->method('trigger')->with('after:reload');
+
+        $entity->id = 'bla';
+        $entity->foo = 'zoo';
+
+        $result = $entity->reload($values);
+
+        $this->assertSame($entity, $result);
+        $this->assertSame('bla', $entity->getId());
+        $this->assertSame('kaz', $entity->foo);
+        $this->assertSame('bar_dynamic', $entity->bar);
     }
 
     /**

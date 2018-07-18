@@ -20,11 +20,6 @@ class DynamicTestEntity implements EntityInterface, DynamicInterface
     public $foo;
     public $num = 0;
 
-    public static function isDynamic(): bool
-    {
-        return true;
-    }
-
     public function jsonSerialize()
     {
     }

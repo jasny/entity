@@ -17,15 +17,9 @@ class LazyLoadingTestEntity implements \JsonSerializable, LazyLoadingInterface {
 
     public $id;
     public $foo = 'bar';
-    public $isDynamic;
 
     public function trigger(string $event, $payload = null)
     {
         return $payload;
-    }
-
-    public function isDynamic(): bool
-    {
-        return !!$this->isDynamic;
     }
 }
