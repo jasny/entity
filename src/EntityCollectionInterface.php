@@ -16,7 +16,7 @@ interface EntityCollectionInterface extends IteratorAggregate, ArrayAccess, Coun
     /**
      * Class constructor
      *
-     * @param EntityInterface[]|iterable $entities  Array of entities
+     * @param EntityInterface[]|    iterable $entities  Array of entities
      * @param int|\Closure               $total     Total number of entities (if set is limited)
      */
     public function __construct(iterable $entities = [], $total = null);
@@ -91,13 +91,22 @@ interface EntityCollectionInterface extends IteratorAggregate, ArrayAccess, Coun
      */
     public function filter(array $filter);
 
+
     /**
      * Sort the entities as string or on a property.
      *
      * @param string $property
+     * @param int    $sortFlags
      * @return $this
      */
-    public function sort($property = null);
+    public function sort(string $property = null, int $sortFlags = SORT_REGULAR);
+
+    /**
+     * Sort the entities as string or on a property.
+     *
+     * @return $this
+     */
+    public function reverse();
 
 
     /**
@@ -117,6 +126,14 @@ interface EntityCollectionInterface extends IteratorAggregate, ArrayAccess, Coun
      */
     public function mapItems(iterable $items, callable $callback): array;
 
+    /**
+     * Reduce items into a single value via callback
+     *
+     * @param callable $callback
+     * @param mixed    $initial
+     * @return mixed
+     */
+    public function reduce(callable $callback, $initial = null);
 
     /**
      * Get property of all entities.
