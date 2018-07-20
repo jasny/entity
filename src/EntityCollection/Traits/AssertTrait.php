@@ -7,6 +7,8 @@ use Jasny\EntityCollectionInterface;
 use Jasny\EntityInterface;
 use Closure;
 use BadMethodCallException;
+use InvalidArgumentException;
+use OutOfBoundsException;
 use function Jasny\expect_type;
 
 /**
@@ -58,7 +60,7 @@ trait AssertTrait
      * Check if index is an integer and not out of bounds.
      *
      * @param int     $index
-     * @param boolean $add              Indexed is used for adding an element
+     * @param boolean $add              Index is used for adding an element
      * @throws InvalidArgumentException If index is not numeric
      * @throws OutOfBoundsException     If index is out of bounds
      */
