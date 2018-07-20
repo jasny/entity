@@ -1,45 +1,35 @@
 <?php
 
-namespace Jasny\EntityCollection;
+namespace Jasny\EntityCollection\Traits;
 
-use Jasny\EntityCollection\AbstractEntityCollection;
 use Jasny\EntityInterface;
-use BadMethodCallException;
-use OutOfBoundsException;
 
 /**
- * An entity collection that works as a map, so a key/value pairs.
- * @see https://en.wikipedia.org/wiki/Associative_array
+ * ArrayAccess implementation for EntityCollection
+ *
+ * @property EntityInterface[] $entities
  */
-class EntityMap extends AbstractEntityCollection
+trait ArrayAccessTrait
 {
     /**
-     * Sort the entities as string or on a property.
+     * Check if index is an integer and not out of bounds.
      *
-     * @param string $property
-     * @param int    $sortFlags
-     * @throws BadMethodCallException
+     * @param int     $index
+     * @param boolean $add     Indexed is used for adding an element
      */
-    public function sort(string $property = null, int $sortFlags = SORT_REGULAR)
-    {
-        throw new BadMethodCallException("Map should not be used as ordered list");
-    }
+    abstract protected function assertIndex($index, $add = false);
 
     /**
-     * Sort the entities as string or on a property.
+     * Turn input into array of entities
      *
-     * @throws BadMethodCallException
+     * @param EntityInterface|mixed $entity
      */
-    public function reverse()
-    {
-        throw new BadMethodCallException("Map should not be used as ordered list");
-    }
-
+    abstract protected function assertEntity($entity);
 
     /**
      * Check if offset exists
      *
-     * @param string $index
+     * @param int $index
      * @return bool
      */
     public function offsetExists($index)
@@ -52,7 +42,6 @@ class EntityMap extends AbstractEntityCollection
      *
      * @param int $index
      * @return Entity
-     * @throws OutOfBoundsException
      */
     public function offsetGet($index)
     {
@@ -71,9 +60,13 @@ class EntityMap extends AbstractEntityCollection
     public function offsetSet($index, $entity)
     {
         $this->assertEntity($entity);
-        $this->assertIndex($index, true);
 
-        $this->entities[$index] = $entity;
+        if (isset($index)) {
+            $this->assertIndex($index, true);
+            $this->entities[$index] = $entity;
+        } else {
+            $this->entities[] = $entity;
+        }
     }
 
     /**

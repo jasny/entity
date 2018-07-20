@@ -5,12 +5,13 @@ namespace Jasny\Entity\Traits;
 use BadMethodCallException;
 use InvalidArgumentException;
 use ReflectionClass;
+use Jasny\Entity\DynamicInterface;
 use function Jasny\array_only;
 use function Jasny\object_set_properties;
 
 /**
  * Entity lazy loading implementation
- * 
+ *
  * @author  Arnold Daniels <arnold@jasny.net>
  * @license https://raw.github.com/jasny/entity/master/LICENSE MIT
  * @link    https://jasny.github.com/entity
@@ -24,13 +25,12 @@ trait LazyLoadingTrait
      */
     private $i__ghost = false;
 
-
     /**
-     * Check if the entity is identifiable.
+     * Check if the entity has an id property
      *
      * @return bool
      */
-    abstract public static function isIdentifiable(): bool;
+    abstract public static function hasIdProperty(): bool;
 
     /**
      * Get the id property of the entity.
@@ -42,14 +42,14 @@ trait LazyLoadingTrait
 
     /**
      * Set the ghost state
-     * 
+     *
      * @param bool $state
      */
     final protected function markAsGhost(bool $state)
     {
         $this->i__ghost = $state;
     }
-    
+
     /**
      * Check if the object is a ghost.
      *
@@ -59,7 +59,6 @@ trait LazyLoadingTrait
     {
         return $this->i__ghost;
     }
-
 
     /**
      * Lazy load an entity, only the id is known.
@@ -73,7 +72,7 @@ trait LazyLoadingTrait
     {
         $class = get_called_class();
 
-        if (!static::isIdentifiable()) {
+        if (!static::hasIdProperty()) {
             throw new BadMethodCallException("$class entity is not identifiable");
         }
 
@@ -103,7 +102,7 @@ trait LazyLoadingTrait
     {
         $class = get_class($this);
 
-        if (!static::isIdentifiable()) {
+        if (!static::hasIdProperty()) {
             throw new BadMethodCallException("$class entity is not identifiable");
         }
 
@@ -112,15 +111,12 @@ trait LazyLoadingTrait
         $id = $this->getId();
         $idProp = static::getIdProperty();
 
-        if (!$data[$idProp] === $id) {
+        if ($data[$idProp] !== $id) {
             throw new InvalidArgumentException("Id in reload data doesn't match entity id");
         }
 
-        if (!static::isDynamic()) {
-            $data = array_only($data, array_keys(get_class_vars($class)));
-        }
-
-        object_set_properties($this, $data, true);
+        $isDynamic = $this instanceof DynamicInterface;
+        object_set_properties($this, $data, $isDynamic);
 
         $this->trigger("after:reload");
 
