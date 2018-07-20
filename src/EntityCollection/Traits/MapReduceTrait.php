@@ -12,6 +12,14 @@ use Jasny\EntityInterface;
 trait MapReduceTrait
 {
     /**
+     * Get an entity from the set by id
+     *
+     * @param mixed|EntityInterface $entity   Entity id or Entity
+     * @return EntityInterface|null
+     */
+    abstract public function get($entity): ?EntityInterface;
+
+    /**
      * Returns the result of applying a callback to each value
      *
      * @param callable $callback
