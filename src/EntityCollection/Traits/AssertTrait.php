@@ -34,10 +34,6 @@ trait AssertTrait
         if (!is_a($class, EntityInterface::class, true)) {
             throw new InvalidArgumentException("$class is not an Entity");
         }
-
-        if (!$class::hasIdProperty()) {
-            throw new InvalidArgumentException("$class is not an identifiable, can't create a set");
-        }
     }
 
     /**
