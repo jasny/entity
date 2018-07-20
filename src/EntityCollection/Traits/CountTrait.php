@@ -2,10 +2,11 @@
 
 namespace Jasny\EntityCollection\Traits;
 
+use Closure;
 use Jasny\EntityInterface;
 
 /**
- * Count methods of EntityCollection
+ * Count entities methods for EntityCollection
  *
  * @property EntityInterface[] $entities
  * @property int $totalCount
