@@ -12,6 +12,21 @@ use Jasny\EntityInterface;
 trait ArrayAccessTrait
 {
     /**
+     * Check if index is an integer and not out of bounds.
+     *
+     * @param int     $index
+     * @param boolean $add     Indexed is used for adding an element
+     */
+    abstract protected function assertIndex($index, $add = false);
+
+    /**
+     * Turn input into array of entities
+     *
+     * @param EntityInterface|mixed $entity
+     */
+    abstract protected function assertEntity($entity);
+
+    /**
      * Check if offset exists
      *
      * @param int $index

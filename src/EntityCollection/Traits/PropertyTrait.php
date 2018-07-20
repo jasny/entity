@@ -5,7 +5,7 @@ namespace Jasny\EntityCollection\Traits;
 /**
  * Methods to get the values of a property of all entities
  *
- * @package Jasny\EntityCollection\Traits
+ * @property EntityInterface[] $entities
  */
 trait PropertyTrait
 {

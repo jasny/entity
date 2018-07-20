@@ -15,6 +15,9 @@
             <directory>tests/Entity</directory>
             <exclude>tests/Entity/ChangeAwarenessTraitTest.php</exclude>
         </testsuite>
+        <testsuite name="collection">
+            <directory>tests/EntityCollection</directory>
+        </testsuite>
     </testsuites>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">

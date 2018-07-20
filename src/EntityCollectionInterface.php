@@ -86,10 +86,11 @@ interface EntityCollectionInterface extends IteratorAggregate, ArrayAccess, Coun
     /**
      * Filter the elements
      *
-     * @param array $filter
+     * @param array|Closure $filter
+     * @param bool          $strict  Strict comparison when filtering on properties
      * @return EntityCollectionInterface
      */
-    public function filter(array $filter);
+    public function filter($filter, $strict = false);
 
 
     /**
