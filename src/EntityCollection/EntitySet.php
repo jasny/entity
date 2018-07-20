@@ -18,6 +18,23 @@ class EntitySet extends AbstractEntityCollection
     protected $map = [];
 
     /**
+     * Set the entity class
+     *
+     * @throws BadMethodCallException When entity class is not set
+     * @throws InvalidArgumentException When entity class does not represent an Entity or is not Identifiable
+     */
+    protected function assertEntityClass()
+    {
+        $class = $this->entityClass;
+
+        if (!$class::hasIdProperty()) {
+            throw new InvalidArgumentException("$class is not an identifiable, can't create a set");
+        }
+
+        parent::assertEntityClass();
+    }
+
+    /**
      * Set the entities
      *
      * @param EntityInterface[]|iterable $entities
