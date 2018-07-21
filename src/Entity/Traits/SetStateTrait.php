@@ -3,6 +3,8 @@
 namespace Jasny\Entity\Traits;
 
 use ReflectionClass;
+use Jasny\Entity\DynamicInterface;
+use function Jasny\object_set_properties;
 
 /**
  * Entity::__set_state method
@@ -28,13 +30,6 @@ trait SetStateTrait
      */
     abstract public function trigger(string $event, $payload = null);
 
-    /**
-     * Check if the entity can hold and use undefined properties.
-     *
-     * @return bool
-     */
-    abstract public static function isDynamic(): bool;
-
 
     /**
      * Mark entity as new or persisted
@@ -56,9 +51,8 @@ trait SetStateTrait
         return $this->i__new;
     }
 
-
     /**
-     * Create an entity from persisted datay
+     * Create an entity from persisted data
      *
      * @param array $data
      * @return static
@@ -67,9 +61,14 @@ trait SetStateTrait
     public static function __set_state(array $data)
     {
         $class = get_called_class();
+        $isDynamic = is_a($class, DynamicInterface::class, true);
         $entity = (new ReflectionClass($class))->newInstanceWithoutConstructor();
 
-        object_set_properties($entity, $data, static::isDynamic());
+        object_set_properties($entity, $data, $isDynamic);
+
+        if (method_exists($entity, '__construct')) {
+            $entity->__construct();
+        }
 
         $entity->markNew(false);
 
@@ -78,10 +77,14 @@ trait SetStateTrait
 
     /**
      * Mark entity as persisted
+     *
+     * @return this
      */
-    public function markAsPersisted()
+    public function markAsPersisted(): self
     {
-        $this->isNew(false);
+        $this->markNew(false);
         $this->trigger('persisted');
+
+        return $this;
     }
 }
