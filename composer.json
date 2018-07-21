@@ -18,18 +18,28 @@
     },
     "require": {
         "php": ">=7.1.0",
-        "ext-ds": "*",
-        "jasny/meta": "^3.0.0",
-        "jasny/typecast": "^2.1.0",
         "jasny/php-functions": "^3.1"
     },
+    "conflicts": {
+        "jasny/meta": "< 3.0 || >= 4.0",
+        "jasny/typecast": "< 2.1 || >= 4.0"
+    },
     "require-dev": {
-        "jasny/php-code-quality": "^2.3"
+        "jasny/php-code-quality": "^2.3",
+        "jasny/meta": "^3.0",
+        "jasny/typecast": "dev-master as 2.1.0"
+    },
+    "suggest": {
+        "jasny/meta": "Use annotations",
+        "jasny/typecast": "Cast values based on entity metadata"
     },
     "autoload": {
         "psr-4": {
             "Jasny\\": "src/"
-        }
+        },
+        "files": [
+            "src/functions.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
