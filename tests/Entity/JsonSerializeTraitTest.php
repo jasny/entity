@@ -5,10 +5,15 @@ namespace Jasny\Entity;
 use JsonSerializable;
 use Jasny\EntityInterface;
 use Jasny\Entity;
-use PHPUnit_Framework_TestCase as TestCase;
+use Jasny\Entity\LazyLoadingInterface;
+use Jasny\Entity\Traits\LazyLoadingTrait;
+use Jasny\Entity\Traits\JsonSerializeTrait;
+use Jasny\Entity\Traits\GetSetTrait;
+use PHPUnit\Framework\TestCase;
 
 /**
- * @covers Jasny\Entity\Json
+ * @covers Jasny\Entity\Traits\JsonSerializeTrait
+ * @group entity
  */
 class JsonSerializeTraitTest extends TestCase
 {
@@ -16,89 +21,75 @@ class JsonSerializeTraitTest extends TestCase
      * @var EntityInterface|JsonSerializable
      */
     protected $entity;
-    
+
     public function setUp()
     {
-        $this->entity = $this->getMockForTrait(Entity\Json::class);
+        $this->entity = $this->getMockForTrait(JsonSerializeTrait::class);
     }
-    
+
+    /**
+     * Test 'jsonSerialize' method
+     */
     public function testJsonSerialize()
     {
         $this->entity->foo = 'bar';
         $this->entity->color = 'blue';
-        
-        $this->assertEquals((object)['foo' => 'bar', 'color' => 'blue'], $this->entity->jsonSerialize());
+
+        $expected = (object)['foo' => 'bar', 'color' => 'blue'];
+        $this->entity->expects($this->once())->method('trigger')->with('jsonSerialize', $expected)->willReturn($expected);
+
+        $result = $this->entity->jsonSerialize();
+
+        $this->assertEquals($expected, $result);
     }
-    
+
+    /**
+     * Test 'jsonSerialize' method for DateTime value
+     */
     public function testJsonSerializeCastDateTime()
     {
-        $this->entity->date = new \DateTime('2013-03-01 16:04:00 +01:00');
-        $this->entity->color = 'pink';
-        
-        $this->assertEquals(
-            (object)['date' => '2013-03-01T16:04:00+0100', 'color' => 'pink'],
-            $this->entity->jsonSerialize()
-        );
+        $data = (object)['date' => new \DateTime('2013-03-01 16:04:00 +01:00'), 'color' => 'pink'];
+        $expected = (object)['date' => '2013-03-01T16:04:00+0100', 'color' => 'pink'];
+
+        $this->entity->date = $data->date;
+        $this->entity->color = $data->color;
+        $this->entity->expects($this->once())->method('trigger')->with('jsonSerialize', $expected)->willReturn($expected);
+
+        $result = $this->entity->jsonSerialize();
+
+        $this->assertEquals($expected, $result);
     }
-    
+
+    /**
+     * Test 'jsonSerialize' method for serializable value
+     */
     public function testJsonSerializeCastJsonSerializable()
     {
-        $this->entity->foo = $this->getMockForAbstractClass(\JsonSerializable::class);
-        $this->entity->foo->expects($this->once())->method('jsonSerialize')->willReturn('bar');
-        
-        $this->assertEquals((object)['foo' => 'bar'], $this->entity->jsonSerialize());
+        $entity = $this->entity;
+        $entity->foo = $this->getMockForAbstractClass(\JsonSerializable::class);
+        $entity->foo->expects($this->once())->method('jsonSerialize')->willReturn('bar');
+
+        $expected = (object)['foo' => 'bar'];
+        $entity->method('trigger')->with('jsonSerialize', $expected)->willReturn($expected);
+
+        $result = $entity->jsonSerialize();
+
+        $this->assertEquals($expected, $result);
     }
-    
-    
-    public function testJsonSerializeFilter()
-    {
-        $this->entity = $this->getMockForTrait(Json::class, [], '', true, true, true, [
-            'jsonSerializeFilterFoo',
-            'jsonSerializeFilterBar'
-        ]);
-        $this->entity->expects($this->once())->method('jsonSerializeFilterFoo')->with((object)['foo' => 'bar']);
-        $this->entity->expects($this->once())->method('jsonSerializeFilterBar')->with((object)['foo' => 'bar']);
-        
-        $this->entity->foo = 'bar';
-        
-        $this->entity->jsonSerialize();
-    }
-    
-    
-    protected function createLazyLoadingEntity(): JsonSerializable
-    {
-        return new class implements JsonSerializable, Entity\WithLazyLoading {
-            use Entity\Json,
-                Entity\ToAssocTrait;
-            
-            public function isGhost()
-            {
-                return !isset($this->foo);
-            }
-            
-            public function expand()
-            {
-                $this->foo = 'bar';
-            }
-        };
-    }
-    
-    public function testJsonSerializeExpand()
-    {
-        $entity = $this->createLazyLoadingEntity();
-        
-        $this->assertEquals(
-            (object)['foo' => 'bar'],
-            $entity->jsonSerialize()
-        );
-    }
-    
-    
+
     /**
-     * @ignore
-     * @internal IDE is acting up because of anonymous class with use statement
+     * Test 'jsonSerialize' method for iterable value
      */
-    public function toArray()
+    public function testJsonSerializeIterable()
     {
+        $entity = $this->entity;
+        $entity->foo = new \ArrayObject(['zoo' => 'bar']);
+
+        $expected = (object)['foo' => ['zoo' => 'bar']];
+        $entity->method('trigger')->with('jsonSerialize', $expected)->willReturn($expected);
+
+        $result = $entity->jsonSerialize();
+
+        $this->assertEquals($expected, $result);
     }
 }
