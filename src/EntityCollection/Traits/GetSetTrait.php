@@ -73,5 +73,7 @@ trait GetSetTrait
         foreach ($this->findEntity($entity) as $index => $cur) {
             unset($this->entities[$index]);
         }
+
+        $this->entities = array_values($this->entities);
     }
 }
