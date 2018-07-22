@@ -4,11 +4,12 @@ namespace Jasny\Support;
 
 use Jasny\EntityInterface;
 use Jasny\Entity;
+use Jasny\Entity\DynamicInterface;
 
 /**
  * @ignore
  */
-class TestEntity implements EntityInterface
+class IdentifyTestEntity implements EntityInterface, DynamicInterface
 {
     use Entity\Traits\SetStateTrait,
         Entity\Traits\GetSetTrait,
@@ -16,13 +17,7 @@ class TestEntity implements EntityInterface
         Entity\Traits\IdentifyTrait,
         Entity\Traits\LazyLoadingTrait;
 
-    public $foo;
-    public $num;
-
-    public function __construct()
-    {
-        $this->num = $this->num ?? 0;
-    }
+    public $id;
 
     public function jsonSerialize()
     {
