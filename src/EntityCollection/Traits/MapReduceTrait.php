@@ -50,11 +50,9 @@ trait MapReduceTrait
         foreach ($items as $id => $item) {
             $entity = $this->get($id);
 
-            if (!isset($entity)) {
-                continue;
+            if (isset($entity)) {
+                $result[$id] = $callback($entity, $item);
             }
-
-            $result[$id] = $callback($this->entities[$id], $item);
         }
 
         return $result;
