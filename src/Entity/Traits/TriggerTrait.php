@@ -25,7 +25,7 @@ trait TriggerTrait
      * @param callable $callback
      * @return void
      */
-    final protected function addTrigger(string $event, callable $callback): void
+    final protected function addTrigger(string $event, callable $callback): self
     {
         $this->i__triggers[$event][] = $callback;
 
