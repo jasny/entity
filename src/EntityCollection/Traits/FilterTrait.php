@@ -24,9 +24,10 @@ trait FilterTrait
 
         return $this->filter(function(EntityInterface $entity) use (&$index) {
             $id = $entity->getId();
-            $double = empty($index[$id]);
 
+            $double = isset($index[$id]);
             $index[$id] = true;
+
             return !$double;
         });
     }
@@ -43,7 +44,7 @@ trait FilterTrait
         expect_type($filter, ['array', Closure::class]);
 
         if (is_array($filter)) {
-            $filter = function($entity) use ($filter, $strict) {
+            $filter = function(EntityInterface $entity) use ($filter, $strict) {
                 foreach ($filter as $key => $value) {
                     $check = $entity->$key ?? null;
 
@@ -51,16 +52,18 @@ trait FilterTrait
                         ($strict ? $value === $check : $value == $check) ||
                         (isset($check) && is_array($check) && in_array($value, $check, $strict))
                     ) {
-                        return false;
+                        return true;
                     }
                 }
 
-                return true;
+                return !count($filter);
             };
         }
 
+        $filtered = array_filter($this->entities, $filter);
+
         $filteredSet = clone $this;
-        $filteredSet->entities = array_filter($this->entities, $filter);
+        $filteredSet->entities = array_values($filtered);
 
         return $filteredSet;
     }
