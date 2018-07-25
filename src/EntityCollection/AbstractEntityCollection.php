@@ -56,6 +56,7 @@ class AbstractEntityCollection implements EntityCollectionInterface
     /**
      * Class constructor
      *
+     * @codeCoverageIgnore
      * @param EntityInterface[]|iterable $entities  Array of entities
      * @param int|\Closure               $total     Total number of entities (if set is limited)
      */
