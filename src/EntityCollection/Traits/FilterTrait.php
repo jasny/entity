@@ -60,6 +60,17 @@ trait FilterTrait
             };
         }
 
+        return $this->applyFilter($filter);
+    }
+
+    /**
+     * Apply filter to entities
+     *
+     * @param callable $filter
+     * @return static
+     */
+    protected function applyFilter($filter)
+    {
         $filtered = array_filter($this->entities, $filter);
 
         $filteredSet = clone $this;
