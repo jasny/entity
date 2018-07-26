@@ -62,14 +62,25 @@ trait PropertyTrait
             }, []);
         }
 
-        return array_unique($items);
+        $unique = array_unique($items);
+        $result = array_values($unique);
+
+        return $result;
     }
 
     /**
+     * Get sum of property values of all entities
+     *
      * @param string $property
      */
     public function sum(string $property)
     {
+        $items = iterator_to_array($this->getAll($property));
 
+        $sum = array_reduce($items, function($sum, $item) {
+            return $sum + $item;
+        }, 0);
+
+        return $sum;
     }
 }
