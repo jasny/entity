@@ -43,6 +43,9 @@ class EntitySet extends AbstractEntityCollection
      */
     protected function setEntities(iterable $entities): void
     {
+        $this->entities = [];
+        $this->map = [];
+
         foreach ($entities as $entity) {
             $this->assertEntity($entity);
 

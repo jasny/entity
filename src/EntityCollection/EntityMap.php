@@ -5,6 +5,7 @@ namespace Jasny\EntityCollection;
 use Jasny\EntityCollection\AbstractEntityCollection;
 use Jasny\EntityInterface;
 use BadMethodCallException;
+use InvalidArgumentException;
 use OutOfBoundsException;
 
 /**
@@ -56,7 +57,7 @@ class EntityMap extends AbstractEntityCollection
      */
     public function offsetGet($index)
     {
-        $this->assertIndex($index);
+        $this->assertIndex($index, true);
 
         return $this->entities[$index];
     }
@@ -71,7 +72,7 @@ class EntityMap extends AbstractEntityCollection
     public function offsetSet($index, $entity)
     {
         $this->assertEntity($entity);
-        $this->assertIndex($index, true);
+        $this->assertIndex($index);
 
         $this->entities[$index] = $entity;
     }
@@ -83,8 +84,70 @@ class EntityMap extends AbstractEntityCollection
      */
     public function offsetUnset($index)
     {
-        $this->assertIndex($index);
+        $this->assertIndex($index, true);
 
         unset($this->entities[$index]);
+    }
+
+    /**
+     * Remove an entity from the set
+     *
+     * @param mixed|EntityInterface $entity
+     * @return void
+     */
+    public function remove($entity): void
+    {
+        foreach ($this->findEntity($entity) as $index => $cur) {
+            unset($this->entities[$index]);
+        }
+    }
+
+    /**
+     * Set the entities
+     *
+     * @param EntityInterface[]|iterable $entities
+     * @return void
+     */
+    protected function setEntities(iterable $entities): void
+    {
+        $this->entities = [];
+
+        foreach ($entities as $key => $entity) {
+            $this->assertEntity($entity);
+            $this->entities[$key] = $entity;
+        }
+    }
+
+    /**
+     * Apply filter to entities
+     *
+     * @param callable $filter
+     * @return static
+     */
+    protected function applyFilter($filter)
+    {
+        $filteredSet = clone $this;
+        $filteredSet->entities = array_filter($this->entities, $filter);
+
+        return $filteredSet;
+    }
+
+    /**
+     * Check if index is an integer or exists in collection
+     *
+     * @param int     $index
+     * @param boolean $exists           Index should be checked for existens in collection
+     * @throws InvalidArgumentException If index is not numeric
+     * @throws OutOfBoundsException     If index does not exist in collection
+     */
+    protected function assertIndex($index, $exists = false)
+    {
+        if (!is_int($index)) {
+            throw new InvalidArgumentException("Only numeric keys are allowed");
+        }
+
+        if ($exists && !isset($this->entities[$index])) {
+            throw new OutOfBoundsException("Key $index does not exist in map");
+        }
     }
 }
