@@ -24,7 +24,9 @@ trait SearchTrait
      */
     protected function findEntity($entity)
     {
-        return $entity instanceof EntityInterface ? $this->findEntityByRef() : $this->findEntityById();
+        return $entity instanceof EntityInterface ?
+            $this->findEntityByRef($entity) :
+            $this->findEntityById($entity);
     }
 
     /**
