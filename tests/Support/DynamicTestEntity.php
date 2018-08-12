@@ -27,4 +27,9 @@ class DynamicTestEntity implements EntityInterface, DynamicInterface
     public function toArray(): array
     {
     }
+
+    public function __toString()
+    {
+        return $this->foo;
+    }
 }
