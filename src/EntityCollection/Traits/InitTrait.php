@@ -81,6 +81,8 @@ trait InitTrait
      */
     protected function setEntities(iterable $entities): void
     {
+        $this->entities = [];
+
         foreach ($entities as $entity) {
             $this->assertEntity($entity);
             $this->entities[] = $entity;

@@ -4,6 +4,8 @@ namespace Jasny\EntityCollection;
 
 use Jasny\EntityCollection\AbstractEntityCollection;
 use Jasny\EntityInterface;
+use BadMethodCallException;
+use InvalidArgumentException;
 
 /**
  * An entity collection that works as a set, so unordered with unique items.
@@ -20,8 +22,7 @@ class EntitySet extends AbstractEntityCollection
     /**
      * Set the entity class
      *
-     * @throws BadMethodCallException When entity class is not set
-     * @throws InvalidArgumentException When entity class does not represent an Entity or is not Identifiable
+     * @throws InvalidArgumentException When entity class is not Identifiable
      */
     protected function assertEntityClass()
     {
@@ -42,6 +43,9 @@ class EntitySet extends AbstractEntityCollection
      */
     protected function setEntities(iterable $entities): void
     {
+        $this->entities = [];
+        $this->map = [];
+
         foreach ($entities as $entity) {
             $this->assertEntity($entity);
 
@@ -105,9 +109,10 @@ class EntitySet extends AbstractEntityCollection
         if (isset($this->map[$id])) {
             $index = $this->findEntityById($id)->key();
             unset($this->map[$id], $this->entities[$index]);
+
+            $this->entities = array_values($this->entities);
         }
     }
-
 
     /**
      * Replace the entity of a specific index
@@ -125,11 +130,13 @@ class EntitySet extends AbstractEntityCollection
 
             list($existing) = array_slice($this->entities, $index, 1) + [null];
 
-            if (isset($existing) && $existing->getId() !== $entity->getId()) {
-                throw new BadMethodCallException("Can't replace entity in a set by index");
-            }
+            if (isset($existing)) {
+                if ($existing->getId() !== $entity->getId()) {
+                    throw new BadMethodCallException("Can't replace entity in a set by index");
+                }
 
-            return;
+                return;
+            }
         }
 
         $id = $entity->getId();
@@ -151,5 +158,56 @@ class EntitySet extends AbstractEntityCollection
 
         $id = $this->entities[$index]->getId();
         unset($this->map[$id], $this->entities[$index]);
+
+        $this->entities = array_values($this->entities);
+    }
+
+    /**
+     * Apply filter to entities
+     *
+     * @param callable $filter
+     * @return static
+     */
+    protected function applyFilter($filter)
+    {
+        $entities = [];
+        $map = [];
+
+        foreach ($this->entities as $entity) {
+            $keep = $filter($entity);
+
+            if ($keep) {
+                $entities[] = $entity;
+                $map[$entity->getId()] = $entity;
+            }
+        }
+
+        $filteredSet = clone $this;
+        $filteredSet->entities = $entities;
+        $filteredSet->map = $map;
+
+        return $filteredSet;
+    }
+
+    /**
+     * Sort the entities as string or on a property.
+     *
+     * @param string $property
+     * @param int    $sortFlags
+     * @throws BadMethodCallException
+     */
+    public function sort(string $property = null, int $sortFlags = SORT_REGULAR)
+    {
+        throw new BadMethodCallException("Set should not be used as ordered list");
+    }
+
+    /**
+     * Sort the entities as string or on a property.
+     *
+     * @throws BadMethodCallException
+     */
+    public function reverse()
+    {
+        throw new BadMethodCallException("Set should not be used as ordered list");
     }
 }
