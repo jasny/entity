@@ -47,7 +47,7 @@ trait InitTrait
             $class !== $entitySet->entityClass &&
             !is_a($class, $entitySet->entityClass, true)
         ) {
-            throw new DomainException("{$refl->name} is only for {$entitySet->entityClass} entities, not $class");
+            throw new \DomainException("{$refl->name} is only for {$entitySet->entityClass} entities, not $class");
         }
 
         $args = func_get_args();
