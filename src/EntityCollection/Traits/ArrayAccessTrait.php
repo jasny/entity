@@ -79,5 +79,6 @@ trait ArrayAccessTrait
         $this->assertIndex($index);
 
         unset($this->entities[$index]);
+        $this->entities = array_values($this->entities);
     }
 }
