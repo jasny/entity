@@ -2,6 +2,7 @@
 
 namespace Jasny\EntityCollection\Traits;
 
+use ArrayIterator;
 use Jasny\EntityInterface;
 
 /**
