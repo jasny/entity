@@ -1,6 +1,6 @@
 <?php
 
-namespace Jasny\EntityCollection;
+namespace Jasny\EntityCollection\Traits\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Jasny\EntityCollection\Traits\CountTrait;

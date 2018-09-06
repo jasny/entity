@@ -1,11 +1,10 @@
 <?php
 
-namespace Jasny\EntityCollection;
+namespace Jasny\EntityCollection\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Jasny\EntityCollection\EntityMap;
 use Jasny\EntityInterface;
-use Jasny\Support\TestEntity;
 use Jasny\Support\IdentifyTestEntity;
 
 /**
