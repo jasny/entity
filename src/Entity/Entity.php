@@ -9,7 +9,7 @@ use Jasny\Entity\Traits;
 /**
  * Base class for an entity.
  */
-abstract class Entity extends stdClass implements EntityInterface
+abstract class Entity implements EntityInterface
 {
     use Traits\GetSetTrait;
     use Traits\IdentifyTrait;

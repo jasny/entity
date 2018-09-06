@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Jasny\Entity\Handler;
 
@@ -9,10 +10,10 @@ use function Jasny\expect_type;
 use function Jasny\array_without;
 
 /**
- * Redact an entity, removing values except for given properties.
+ * Censor an entity, removing values for given properties.
  * @immutable
  */
-class Redact
+class Censor
 {
     /**
      * @var array
@@ -21,7 +22,7 @@ class Redact
 
 
     /**
-     * Redact properties.
+     * Censor properties.
      *
      * @param string[] $properties
      */
@@ -42,7 +43,7 @@ class Redact
     {
         expect_type($entity, ['array', \stdClass::class]);
 
-        $result = array_only((array)$data, $this->properties);
+        $result = array_without((array)$data, $this->properties);
 
         return is_object($data) ? (object)$result : $result;
     }

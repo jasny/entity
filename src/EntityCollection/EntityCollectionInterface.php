@@ -16,7 +16,7 @@ interface EntityCollectionInterface extends IteratorAggregate, ArrayAccess, Coun
     /**
      * Class constructor
      *
-     * @param EntityInterface[]|    iterable $entities  Array of entities
+     * @param EntityInterface[]|iterable $entities  Array of entities
      * @param int|\Closure               $total     Total number of entities (if set is limited)
      */
     public function __construct(iterable $entities = [], $total = null);
@@ -84,13 +84,22 @@ interface EntityCollectionInterface extends IteratorAggregate, ArrayAccess, Coun
     public function unique();
 
     /**
-     * Filter the elements
+     * Filter the entities.
      *
-     * @param array|Closure $filter
-     * @param bool          $strict  Strict comparison when filtering on properties
+     * @param array|callable $filter
+     * @param int|bool       $flag    Strict if filter is an array or FILTER_* contant for a callable
      * @return EntityCollectionInterface
      */
-    public function filter($filter, $strict = false);
+    public function filter($filter, $flag = 0);
+
+    /**
+     * Find first entity that passed a filter.
+     *
+     * @param array|callable $filter
+     * @param int|bool       $flag    Strict if filter is an array or FILTER_* contant for a callable
+     * @return EntityInterface
+     */
+    public function find($filter, $flag = 0);
 
 
     /**
@@ -135,6 +144,7 @@ interface EntityCollectionInterface extends IteratorAggregate, ArrayAccess, Coun
      * @return mixed
      */
     public function reduce(callable $callback, $initial = null);
+
 
     /**
      * Get property of all entities.
