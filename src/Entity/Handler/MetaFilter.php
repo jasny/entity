@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Jasny\Entity\Handler;
 
 use Jasny\EntityInterface;
@@ -10,7 +12,7 @@ use ReflectionClass;
 /**
  * Filter properties base on meta data
  */
-class MetaFilter
+class MetaFilter implements HandlerInterface
 {
     /**
      * @var string
@@ -51,22 +53,13 @@ class MetaFilter
      * @param EntityInterface $entity
      * @param array|stdClass  $data
      * @return array|stdClass
-     * @throws \ReflectionException
      */
     public function __invoke(EntityInterface $entity, $data = null)
     {
-        $reflection = new ReflectionClass(get_class($entity));
-        $meta = $this->metaFactory->create($reflection); // Factory will cache
+        $meta = $this->metaFactory->create(get_class($entity)); // Factory will cache
+        $result = $this->redactArray((array)$data, $meta);
 
-        if (is_array($data)) {
-            return $this->redactArray($data, $meta);
-        }
-
-        if ($data instanceof stdClass) {
-            return $this->redactObject($data, $meta);
-        }
-
-        throw new InvalidArgumentException("Payload must be an array or stdClass object");
+        return is_object($data) ? (object)$result : $result;
     }
 
     /**
@@ -79,25 +72,8 @@ class MetaFilter
     protected function redactArray(array $data, Meta $meta): array
     {
         foreach (array_keys($data) as $property) {
-            if ($meta->ofProperty($property)[$this->tag]) {
+            if ($meta->ofProperty($property)->get($this->tag, false)) {
                 unset($data[$property]);
-            }
-        }
-
-        return $data;
-    }
-
-    /**
-     * Redact a stdClass object
-     *
-     * @param stdClass $data
-     * @return stdClass
-     */
-    protected function redactObject(stdClass $data, Meta $meta): stdClass
-    {
-        foreach (get_object_vars($data) as $property) {
-            if ($meta->ofProperty($property)[$this->tag]) {
-                unset($data->$property);
             }
         }
 

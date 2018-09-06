@@ -4,10 +4,6 @@ namespace Jasny\Entity\Traits;
 
 /**
  * Entity triggers implementation
- *
- * @author  Arnold Daniels <arnold@jasny.net>
- * @license https://raw.github.com/jasny/entity/master/LICENSE MIT
- * @link    https://jasny.github.com/entity
  */
 trait TriggerTrait
 {
@@ -47,7 +43,7 @@ trait TriggerTrait
     /**
      * Bind a callback for before an event.
      *
-     * @param string $event
+     * @param string   $event
      * @param callable $callback
      * @return $this
      */
@@ -60,7 +56,7 @@ trait TriggerTrait
      * Trigger before an event.
      *
      * @param string $event
-     * @param mixed $payload
+     * @param mixed  $payload
      * @return mixed|void
      */
     public function trigger(string $event, $payload = null)

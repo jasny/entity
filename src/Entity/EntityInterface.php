@@ -58,7 +58,7 @@ interface EntityInterface extends JsonSerializable
     public function isGhost(): bool;
 
     /**
-     * Lazy load an entity, only the id is known
+     * Lazy load an entity, only the id is known.
      *
      * @param mixed             $id
      * @return static
@@ -66,22 +66,6 @@ interface EntityInterface extends JsonSerializable
      */
     public static function lazyload($id);
 
-    /**
-     * Reload with data from persisted storage.
-     *
-     * @param array $data
-     * @return $this
-     */
-    public function reload(array $data);
-
-
-    /**
-     * Create an entity from persisted datay
-     *
-     * @param array $data
-     * @return static
-     */
-    public static function __set_state(array $data);
 
     /**
      * Check if the entity is not persisted yet.
@@ -108,4 +92,23 @@ interface EntityInterface extends JsonSerializable
      * @return mixed
      */
     public function trigger(string $event, $payload = null);
+
+
+    /**
+     * Create an entity from persisted data.
+     * @internal
+     *
+     * @param array $data
+     * @return static
+     */
+    public static function __set_state(array $data);
+
+    /**
+     * Reload with data from persisted storage.
+     * @internal
+     *
+     * @param array $data
+     * @return $this
+     */
+    public function applyState(array $data);
 }
