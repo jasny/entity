@@ -18,7 +18,7 @@
     },
     "require": {
         "php": ">=7.1.0",
-        "jasny/php-functions": "^3.1"
+        "jasny/php-functions": "^4.0"
     },
     "conflicts": {
         "jasny/meta": "< 3.0 || >= 4.0",
@@ -35,7 +35,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Jasny\\": "src/"
+            "Jasny\\Entity\\": "src/Entity",
+            "Jasny\\EntityCollection\\": "src/EntityCollection"
         },
         "files": [
             "src/functions.php"
