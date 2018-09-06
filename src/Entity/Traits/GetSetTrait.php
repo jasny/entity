@@ -52,7 +52,13 @@ trait GetSetTrait
      */
     public function set($key, $value = null)
     {
-        expect_type($key, func_num_args() === 1 ? 'array' : 'string');
+        expect_type($key, ['array', 'string']);
+
+        if (func_num_args() === 1 && is_string($key)) {
+            throw new \BadMethodCallException("Too few arguments to method " . __METHOD__ . "(), " .
+                "if first argument is a string, a second argument is required");
+        }
+
         $payload = func_num_args() === 1 ? (array)$key : [$key => $value];
 
         $data = $this->trigger('before:set', $payload);

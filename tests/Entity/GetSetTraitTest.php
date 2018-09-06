@@ -1,37 +1,78 @@
 <?php
 
-namespace Jasny\Entity;
+namespace Jasny\Entity\Traits\Tests;
 
-use Jasny\EntityInterface;
+use Jasny\Entity\DynamicInterface;
+use Jasny\Entity\Traits\GetSetTrait;
+use Jasny\Entity\EntityInterface;
 use Jasny\Support\TestEntity;
-use Jasny\Support\DynamicTestEntity;
+use Jasny\TestHelper;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers Jasny\Entity\Traits\GetSetTrait
- * @group entity
+ * @covers \Jasny\Entity\Traits\GetSetTrait
  */
 class GetSetTraitTest extends TestCase
 {
-    /**
-     * @var EntityInterface
-     */
-    protected $entity;
+    use TestHelper;
 
-    public function setUp()
+    protected function createObject()
     {
-        $this->entity = new TestEntity();
+        return new class() {
+            use GetSetTrait;
+
+            public $foo;
+            public $num = 0;
+
+            public function trigger($event, $payload) {
+                return $payload;
+            }
+        };
     }
+
+    protected function createDynamicObject()
+    {
+        return new class() implements DynamicInterface {
+            use GetSetTrait;
+
+            public $foo;
+            public $num = 0;
+
+            public function trigger($event, $payload) {
+                return $payload;
+            }
+        };
+    }
+
+    protected function createObjectWithTrigger(callable $trigger)
+    {
+        return new class($trigger) {
+            use GetSetTrait;
+
+            private $trigger;
+
+            public function __construct(callable $trigger) {
+                $this->trigger = $trigger;
+            }
+
+            public function trigger() {
+                $args = func_get_args();
+                return call_user_func_array($this->trigger, $args);
+            }
+        };
+    }
+
 
     /**
      * Test 'set' method for single value
      */
     public function testSetValue()
     {
-        $this->entity->set('foo', 'bar');
+        $object = $this->createObject();
+        $object->set('foo', 'bar');
 
-        $this->assertAttributeSame('bar', 'foo', $this->entity);
-        $this->assertAttributeSame(0, 'num', $this->entity);
+        $this->assertAttributeSame('bar', 'foo', $object);
+        $this->assertAttributeSame(0, 'num', $object);
     }
 
     /**
@@ -39,10 +80,11 @@ class GetSetTraitTest extends TestCase
      */
     public function testSetValueToNull()
     {
-        $this->entity->set('num', null);
+        $object = $this->createObject();
+        $object->set('num', null);
 
-        $this->assertAttributeSame(null, 'foo', $this->entity);
-        $this->assertAttributeSame(null, 'num', $this->entity);
+        $this->assertAttributeSame(null, 'foo', $object);
+        $this->assertAttributeSame(null, 'num', $object);
     }
 
     /**
@@ -50,11 +92,12 @@ class GetSetTraitTest extends TestCase
      */
     public function testSetValues()
     {
-        $this->entity->set(['foo' => 'bar', 'num' => 100, 'dyn' => 'woof']);
+        $object = $this->createObject();
+        $object->set(['foo' => 'bar', 'num' => 100, 'dyn' => 'woof']);
 
-        $this->assertAttributeSame('bar', 'foo', $this->entity);
-        $this->assertAttributeSame(100, 'num', $this->entity);
-        $this->assertObjectNotHasAttribute('dyn', $this->entity);
+        $this->assertAttributeSame('bar', 'foo', $object);
+        $this->assertAttributeSame(100, 'num', $object);
+        $this->assertObjectNotHasAttribute('dyn', $object);
     }
 
     /**
@@ -62,24 +105,24 @@ class GetSetTraitTest extends TestCase
      */
     public function testSetValuesDynamic()
     {
-        $this->entity = new DynamicTestEntity();
+        $object = $this->createDynamicObject();
+        $object->set(['foo' => 'bar', 'num' => 100, 'dyn' => 'woof']);
 
-        $this->entity->set(['foo' => 'bar', 'num' => 100, 'dyn' => 'woof']);
-
-        $this->assertAttributeSame('bar', 'foo', $this->entity);
-        $this->assertAttributeSame(100, 'num', $this->entity);
-        $this->assertAttributeSame('woof', 'dyn', $this->entity);
+        $this->assertAttributeSame('bar', 'foo', $object);
+        $this->assertAttributeSame(100, 'num', $object);
+        $this->assertAttributeSame('woof', 'dyn', $object);
     }
 
     /**
      * Test 'set' method with invalid argument
      *
-     * @expectedException TypeError
-     * @expectedExceptionMessage Expected array, string given
+     * @expectedException \BadMethodCallException
+     * @expectedExceptionMessage Too few arguments to method Jasny\Entity\Traits\GetSetTrait::set(), if first argument is a string, a second argument is required
      */
     public function testSetValueInvalidArgument()
     {
-        $this->entity->set('foo');
+        $object = $this->createDynamicObject();
+        $object->set('foo');
     }
 
     /**
@@ -89,13 +132,12 @@ class GetSetTraitTest extends TestCase
     {
         $expected = ['foo' => 'bar', 'num' => 23];
 
-        $entity = $this->createPartialMock(TestEntity::class, ['trigger']);
-        $entity->expects($this->once())->method('trigger')->with('toAssoc', $expected)->willReturn($expected);
+        $object = $this->createDynamicObject();
 
-        $entity->foo = $expected['foo'];
-        $entity->num = $expected['num'];
+        $object->foo = 'bar';
+        $object->num = 23;
 
-        $result = $entity->toAssoc();
+        $result = $object->toAssoc();
 
         $this->assertSame($expected, $result);
     }

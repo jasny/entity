@@ -1,6 +1,6 @@
 <?php
 
-namespace Jasny\DB;
+namespace Jasny\EntityCollection\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Jasny\EntityCollection\EntitySet;
