@@ -3,6 +3,7 @@
 namespace Jasny\Tests\EntityCollection\Traits;
 
 use PHPUnit\Framework\TestCase;
+use Jasny\Entity\Entity;
 use Jasny\Entity\EntityInterface;
 use Jasny\Tests\Support\TestEntity;
 use Jasny\EntityCollection\Traits\SortTrait;
@@ -96,7 +97,7 @@ class SortTraitTest extends TestCase
     public function testSortException()
     {
         $this->collection->entities = [];
-        $this->collection->entityClass = TestEntity::class;
+        $this->collection->entityClass = Entity::class;
 
         $this->collection->sort();
     }

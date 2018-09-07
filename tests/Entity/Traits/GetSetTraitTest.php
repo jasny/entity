@@ -5,7 +5,6 @@ namespace Jasny\Tests\Entity\Traits;
 use Jasny\Entity\DynamicInterface;
 use Jasny\Entity\Traits\GetSetTrait;
 use Jasny\Entity\EntityInterface;
-use Jasny\Tests\Support\TestEntity;
 use Jasny\TestHelper;
 use PHPUnit\Framework\TestCase;
 

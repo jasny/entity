@@ -5,7 +5,6 @@ namespace Jasny\Tests\EntityCollection;
 use PHPUnit\Framework\TestCase;
 use Jasny\Entity\Entity;
 use Jasny\EntityCollection\EntitySet;
-use Jasny\Tests\Support\TestEntity;
 
 /**
  * @covers Jasny\EntityCollection\EntitySet
