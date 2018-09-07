@@ -2,7 +2,7 @@
 
 namespace Jasny\EntityCollection\Traits;
 
-use Jasny\EntityInterface;
+use Jasny\Entity\EntityInterface;
 use Closure;
 use function Jasny\expect_type;
 

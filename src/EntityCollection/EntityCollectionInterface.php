@@ -1,8 +1,8 @@
 <?php
 
-namespace Jasny;
+namespace Jasny\EntityCollection;
 
-use Jasny\EntityInterface;
+use Jasny\Entity\EntityInterface;
 use IteratorAggregate;
 use ArrayAccess;
 use Countable;

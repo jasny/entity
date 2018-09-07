@@ -2,7 +2,7 @@
 
 namespace Jasny\EntityCollection;
 
-use Jasny\EntityCollectionInterface;
+use Jasny\EntityCollection\EntityCollectionInterface;
 use Jasny\EntityCollection\Traits\{
     ArrayAccessTrait,
     AssertTrait,
@@ -21,7 +21,7 @@ use Jasny\EntityCollection\Traits\{
 /**
  * Base class for entity collections
  */
-class AbstractEntityCollection implements EntityCollectionInterface
+abstract class AbstractEntityCollection implements EntityCollectionInterface
 {
     use ArrayAccessTrait;
     use AssertTrait;

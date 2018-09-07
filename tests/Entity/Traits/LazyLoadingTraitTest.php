@@ -1,10 +1,10 @@
 <?php
 
-namespace Jasny\Entity;
+namespace Jasny\Tests\Entity\Traits;
 
-use Jasny\Support\LazyLoadingTestEntity;
-use Jasny\Support\IdentifyTestEntity;
-use Jasny\Support\DynamicTestEntity;
+use Jasny\Tests\Support\LazyLoadingTestEntity;
+use Jasny\Tests\Support\IdentifyTestEntity;
+use Jasny\Tests\Support\DynamicTestEntity;
 use Jasny\Entity\Traits\LazyLoadingTrait;
 use PHPUnit\Framework\TestCase;
 

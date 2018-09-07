@@ -3,7 +3,7 @@
 namespace Jasny\EntityCollection\Traits;
 
 use Closure;
-use Jasny\EntityInterface;
+use Jasny\Entity\EntityInterface;
 
 /**
  * Count entities methods for EntityCollection

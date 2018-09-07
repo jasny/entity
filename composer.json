@@ -37,14 +37,14 @@
         "psr-4": {
             "Jasny\\Entity\\": "src/Entity",
             "Jasny\\EntityCollection\\": "src/EntityCollection"
-        },
-        "files": [
-            "src/functions.php"
-        ]
+        }
     },
     "autoload-dev": {
         "psr-4": {
-            "Jasny\\": "tests/"
+            "Jasny\\Tests\\": "tests/"
         }
+    },
+    "scripts": {
+        "test": "phpunit"
     }
 }
