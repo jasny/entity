@@ -2,9 +2,9 @@
 
 namespace Jasny\Tests\Entity\Traits;
 
-use Jasny\Tests\Support\TestEntity;
 use Jasny\Entity\DynamicInterface;
 use Jasny\Entity\Traits\SetStateTrait;
+use Jasny\Entity\Traits\TriggerTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -18,9 +18,18 @@ class SetStateTraitTest extends TestCase
      */
     public function testSetState()
     {
-        $entity = TestEntity::__set_state(['foo' => 'bar', 'num' => 22, 'dyn' => 'woof']);
+        $source = new class() {
+            use SetStateTrait, TriggerTrait;
 
-        $this->assertInstanceOf(TestEntity::class, $entity);
+            public $foo;
+            public $num = 0;
+        };
+
+        $class = get_class($source);
+
+        $entity = $class::__set_state(['foo' => 'bar', 'num' => 22, 'dyn' => 'woof']);
+
+        $this->assertInstanceOf($class, $entity);
 
         $this->assertAttributeSame('bar', 'foo', $entity);
         $this->assertAttributeSame(22, 'num', $entity);
@@ -34,15 +43,10 @@ class SetStateTraitTest extends TestCase
     public function testSetStateWithDynamicEntity()
     {
         $source = new class() implements DynamicInterface {
-            use SetStateTrait;
+            use SetStateTrait, TriggerTrait;
 
             public $foo;
             public $num = 0;
-
-            public function trigger(string $event, $payload = null)
-            {
-
-            }
         };
 
         $class = get_class($source);
@@ -60,10 +64,23 @@ class SetStateTraitTest extends TestCase
      */
     public function testSetStateConstruct()
     {
-        $entity = TestEntity::__set_state([]);
+        $source = new class() implements DynamicInterface {
+            use SetStateTrait, TriggerTrait;
 
-        $this->assertInstanceOf(TestEntity::class, $entity);
+            public $foo;
+            public $num;
 
+            public function __construct()
+            {
+                $this->num = 0;
+            }
+        };
+
+        $class = get_class($source);
+
+        $entity = $class::__set_state([]);
+
+        $this->assertInstanceOf($class, $entity);
         $this->assertAttributeSame(0, 'num', $entity);
     }
 
@@ -72,7 +89,7 @@ class SetStateTraitTest extends TestCase
      */
     public function testMarkAsPersisted()
     {
-        $entity = $this->createPartialMock(TestEntity::class, ['trigger']);
+        $entity = $this->getMockForTrait(SetStateTrait::class);
         $entity->expects($this->once())->method('trigger')->with('persisted');
 
         $result = $entity->markAsPersisted();

@@ -3,7 +3,6 @@
 namespace Jasny\Tests\Entity\Traits;
 
 use Jasny\Entity\EntityInterface;
-use Jasny\Tests\Support\LazyLoadingTestEntity;
 use Jasny\Entity\Traits\LazyLoadingTrait;
 use Jasny\Entity\Traits\IdentifyTrait;
 use Jasny\Entity\Traits\TriggerTrait;
