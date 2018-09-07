@@ -3,9 +3,10 @@
 namespace Jasny\Tests\EntityCollection\Traits;
 
 use PHPUnit\Framework\TestCase;
-use Jasny\Tests\Support\IdentifyTestEntity;
 use Jasny\Tests\Support\TestCollectionWithFakeEntityClass;
 use Jasny\Entity\Entity;
+use Jasny\Entity\EntityInterface;
+use Jasny\EntityCollection\AbstractEntityCollection;
 use Jasny\EntityCollection\Traits\InitTrait;
 
 /**
@@ -21,9 +22,9 @@ class InitTraitTest extends TestCase
      */
     public function forClassProvider()
     {
-        $item1 = $this->createPartialMock(IdentifyTestEntity::class, []);
-        $item2 = $this->createPartialMock(IdentifyTestEntity::class, []);
-        $item3 = $this->createPartialMock(IdentifyTestEntity::class, []);
+        $item1 = $this->createPartialMock(Entity::class, []);
+        $item2 = $this->createPartialMock(Entity::class, []);
+        $item3 = $this->createPartialMock(Entity::class, []);
 
         $item1->id = 'a';
         $item2->id = 'b';
@@ -46,19 +47,24 @@ class InitTraitTest extends TestCase
      */
     public function testForClass(iterable $iterable, $expectedCount, $expectedItems)
     {
-        $class = IdentifyTestEntity::class;
-        $collection = AbstractEntityCollection::forClass($class, $iterable);
+        $source = new class() extends AbstractEntityCollection {
+            public $entityClass = EntityInterface::class;
+        };
 
-        $this->assertInstanceOf(AbstractEntityCollection::class, $collection);
+        $collectionClass = get_class($source);
+
+        $collection = $collectionClass::forClass(Entity::class, $iterable);
+
+        $this->assertInstanceOf($collectionClass, $collection);
         $this->assertAttributeEquals($expectedItems, 'entities', $collection);
-        $this->assertAttributeEquals($class, 'entityClass', $collection);
+        $this->assertAttributeEquals(Entity::class, 'entityClass', $collection);
     }
 
     /**
      * Test 'forClass' method, in case when $class parameter is wrong
      *
      * @expectedException DomainException
-     * @expectedExceptionMessageRegExp /Jasny\\Support\\TestCollectionWithFakeEntityClass is only for Foo entities, not Jasny\\Entity/
+     * @expectedExceptionMessageRegExp /Jasny\\Support\\TestCollectionWithFakeEntityClass is only for Foo entities, not Jasny\\Entity\\Entity/
      */
     public function testForClassWrongEntityClass()
     {

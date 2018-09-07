@@ -4,8 +4,8 @@ namespace Jasny\Tests\Entity\Traits;
 
 use Jasny\Entity\EntityInterface;
 use Jasny\Tests\Support\LazyLoadingTestEntity;
-use Jasny\Tests\Support\IdentifyTestEntity;
 use Jasny\Entity\Traits\LazyLoadingTrait;
+use Jasny\Entity\DynamicInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -97,9 +97,37 @@ class LazyLoadingTraitTest extends TestCase
     {
         $values = ['id' => 'bla', 'foo' => 'kaz', 'bar' => 'bar_dynamic'];
 
-        $entity = $this->createPartialMock(IdentifyTestEntity::class, ['trigger']);
-        $entity->expects($this->at(0))->method('trigger')->with('before:reload', $values)->willReturn($values);
-        $entity->expects($this->at(1))->method('trigger')->with('after:reload');
+        $entity = new class() implements DynamicInterface {
+            use LazyLoadingTrait;
+
+            public $id;
+            public $foo;
+            public $triggerEvents = [];
+
+            public function trigger(string $event, $payload = null)
+            {
+                $this->triggerEvents[] = $event;
+
+                if ($event === 'before:reload') {
+                    return $payload;
+                }
+            }
+
+            public function getId()
+            {
+                return $this->id;
+            }
+
+            public static function hasIdProperty(): bool
+            {
+                return true;
+            }
+
+            protected static function getIdProperty(): ?string
+            {
+                return 'id';
+            }
+        };
 
         $entity->id = 'bla';
         $entity->foo = 'zoo';
@@ -110,6 +138,7 @@ class LazyLoadingTraitTest extends TestCase
         $this->assertSame('bla', $entity->getId());
         $this->assertSame('kaz', $entity->foo);
         $this->assertSame('bar_dynamic', $entity->bar);
+        $this->assertSame(['before:reload', 'after:reload'], $entity->triggerEvents);
     }
 
     /**
