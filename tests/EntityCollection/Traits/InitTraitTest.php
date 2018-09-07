@@ -3,7 +3,6 @@
 namespace Jasny\Tests\EntityCollection\Traits;
 
 use PHPUnit\Framework\TestCase;
-use Jasny\Tests\Support\TestCollectionWithFakeEntityClass;
 use Jasny\Entity\Entity;
 use Jasny\Entity\EntityInterface;
 use Jasny\EntityCollection\AbstractEntityCollection;
@@ -64,10 +63,16 @@ class InitTraitTest extends TestCase
      * Test 'forClass' method, in case when $class parameter is wrong
      *
      * @expectedException DomainException
-     * @expectedExceptionMessageRegExp /Jasny\\Support\\TestCollectionWithFakeEntityClass is only for Foo entities, not Jasny\\Entity\\Entity/
+     * @expectedExceptionMessageRegExp /.*? is only for Jasny\\Entity\\Entity entities, not Jasny\\Entity\\EntityInterface/
      */
     public function testForClassWrongEntityClass()
     {
-        $collection = TestCollectionWithFakeEntityClass::forClass(Entity::class, []);
+        $source = new class() extends AbstractEntityCollection {
+            public $entityClass = Entity::class;
+        };
+
+        $collectionClass = get_class($source);
+
+        $collection = $collectionClass::forClass(EntityInterface::class, []);
     }
 }
