@@ -5,6 +5,8 @@ namespace Jasny\Tests\Entity\Traits;
 use Jasny\Entity\EntityInterface;
 use Jasny\Tests\Support\LazyLoadingTestEntity;
 use Jasny\Entity\Traits\LazyLoadingTrait;
+use Jasny\Entity\Traits\IdentifyTrait;
+use Jasny\Entity\Traits\TriggerTrait;
 use Jasny\Entity\DynamicInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -14,17 +16,13 @@ use PHPUnit\Framework\TestCase;
  */
 class LazyLoadingTraitTest extends TestCase
 {
-    public function setUp()
-    {
-        $this->entity = $this->createPartialMock(LazyLoadingTestEntity::class, []);
-    }
-
     /**
      * Test 'isGhost' method
      */
     public function testIsGhost()
     {
-        $result = $this->entity->isGhost();
+        $entity = $this->getMockForTrait(LazyLoadingTrait::class);
+        $result = $entity->isGhost();
 
         $this->assertFalse($result);
     }
@@ -34,9 +32,22 @@ class LazyLoadingTraitTest extends TestCase
      */
     public function testLazyload()
     {
-        $entity = LazyLoadingTestEntity::lazyload('foo');
+        $source = new class() {
+            use LazyLoadingTrait, IdentifyTrait;
 
-        $this->assertInstanceOf(LazyLoadingTestEntity::class, $entity);
+            public $id;
+
+            public function trigger(string $event, $payload = null)
+            {
+
+            }
+        };
+
+        $class = get_class($source);
+
+        $entity = $class::lazyload('foo');
+
+        $this->assertInstanceOf($class, $entity);
         $this->assertSame('foo', $entity->getId());
         $this->assertFalse(isset($entity->foo));
         $this->assertTrue($entity->isGhost());
@@ -51,16 +62,11 @@ class LazyLoadingTraitTest extends TestCase
     public function testLazyloadException()
     {
         $entity = new class() {
-            use LazyLoadingTrait;
+            use LazyLoadingTrait, IdentifyTrait;
 
-            public static function hasIdProperty(): bool
+            public function trigger(string $event, $payload = null)
             {
-                return false;
-            }
 
-            protected static function getIdProperty(): ?string
-            {
-                return null;
             }
         };
 
@@ -75,30 +81,8 @@ class LazyLoadingTraitTest extends TestCase
     {
         $values = ['id' => 'bla', 'foo' => 'kaz', 'bar' => 'bar_dynamic'];
 
-        $entity = $this->createPartialMock(LazyLoadingTestEntity::class, ['trigger']);
-        $entity->expects($this->at(0))->method('trigger')->with('before:reload', $values)->willReturn($values);
-        $entity->expects($this->at(1))->method('trigger')->with('after:reload');
-
-        $entity->id = 'bla';
-        $entity->foo = 'zoo';
-
-        $result = $entity->reload($values);
-
-        $this->assertSame($entity, $result);
-        $this->assertSame('bla', $entity->getId());
-        $this->assertSame('kaz', $entity->foo);
-        $this->assertFalse(isset($entity->bar));
-    }
-
-    /**
-     * Test 'reload' method for dynamic entity
-     */
-    public function testReloadDynamic()
-    {
-        $values = ['id' => 'bla', 'foo' => 'kaz', 'bar' => 'bar_dynamic'];
-
-        $entity = new class() implements DynamicInterface {
-            use LazyLoadingTrait;
+        $entity = new class() {
+            use LazyLoadingTrait, IdentifyTrait;
 
             public $id;
             public $foo;
@@ -112,20 +96,41 @@ class LazyLoadingTraitTest extends TestCase
                     return $payload;
                 }
             }
+        };
 
-            public function getId()
-            {
-                return $this->id;
-            }
+        $entity->id = 'bla';
+        $entity->foo = 'zoo';
 
-            public static function hasIdProperty(): bool
-            {
-                return true;
-            }
+        $result = $entity->reload($values);
 
-            protected static function getIdProperty(): ?string
+        $this->assertSame($entity, $result);
+        $this->assertSame('bla', $entity->getId());
+        $this->assertSame('kaz', $entity->foo);
+        $this->assertFalse(isset($entity->bar));
+        $this->assertSame(['before:reload', 'after:reload'], $entity->triggerEvents);
+    }
+
+    /**
+     * Test 'reload' method for dynamic entity
+     */
+    public function testReloadDynamic()
+    {
+        $values = ['id' => 'bla', 'foo' => 'kaz', 'bar' => 'bar_dynamic'];
+
+        $entity = new class() implements DynamicInterface {
+            use LazyLoadingTrait, IdentifyTrait;
+
+            public $id;
+            public $foo;
+            public $triggerEvents = [];
+
+            public function trigger(string $event, $payload = null)
             {
-                return 'id';
+                $this->triggerEvents[] = $event;
+
+                if ($event === 'before:reload') {
+                    return $payload;
+                }
             }
         };
 
@@ -150,16 +155,11 @@ class LazyLoadingTraitTest extends TestCase
     public function testReloadNotIdentifiable()
     {
         $entity = new class() {
-            use LazyLoadingTrait;
+            use LazyLoadingTrait, IdentifyTrait;
 
-            public static function hasIdProperty(): bool
+            public function trigger(string $event, $payload = null)
             {
-                return false;
-            }
 
-            protected static function getIdProperty(): ?string
-            {
-                return null;
             }
         };
 
@@ -176,8 +176,13 @@ class LazyLoadingTraitTest extends TestCase
     {
         $values = ['id' => 'wrong_id', 'foo' => 'kaz'];
 
-        $entity = $this->createPartialMock(LazyLoadingTestEntity::class, ['trigger']);
-        $entity->expects($this->once())->method('trigger')->with('before:reload', $values)->willReturn($values);
+        $entity = new class() {
+            use LazyLoadingTrait, IdentifyTrait, TriggerTrait;
+
+            public $id;
+            public $foo;
+            public $triggerEvents = [];
+        };
 
         $entity->id = 'bla';
         $entity->foo = 'zoo';
