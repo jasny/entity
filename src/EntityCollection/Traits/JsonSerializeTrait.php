@@ -2,7 +2,7 @@
 
 namespace Jasny\EntityCollection\Traits;
 
-use Jasny\EntityInterface;
+use Jasny\Entity\EntityInterface;
 
 /**
  * Cast to json an instance of EntityCollection

@@ -3,7 +3,7 @@
 namespace Jasny\EntityCollection\Traits;
 
 use ArrayIterator;
-use Jasny\EntityInterface;
+use Jasny\Entity\EntityInterface;
 
 /**
  * Get iterable representation of EntityCollection

@@ -3,8 +3,8 @@
 namespace Jasny\EntityCollection\Traits;
 
 use Jasny\EntityCollection\EntitySet;
-use Jasny\EntityCollectionInterface;
-use Jasny\EntityInterface;
+use Jasny\EntityCollection\EntityCollectionInterface;
+use Jasny\Entity\EntityInterface;
 use Closure;
 use BadMethodCallException;
 use function Jasny\expect_type;

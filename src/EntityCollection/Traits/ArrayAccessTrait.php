@@ -2,7 +2,7 @@
 
 namespace Jasny\EntityCollection\Traits;
 
-use Jasny\EntityInterface;
+use Jasny\Entity\EntityInterface;
 
 /**
  * ArrayAccess implementation for EntityCollection

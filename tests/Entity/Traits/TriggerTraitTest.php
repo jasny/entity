@@ -1,8 +1,8 @@
 <?php
 
-namespace Jasny\Entity;
+namespace Jasny\Tests\Entity\Traits;
 
-use Jasny\Support\TestEntity;
+use Jasny\Tests\Support\TestEntity;
 use PHPUnit\Framework\TestCase;
 
 /**

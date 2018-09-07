@@ -3,7 +3,7 @@
 namespace Jasny\EntityCollection;
 
 use Jasny\EntityCollection\AbstractEntityCollection;
-use Jasny\EntityInterface;
+use Jasny\Entity\EntityInterface;
 use BadMethodCallException;
 use InvalidArgumentException;
 

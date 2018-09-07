@@ -1,9 +1,9 @@
 <?php
 
-namespace Jasny\Support;
+namespace Jasny\Tests\Support;
 
-use Jasny\EntityInterface;
-use Jasny\Entity;
+use Jasny\Entity\EntityInterface;
+use Jasny\Entity\Traits;
 use Jasny\Entity\DynamicInterface;
 
 /**
@@ -11,11 +11,11 @@ use Jasny\Entity\DynamicInterface;
  */
 class IdentifyTestEntity implements EntityInterface, DynamicInterface
 {
-    use Entity\Traits\SetStateTrait,
-        Entity\Traits\GetSetTrait,
-        Entity\Traits\TriggerTrait,
-        Entity\Traits\IdentifyTrait,
-        Entity\Traits\LazyLoadingTrait;
+    use Traits\SetStateTrait,
+        Traits\GetSetTrait,
+        Traits\TriggerTrait,
+        Traits\IdentifyTrait,
+        Traits\LazyLoadingTrait;
 
     public $id;
 
@@ -24,6 +24,10 @@ class IdentifyTestEntity implements EntityInterface, DynamicInterface
     }
 
     public function toArray(): array
+    {
+    }
+
+    public function applyState(array $data)
     {
     }
 }

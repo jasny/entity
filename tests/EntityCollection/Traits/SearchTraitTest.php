@@ -1,10 +1,10 @@
 <?php
 
-namespace Jasny\EntityCollection\Traits\Tests;
+namespace Jasny\Tests\EntityCollection\Traits;
 
 use PHPUnit\Framework\TestCase;
-use Jasny\EntityInterface;
-use Jasny\Support\IdentifyTestEntity;
+use Jasny\Entity\EntityInterface;
+use Jasny\Tests\Support\IdentifyTestEntity;
 use Jasny\EntityCollection\Traits\SearchTrait;
 
 /**

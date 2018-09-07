@@ -1,9 +1,9 @@
 <?php
 
-namespace Jasny\Entity;
+namespace Jasny\Tests\Entity\Traits;
 
-use Jasny\Support\TestEntity;
-use Jasny\Support\DynamicTestEntity;
+use Jasny\Tests\Support\TestEntity;
+use Jasny\Tests\Support\DynamicTestEntity;
 use PHPUnit\Framework\TestCase;
 
 /**
