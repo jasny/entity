@@ -18,12 +18,7 @@ class IdentifyTraitTest extends TestCase
      */
     public function hasIdPropertyProvider()
     {
-        $entity1 = new class() {
-            use IdentifyTrait;
-
-            public $id;
-        };
-
+        $entity1 = static::createIdentifiableObject();
         $entity2 = $this->getMockForTrait(IdentifyTrait::class);
 
         return [
@@ -49,12 +44,7 @@ class IdentifyTraitTest extends TestCase
      */
     public function testGetId()
     {
-        $entity = new class() {
-            use IdentifyTrait;
-
-            public $id;
-        };
-
+        $entity = static::createIdentifiableObject();
         $entity->id = 'foo';
 
         $result = $entity->getId();
@@ -72,5 +62,19 @@ class IdentifyTraitTest extends TestCase
     {
         $entity = $this->getMockForTrait(IdentifyTrait::class);
         $result = $entity->getId();
+    }
+
+    /**
+     * Get identifiable object
+     *
+     * @return object
+     */
+    protected static function createIdentifiableObject()
+    {
+        return new class() {
+            use IdentifyTrait;
+
+            public $id;
+        };
     }
 }

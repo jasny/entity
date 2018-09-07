@@ -18,13 +18,7 @@ class SetStateTraitTest extends TestCase
      */
     public function testSetState()
     {
-        $source = new class() {
-            use SetStateTrait, TriggerTrait;
-
-            public $foo;
-            public $num = 0;
-        };
-
+        $source = $this->createNotDynamicObject();
         $class = get_class($source);
 
         $entity = $class::__set_state(['foo' => 'bar', 'num' => 22, 'dyn' => 'woof']);
@@ -42,13 +36,7 @@ class SetStateTraitTest extends TestCase
      */
     public function testSetStateWithDynamicEntity()
     {
-        $source = new class() implements DynamicInterface {
-            use SetStateTrait, TriggerTrait;
-
-            public $foo;
-            public $num = 0;
-        };
-
+        $source = $this->createDynamicObject();
         $class = get_class($source);
 
         $entity = $class::__set_state(['foo' => 'bar', 'num' => 22, 'dyn' => 'woof']);
@@ -64,18 +52,7 @@ class SetStateTraitTest extends TestCase
      */
     public function testSetStateConstruct()
     {
-        $source = new class() implements DynamicInterface {
-            use SetStateTrait, TriggerTrait;
-
-            public $foo;
-            public $num;
-
-            public function __construct()
-            {
-                $this->num = 0;
-            }
-        };
-
+        $source = $this->createDynamicObjectWithConstructor();
         $class = get_class($source);
 
         $entity = $class::__set_state([]);
@@ -96,5 +73,55 @@ class SetStateTraitTest extends TestCase
 
         $this->assertSame($entity, $result);
         $this->assertFalse($entity->isNew());
+    }
+
+    /**
+     * Get not dynamic object
+     *
+     * @return object
+     */
+    protected function createNotDynamicObject()
+    {
+        return new class() {
+            use SetStateTrait, TriggerTrait;
+
+            public $foo;
+            public $num = 0;
+        };
+    }
+
+    /**
+     * Get dynamic object
+     *
+     * @return object
+     */
+    protected function createDynamicObject()
+    {
+        return new class() implements DynamicInterface {
+            use SetStateTrait, TriggerTrait;
+
+            public $foo;
+            public $num = 0;
+        };
+    }
+
+    /**
+     * Get dynamic object with constructor
+     *
+     * @return object
+     */
+    protected function createDynamicObjectWithConstructor()
+    {
+        return new class() implements DynamicInterface {
+            use SetStateTrait, TriggerTrait;
+
+            public $foo;
+            public $num;
+
+            public function __construct()
+            {
+                $this->num = 0;
+            }
+        };
     }
 }

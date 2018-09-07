@@ -31,24 +31,13 @@ class LazyLoadingTraitTest extends TestCase
      */
     public function testLazyload()
     {
-        $source = new class() {
-            use LazyLoadingTrait, IdentifyTrait;
-
-            public $id;
-
-            public function trigger(string $event, $payload = null)
-            {
-
-            }
-        };
-
+        $source = $this->createIdentifiableObject();
         $class = get_class($source);
 
         $entity = $class::lazyload('foo');
 
         $this->assertInstanceOf($class, $entity);
         $this->assertSame('foo', $entity->getId());
-        $this->assertFalse(isset($entity->foo));
         $this->assertTrue($entity->isGhost());
     }
 
@@ -60,14 +49,7 @@ class LazyLoadingTraitTest extends TestCase
      */
     public function testLazyloadException()
     {
-        $entity = new class() {
-            use LazyLoadingTrait, IdentifyTrait;
-
-            public function trigger(string $event, $payload = null)
-            {
-
-            }
-        };
+        $entity = $this->createNotIdentifiableObject();
 
         $class = get_class($entity);
         $class::lazyload('foo');
@@ -80,23 +62,7 @@ class LazyLoadingTraitTest extends TestCase
     {
         $values = ['id' => 'bla', 'foo' => 'kaz', 'bar' => 'bar_dynamic'];
 
-        $entity = new class() {
-            use LazyLoadingTrait, IdentifyTrait;
-
-            public $id;
-            public $foo;
-            public $triggerEvents = [];
-
-            public function trigger(string $event, $payload = null)
-            {
-                $this->triggerEvents[] = $event;
-
-                if ($event === 'before:reload') {
-                    return $payload;
-                }
-            }
-        };
-
+        $entity = $this->createNotDynamicObject();
         $entity->id = 'bla';
         $entity->foo = 'zoo';
 
@@ -116,23 +82,7 @@ class LazyLoadingTraitTest extends TestCase
     {
         $values = ['id' => 'bla', 'foo' => 'kaz', 'bar' => 'bar_dynamic'];
 
-        $entity = new class() implements DynamicInterface {
-            use LazyLoadingTrait, IdentifyTrait;
-
-            public $id;
-            public $foo;
-            public $triggerEvents = [];
-
-            public function trigger(string $event, $payload = null)
-            {
-                $this->triggerEvents[] = $event;
-
-                if ($event === 'before:reload') {
-                    return $payload;
-                }
-            }
-        };
-
+        $entity = $this->createDynamicObject();
         $entity->id = 'bla';
         $entity->foo = 'zoo';
 
@@ -153,14 +103,7 @@ class LazyLoadingTraitTest extends TestCase
      */
     public function testReloadNotIdentifiable()
     {
-        $entity = new class() {
-            use LazyLoadingTrait, IdentifyTrait;
-
-            public function trigger(string $event, $payload = null)
-            {
-
-            }
-        };
+        $entity = $this->createNotIdentifiableObject();
 
         $entity->reload([]);
     }
@@ -173,19 +116,89 @@ class LazyLoadingTraitTest extends TestCase
      */
     public function testReloadWrongId()
     {
-        $values = ['id' => 'wrong_id', 'foo' => 'kaz'];
+        $values = ['id' => 'wrong_id', 'bar' => 'kaz'];
 
-        $entity = new class() {
+        $entity = $this->createIdentifiableObject();
+        $entity->id = 'bla';
+        $entity->bar = 'zoo';
+
+        $result = $entity->reload($values);
+    }
+
+    /**
+     * Get identifiable object
+     *
+     * @return object
+     */
+    protected function createIdentifiableObject()
+    {
+        return new class() {
             use LazyLoadingTrait, IdentifyTrait, TriggerTrait;
+
+            public $id;
+            public $bar;
+        };
+    }
+
+    /**
+     * Get not identifiable object
+     *
+     * @return object
+     */
+    protected function createNotIdentifiableObject()
+    {
+        return new class() {
+            use LazyLoadingTrait, IdentifyTrait, TriggerTrait;
+        };
+    }
+
+    /**
+     * Get not dynamic identifiable object
+     *
+     * @return object
+     */
+    protected function createNotDynamicObject()
+    {
+        return new class() {
+            use LazyLoadingTrait, IdentifyTrait;
 
             public $id;
             public $foo;
             public $triggerEvents = [];
+
+            public function trigger(string $event, $payload = null)
+            {
+                $this->triggerEvents[] = $event;
+
+                if ($event === 'before:reload') {
+                    return $payload;
+                }
+            }
         };
+    }
 
-        $entity->id = 'bla';
-        $entity->foo = 'zoo';
+    /**
+     * Get dynamic identifiable object
+     *
+     * @return object
+     */
+    protected function createDynamicObject()
+    {
+        return new class() implements DynamicInterface {
+            use LazyLoadingTrait, IdentifyTrait;
 
-        $result = $entity->reload($values);
+            public $id;
+            public $foo;
+            public $triggerEvents = [];
+
+            public function trigger(string $event, $payload = null)
+            {
+                $this->triggerEvents[] = $event;
+
+                if ($event === 'before:reload') {
+                    return $payload;
+                }
+            }
+        };
     }
 }
