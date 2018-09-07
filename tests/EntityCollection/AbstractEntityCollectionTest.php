@@ -1,6 +1,6 @@
 <?php
 
-namespace Jasny\EntityCollection\Tests;
+namespace Jasny\Tests\EntityCollection;
 
 use PHPUnit\Framework\TestCase;
 use Jasny\EntityCollection\AbstractEntityCollection;

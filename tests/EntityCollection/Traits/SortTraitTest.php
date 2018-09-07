@@ -1,11 +1,11 @@
 <?php
 
-namespace Jasny\EntityCollection\Traits\Tests;
+namespace Jasny\Tests\EntityCollection\Traits;
 
 use PHPUnit\Framework\TestCase;
-use Jasny\EntityInterface;
-use Jasny\Support\DynamicTestEntity;
-use Jasny\Support\TestEntity;
+use Jasny\Entity\EntityInterface;
+use Jasny\Tests\Support\DynamicTestEntity;
+use Jasny\Tests\Support\TestEntity;
 use Jasny\EntityCollection\Traits\SortTrait;
 
 /**

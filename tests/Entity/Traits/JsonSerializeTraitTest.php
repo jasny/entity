@@ -1,10 +1,10 @@
 <?php
 
-namespace Jasny\Entity;
+namespace Jasny\Tests\Entity\Traits;
 
 use JsonSerializable;
-use Jasny\EntityInterface;
-use Jasny\Entity;
+use Jasny\Entity\EntityInterface;
+use Jasny\Entity\Entity;
 use Jasny\Entity\LazyLoadingInterface;
 use Jasny\Entity\Traits\LazyLoadingTrait;
 use Jasny\Entity\Traits\JsonSerializeTrait;

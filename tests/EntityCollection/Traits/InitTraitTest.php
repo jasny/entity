@@ -1,11 +1,11 @@
 <?php
 
-namespace Jasny\EntityCollection\Traits\Tests;
+namespace Jasny\Tests\EntityCollection\Traits;
 
 use PHPUnit\Framework\TestCase;
-use Jasny\Support\IdentifyTestEntity;
-use Jasny\Support\TestCollectionWithFakeEntityClass;
-use Jasny\Entity;
+use Jasny\Tests\Support\IdentifyTestEntity;
+use Jasny\Tests\Support\TestCollectionWithFakeEntityClass;
+use Jasny\Entity\Entity;
 use Jasny\EntityCollection\Traits\InitTrait;
 
 /**

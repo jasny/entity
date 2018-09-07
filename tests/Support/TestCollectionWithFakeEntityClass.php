@@ -1,6 +1,6 @@
 <?php
 
-namespace Jasny\Support;
+namespace Jasny\Tests\Support;
 
 use Jasny\EntityCollection\AbstractEntityCollection;
 

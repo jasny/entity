@@ -1,8 +1,8 @@
 <?php
 
-namespace Jasny\Support;
+namespace Jasny\Tests\Support;
 
-use Jasny\Entity\LazyLoadingInterface;
+use Jasny\Entity\EntityInterface;
 use Jasny\Entity\Traits\JsonSerializeTrait;
 use Jasny\Entity\Traits\IdentifyTrait;
 use Jasny\Entity\Traits\LazyLoadingTrait;
@@ -10,7 +10,7 @@ use Jasny\Entity\Traits\LazyLoadingTrait;
 /**
  * @ignore
  */
-class LazyLoadingTestEntity implements \JsonSerializable, LazyLoadingInterface {
+class LazyLoadingTestEntity implements \JsonSerializable, EntityInterface {
     use JsonSerializeTrait;
     use IdentifyTrait;
     use LazyLoadingTrait;
@@ -21,5 +21,35 @@ class LazyLoadingTestEntity implements \JsonSerializable, LazyLoadingInterface {
     public function trigger(string $event, $payload = null)
     {
         return $payload;
+    }
+
+    public function set($key, $value = null)
+    {
+
+    }
+
+    public function toAssoc(): array
+    {
+
+    }
+
+    public function isNew(): bool
+    {
+
+    }
+
+    public function on(string $event, callable $handler)
+    {
+
+    }
+
+    public static function __set_state(array $data)
+    {
+
+    }
+
+    public function applyState(array $data)
+    {
+
     }
 }
