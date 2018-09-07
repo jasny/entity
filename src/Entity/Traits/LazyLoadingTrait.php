@@ -26,6 +26,14 @@ trait LazyLoadingTrait
     private $i__ghost = false;
 
     /**
+     * Get entity id.
+     *
+     * @return mixed
+     * @throws BadMethodCallException if the entity is not identifiable.
+     */
+    abstract public function getId();
+
+    /**
      * Check if the entity has an id property
      *
      * @return bool
@@ -39,6 +47,14 @@ trait LazyLoadingTrait
      */
     abstract protected static function getIdProperty(): ?string;
 
+    /**
+     * Trigger before an event.
+     *
+     * @param string $event
+     * @param mixed  $payload
+     * @return mixed|void
+     */
+    abstract public function trigger(string $event, $payload = null);
 
     /**
      * Set the ghost state

@@ -3,8 +3,8 @@
 namespace Jasny\Tests\EntityCollection\Traits;
 
 use PHPUnit\Framework\TestCase;
+use Jasny\Entity\Entity;
 use Jasny\Entity\EntityInterface;
-use Jasny\Tests\Support\IdentifyTestEntity;
 use Jasny\EntityCollection\Traits\SearchTrait;
 
 /**
@@ -64,19 +64,14 @@ class SearchTraitTest extends TestCase
      */
     public function findEntityByRefProvider()
     {
-        $entity1 = $this->createPartialMock(IdentifyTestEntity::class, ['getId']);
-        $entity2 = $this->createPartialMock(IdentifyTestEntity::class, ['getId']);
-        $entity3 = $this->createPartialMock(IdentifyTestEntity::class, ['getId']);
-        $entity4 = $this->createPartialMock(IdentifyTestEntity::class, ['getId']);
-        $entity5 = $this->createPartialMock(IdentifyTestEntity::class, ['getId']);
-        $entity6 = $this->createPartialMock(IdentifyTestEntity::class, ['getId']);
+        $class = static::getMockEntityClass();
 
-        $entity1->method('getId')->willReturn('a');
-        $entity2->method('getId')->willReturn('b');
-        $entity3->method('getId')->willReturn('c');
-        $entity4->method('getId')->willReturn('a');
-        $entity5->method('getId')->willReturn('d');
-        $entity6->method('getId')->willReturn('aa');
+        $entity1 = new $class('a');
+        $entity2 = new $class('b');
+        $entity3 = new $class('c');
+        $entity4 = new $class('a');
+        $entity5 = new $class('d');
+        $entity6 = new $class('aa');
 
         $entities = [$entity1, $entity2, $entity3, $entity4, $entity5];
 
@@ -109,19 +104,14 @@ class SearchTraitTest extends TestCase
      */
     public function findEntityByIdProvider()
     {
-        $entity1 = $this->createPartialMock(IdentifyTestEntity::class, ['getId']);
-        $entity2 = $this->createPartialMock(IdentifyTestEntity::class, ['getId']);
-        $entity3 = $this->createPartialMock(IdentifyTestEntity::class, ['getId']);
-        $entity4 = $this->createPartialMock(IdentifyTestEntity::class, ['getId']);
-        $entity5 = $this->createPartialMock(IdentifyTestEntity::class, ['getId']);
-        $entity6 = $this->createPartialMock(IdentifyTestEntity::class, ['getId']);
+        $class = static::getMockEntityClass();
 
-        $entity1->method('getId')->willReturn('a');
-        $entity2->method('getId')->willReturn('b');
-        $entity3->method('getId')->willReturn('c');
-        $entity4->method('getId')->willReturn('a');
-        $entity5->method('getId')->willReturn('d');
-        $entity6->method('getId')->willReturn('aa');
+        $entity1 = new $class('a');
+        $entity2 = new $class('b');
+        $entity3 = new $class('c');
+        $entity4 = new $class('a');
+        $entity5 = new $class('d');
+        $entity6 = new $class('aa');
 
         $entities = [$entity1, $entity2, $entity3, $entity4, $entity5];
 
@@ -145,5 +135,23 @@ class SearchTraitTest extends TestCase
         $result = iterator_to_array($result);
 
         $this->assertSame($expected, $result);
+    }
+
+    /**
+     * Get class for mocking entity with id
+     * @return [type] [description]
+     */
+    protected static function getMockEntityClass()
+    {
+        $source = new class() extends Entity {
+            public $id;
+
+            public function __construct($id = null)
+            {
+                $this->id = $id;
+            }
+        };
+
+        return get_class($source);
     }
 }
