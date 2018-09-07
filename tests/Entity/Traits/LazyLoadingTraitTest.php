@@ -2,9 +2,9 @@
 
 namespace Jasny\Tests\Entity\Traits;
 
+use Jasny\Entity\EntityInterface;
 use Jasny\Tests\Support\LazyLoadingTestEntity;
 use Jasny\Tests\Support\IdentifyTestEntity;
-use Jasny\Tests\Support\DynamicTestEntity;
 use Jasny\Entity\Traits\LazyLoadingTrait;
 use PHPUnit\Framework\TestCase;
 
@@ -50,7 +50,22 @@ class LazyLoadingTraitTest extends TestCase
      */
     public function testLazyloadException()
     {
-        $entity = DynamicTestEntity::lazyload('foo');
+        $entity = new class() {
+            use LazyLoadingTrait;
+
+            public static function hasIdProperty(): bool
+            {
+                return false;
+            }
+
+            protected static function getIdProperty(): ?string
+            {
+                return null;
+            }
+        };
+
+        $class = get_class($entity);
+        $class::lazyload('foo');
     }
 
     /**
@@ -105,10 +120,21 @@ class LazyLoadingTraitTest extends TestCase
      */
     public function testReloadNotIdentifiable()
     {
-        $entity = $this->createPartialMock(DynamicTestEntity::class, ['trigger']);
-        $entity->expects($this->never())->method('trigger');
+        $entity = new class() {
+            use LazyLoadingTrait;
 
-        $result = $entity->reload([]);
+            public static function hasIdProperty(): bool
+            {
+                return false;
+            }
+
+            protected static function getIdProperty(): ?string
+            {
+                return null;
+            }
+        };
+
+        $entity->reload([]);
     }
 
     /**

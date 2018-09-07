@@ -3,7 +3,8 @@
 namespace Jasny\Tests\Entity\Traits;
 
 use Jasny\Tests\Support\TestEntity;
-use Jasny\Tests\Support\DynamicTestEntity;
+use Jasny\Entity\DynamicInterface;
+use Jasny\Entity\Traits\SetStateTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -32,10 +33,23 @@ class SetStateTraitTest extends TestCase
      */
     public function testSetStateWithDynamicEntity()
     {
-        $entity = DynamicTestEntity::__set_state(['foo' => 'bar', 'num' => 22, 'dyn' => 'woof']);
+        $source = new class() implements DynamicInterface {
+            use SetStateTrait;
 
-        $this->assertInstanceOf(DynamicTestEntity::class, $entity);
+            public $foo;
+            public $num = 0;
 
+            public function trigger(string $event, $payload = null)
+            {
+
+            }
+        };
+
+        $class = get_class($source);
+
+        $entity = $class::__set_state(['foo' => 'bar', 'num' => 22, 'dyn' => 'woof']);
+
+        $this->assertInstanceOf($class, $entity);
         $this->assertAttributeSame('bar', 'foo', $entity);
         $this->assertAttributeSame(22, 'num', $entity);
         $this->assertAttributeSame('woof', 'dyn', $entity);
