@@ -99,7 +99,7 @@ class JsonSerializeTraitTest extends TestCase
 
         $entity->foo = 'bar';
         $entity->color = 'blue';
-        $expected = (object)['foo' => 'bar', 'color' => 'blue'];
+        $expected = (object)['foo' => 'bar', 'color' => 'blue', 'event' => null];
 
         $result = $entity->jsonSerialize();
 
@@ -141,6 +141,8 @@ class JsonSerializeTraitTest extends TestCase
     {
         return new class() implements DynamicInterface {
             use JsonSerializeTrait;
+
+            public $event;
 
             public function trigger(string $event, $payload = null)
             {
