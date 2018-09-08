@@ -1,8 +1,8 @@
 <?php
 
-namespace Jasny\Entity;
+namespace Jasny\Tests\Entity\Traits;
 
-use Jasny\Support\TestEntity;
+use Jasny\Entity\Traits\TriggerTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -20,7 +20,7 @@ class TriggerTraitTest extends TestCase
         $processedValues1 = ['foo' => 'zoo'];
         $processedValues2 = ['foo' => 'bla'];
 
-        $entity = $this->createPartialMock(TestEntity::class, []);
+        $entity = $this->getMockForTrait(TriggerTrait::class);
         $tester = $this;
         $count = (object)['value' => 0];
 
@@ -60,7 +60,7 @@ class TriggerTraitTest extends TestCase
     public function testTriggerNoCallbacks()
     {
         $values = ['foo' => 'bar'];
-        $entity = $this->createPartialMock(TestEntity::class, []);
+        $entity = $this->getMockForTrait(TriggerTrait::class);
 
         $result = $entity->trigger('foo_event', $values);
 

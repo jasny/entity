@@ -1,8 +1,9 @@
 <?php
 
-namespace Jasny\EntityCollection\Tests;
+namespace Jasny\Tests\EntityCollection;
 
 use PHPUnit\Framework\TestCase;
+use Jasny\Entity\EntityInterface;
 use Jasny\EntityCollection\AbstractEntityCollection;
 
 /**
@@ -17,13 +18,12 @@ class AbstractEntityCollectionTest extends TestCase
      */
     public function testGetEntityClass()
     {
-        $class = AbstractEntityCollection::class;
-        $collection = (new \ReflectionClass($class))->newInstanceWithoutConstructor();
-
-        $this->setPrivateProperty($collection, 'entityClass', 'FooEntity');
+        $collection = new class() extends AbstractEntityCollection {
+            public $entityClass = EntityInterface::class;
+        };
 
         $result = $collection->getEntityClass();
 
-        $this->assertSame('FooEntity', $result);
+        $this->assertSame(EntityInterface::class, $result);
     }
 }

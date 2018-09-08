@@ -1,9 +1,9 @@
 <?php
 
-namespace Jasny\EntityCollection\Traits\Tests;
+namespace Jasny\Tests\EntityCollection\Traits;
 
 use PHPUnit\Framework\TestCase;
-use Jasny\Entity;
+use Jasny\Entity\Entity;
 use Jasny\EntityCollection\Traits\AssertTrait;
 
 /**

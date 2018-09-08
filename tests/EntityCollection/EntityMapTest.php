@@ -1,11 +1,17 @@
 <?php
 
-namespace Jasny\EntityCollection\Tests;
+namespace Jasny\Tests\EntityCollection;
 
 use PHPUnit\Framework\TestCase;
 use Jasny\EntityCollection\EntityMap;
-use Jasny\EntityInterface;
-use Jasny\Support\IdentifyTestEntity;
+use Jasny\Entity\Entity;
+use Jasny\Entity\EntityInterface;
+use Jasny\Entity\Traits\GetSetTrait;
+use Jasny\Entity\Traits\IdentifyTrait;
+use Jasny\Entity\Traits\JsonSerializeTrait;
+use Jasny\Entity\Traits\LazyLoadingTrait;
+use Jasny\Entity\Traits\SetStateTrait;
+use Jasny\Entity\Traits\TriggerTrait;
 
 /**
  * @covers Jasny\EntityCollection\EntityMap
@@ -86,9 +92,9 @@ class EntityMapTest extends TestCase
      */
     public function offsetGetProvider()
     {
-        $entity1 = $this->createMock(IdentifyTestEntity::class);
-        $entity2 = $this->createMock(IdentifyTestEntity::class);
-        $entity3 = $this->createMock(IdentifyTestEntity::class);
+        $entity1 = $this->createMock(EntityInterface::class);
+        $entity2 = $this->createMock(EntityInterface::class);
+        $entity3 = $this->createMock(EntityInterface::class);
 
         $entities = [1 => $entity1, 3 => $entity2, 7 => $entity3];
 
@@ -121,9 +127,9 @@ class EntityMapTest extends TestCase
      */
     public function testOffsetGetIndexNotExists()
     {
-        $entity1 = $this->createMock(IdentifyTestEntity::class);
-        $entity2 = $this->createMock(IdentifyTestEntity::class);
-        $entity3 = $this->createMock(IdentifyTestEntity::class);
+        $entity1 = $this->createMock(EntityInterface::class);
+        $entity2 = $this->createMock(EntityInterface::class);
+        $entity3 = $this->createMock(EntityInterface::class);
 
         $entities = [1 => $entity1, 3 => $entity2, 7 => $entity3];
 
@@ -139,10 +145,10 @@ class EntityMapTest extends TestCase
      */
     public function offsetSetProvider()
     {
-        $entity1 = $this->createMock(IdentifyTestEntity::class);
-        $entity2 = $this->createMock(IdentifyTestEntity::class);
-        $entity3 = $this->createMock(IdentifyTestEntity::class);
-        $entity4 = $this->createMock(IdentifyTestEntity::class);
+        $entity1 = $this->createMock(EntityInterface::class);
+        $entity2 = $this->createMock(EntityInterface::class);
+        $entity3 = $this->createMock(EntityInterface::class);
+        $entity4 = $this->createMock(EntityInterface::class);
 
         $entities = [1 => $entity1, 3 => $entity2, 7 => $entity3];
 
@@ -166,7 +172,7 @@ class EntityMapTest extends TestCase
     public function testOffsetSet($entities, $index, $entity, $expected)
     {
         $this->setPrivateProperty($this->collection, 'entities', $entities);
-        $this->setPrivateProperty($this->collection, 'entityClass', IdentifyTestEntity::class);
+        $this->setPrivateProperty($this->collection, 'entityClass', EntityInterface::class);
 
         $this->collection->offsetSet($index, $entity);
 
@@ -181,9 +187,9 @@ class EntityMapTest extends TestCase
      */
     public function testOffsetSetNullIndex()
     {
-        $this->setPrivateProperty($this->collection, 'entityClass', IdentifyTestEntity::class);
+        $this->setPrivateProperty($this->collection, 'entityClass', EntityInterface::class);
 
-        $entity = $this->createMock(IdentifyTestEntity::class);
+        $entity = $this->createMock(EntityInterface::class);
         $this->collection->offsetSet(null, $entity);
     }
 
@@ -192,9 +198,9 @@ class EntityMapTest extends TestCase
      */
     public function testOffsetUnset()
     {
-        $entity1 = $this->createMock(IdentifyTestEntity::class);
-        $entity2 = $this->createMock(IdentifyTestEntity::class);
-        $entity3 = $this->createMock(IdentifyTestEntity::class);
+        $entity1 = $this->createMock(EntityInterface::class);
+        $entity2 = $this->createMock(EntityInterface::class);
+        $entity3 = $this->createMock(EntityInterface::class);
 
         $entities = [1 => $entity1, 3 => $entity2, 7 => $entity3];
 
@@ -213,9 +219,9 @@ class EntityMapTest extends TestCase
      */
     public function testOffsetUnsetIndexNotExists()
     {
-        $entity1 = $this->createMock(IdentifyTestEntity::class);
-        $entity2 = $this->createMock(IdentifyTestEntity::class);
-        $entity3 = $this->createMock(IdentifyTestEntity::class);
+        $entity1 = $this->createMock(EntityInterface::class);
+        $entity2 = $this->createMock(EntityInterface::class);
+        $entity3 = $this->createMock(EntityInterface::class);
 
         $entities = [1 => $entity1, 3 => $entity2, 7 => $entity3];
 
@@ -231,15 +237,21 @@ class EntityMapTest extends TestCase
      */
     public function removeProvider()
     {
-        $entity1 = $this->createPartialMock(IdentifyTestEntity::class, ['getId']);
-        $entity2 = $this->createPartialMock(IdentifyTestEntity::class, ['getId']);
-        $entity3 = $this->createPartialMock(IdentifyTestEntity::class, ['getId']);
-        $entity4 = $this->createPartialMock(IdentifyTestEntity::class, ['getId']);
+        $source = new class() extends Entity {
+            public $id;
 
-        $entity1->method('getId')->willReturn('a');
-        $entity2->method('getId')->willReturn('b');
-        $entity3->method('getId')->willReturn('c');
-        $entity4->method('getId')->willReturn('d');
+            public function __construct($id = null)
+            {
+                $this->id = $id;
+            }
+        };
+
+        $class = get_class($source);
+
+        $entity1 = new $class('a');
+        $entity2 = new $class('b');
+        $entity3 = new $class('c');
+        $entity4 = new $class('d');
 
         $entities = [1 => $entity1, 3 => $entity2, 7 => $entity3, 9 => $entity2];
 
@@ -272,13 +284,13 @@ class EntityMapTest extends TestCase
      */
     public function testCreate()
     {
-        $entity1 = $this->createMock(IdentifyTestEntity::class);
-        $entity2 = $this->createMock(IdentifyTestEntity::class);
-        $entity3 = $this->createMock(IdentifyTestEntity::class);
+        $entity1 = $this->createMock(EntityInterface::class);
+        $entity2 = $this->createMock(EntityInterface::class);
+        $entity3 = $this->createMock(EntityInterface::class);
 
         $entities = [1 => $entity1, 3 => $entity2, 7 => $entity3];
 
-        $map = EntityMap::forClass(IdentifyTestEntity::class, $entities);
+        $map = EntityMap::forClass(EntityInterface::class, $entities);
 
         $this->assertAttributeSame($entities, 'entities', $map);
     }
@@ -346,9 +358,9 @@ class EntityMapTest extends TestCase
      */
     protected function getMapMock()
     {
-        $entity1 = $this->createConfiguredMock(IdentifyTestEntity::class, ['getId' => 'a']);
-        $entity2 = $this->createConfiguredMock(IdentifyTestEntity::class, ['getId' => 'b']);
-        $entity3 = $this->createConfiguredMock(IdentifyTestEntity::class, ['getId' => 'c']);
+        $entity1 = $this->createMock(EntityInterface::class);
+        $entity2 = $this->createMock(EntityInterface::class);
+        $entity3 = $this->createMock(EntityInterface::class);
 
         $entities = [1 => $entity1, 3 => $entity2, 7 => $entity3];
 

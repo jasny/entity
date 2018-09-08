@@ -87,4 +87,16 @@ trait SetStateTrait
 
         return $this;
     }
+
+    /**
+     * Reload with data from persisted storage.
+     * @internal
+     *
+     * @param array $data
+     * @return $this
+     */
+    public function applyState(array $data)
+    {
+
+    }
 }

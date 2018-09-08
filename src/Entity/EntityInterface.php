@@ -1,6 +1,6 @@
 <?php
 
-namespace Jasny;
+namespace Jasny\Entity;
 
 use JsonSerializable;
 use Jasny\Meta\MetaCastInterface;

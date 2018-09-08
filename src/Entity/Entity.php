@@ -1,9 +1,9 @@
 <?php
 
-namespace Jasny;
+namespace Jasny\Entity;
 
 use stdClass;
-use Jasny\EntityInterface;
+use Jasny\Entity\EntityInterface;
 use Jasny\Entity\Traits;
 
 /**
