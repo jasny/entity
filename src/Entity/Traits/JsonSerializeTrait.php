@@ -5,6 +5,7 @@ namespace Jasny\Entity\Traits;
 use stdClass;
 use DateTime;
 use JsonSerializable;
+use Jasny\Entity\DynamicInterface;
 use function Jasny\object_get_properties;
 
 /**
@@ -34,7 +35,9 @@ trait JsonSerializeTrait
      */
     public function jsonSerialize(): stdClass
     {
-        $object = (object)object_get_properties($this);
+        $isDynamic = $this instanceof DynamicInterface;
+
+        $object = (object)object_get_properties($this, $isDynamic);
         $object = $this->jsonSerializeCast($object);
 
         return $this->trigger('jsonSerialize', $object);
