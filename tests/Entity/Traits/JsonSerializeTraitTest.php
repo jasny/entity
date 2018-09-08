@@ -3,12 +3,8 @@
 namespace Jasny\Tests\Entity\Traits;
 
 use JsonSerializable;
-use Jasny\Entity\EntityInterface;
-use Jasny\Entity\Entity;
-use Jasny\Entity\LazyLoadingInterface;
-use Jasny\Entity\Traits\LazyLoadingTrait;
+use Jasny\Entity\DynamicInterface;
 use Jasny\Entity\Traits\JsonSerializeTrait;
-use Jasny\Entity\Traits\GetSetTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -18,13 +14,14 @@ use PHPUnit\Framework\TestCase;
 class JsonSerializeTraitTest extends TestCase
 {
     /**
-     * @var EntityInterface|JsonSerializable
+     * Object implementing JsonSerializeTrait, not dynamic
+     * @var object
      */
     protected $entity;
 
     public function setUp()
     {
-        $this->entity = $this->getMockForTrait(JsonSerializeTrait::class);
+        $this->entity = $this->createObject();;
     }
 
     /**
@@ -34,13 +31,13 @@ class JsonSerializeTraitTest extends TestCase
     {
         $this->entity->foo = 'bar';
         $this->entity->color = 'blue';
-
-        $expected = (object)['foo' => 'bar', 'color' => 'blue'];
-        $this->entity->expects($this->once())->method('trigger')->with('jsonSerialize', $expected)->willReturn($expected);
+        $this->entity->non_exist = 'zoo';
+        $expected = (object)['foo' => 'bar', 'color' => 'blue', 'event' => null];
 
         $result = $this->entity->jsonSerialize();
 
         $this->assertEquals($expected, $result);
+        $this->assertSame('jsonSerialize', $this->entity->event);
     }
 
     /**
@@ -48,16 +45,16 @@ class JsonSerializeTraitTest extends TestCase
      */
     public function testJsonSerializeCastDateTime()
     {
-        $data = (object)['date' => new \DateTime('2013-03-01 16:04:00 +01:00'), 'color' => 'pink'];
-        $expected = (object)['date' => '2013-03-01T16:04:00+0100', 'color' => 'pink'];
+        $data = (object)['foo' => new \DateTime('2013-03-01 16:04:00 +01:00'), 'color' => 'pink'];
+        $expected = (object)['foo' => '2013-03-01T16:04:00+0100', 'color' => 'pink', 'event' => null];
 
-        $this->entity->date = $data->date;
+        $this->entity->foo = $data->foo;
         $this->entity->color = $data->color;
-        $this->entity->expects($this->once())->method('trigger')->with('jsonSerialize', $expected)->willReturn($expected);
 
         $result = $this->entity->jsonSerialize();
 
         $this->assertEquals($expected, $result);
+        $this->assertSame('jsonSerialize', $this->entity->event);
     }
 
     /**
@@ -69,12 +66,12 @@ class JsonSerializeTraitTest extends TestCase
         $entity->foo = $this->getMockForAbstractClass(\JsonSerializable::class);
         $entity->foo->expects($this->once())->method('jsonSerialize')->willReturn('bar');
 
-        $expected = (object)['foo' => 'bar'];
-        $entity->method('trigger')->with('jsonSerialize', $expected)->willReturn($expected);
+        $expected = (object)['foo' => 'bar', 'color' => null, 'event' => null];
 
         $result = $entity->jsonSerialize();
 
         $this->assertEquals($expected, $result);
+        $this->assertSame('jsonSerialize', $entity->event);
     }
 
     /**
@@ -85,11 +82,74 @@ class JsonSerializeTraitTest extends TestCase
         $entity = $this->entity;
         $entity->foo = new \ArrayObject(['zoo' => 'bar']);
 
-        $expected = (object)['foo' => ['zoo' => 'bar']];
-        $entity->method('trigger')->with('jsonSerialize', $expected)->willReturn($expected);
+        $expected = (object)['foo' => ['zoo' => 'bar'], 'color' => null, 'event' => null];
 
         $result = $entity->jsonSerialize();
 
         $this->assertEquals($expected, $result);
+        $this->assertSame('jsonSerialize', $entity->event);
+    }
+
+    /**
+     * Test 'jsonSerialize' method for dynamic entity
+     */
+    public function testJsonSerializeDynamic()
+    {
+        $entity = $this->createDynamicObject();
+
+        $entity->foo = 'bar';
+        $entity->color = 'blue';
+        $expected = (object)['foo' => 'bar', 'color' => 'blue'];
+
+        $result = $entity->jsonSerialize();
+
+        $this->assertEquals($expected, $result);
+        $this->assertSame('jsonSerialize', $entity->event);
+    }
+
+    /**
+     * Create object, implementing JsonSerializeTrait
+     *
+     * @return object
+     */
+    protected function createObject()
+    {
+        return new class() {
+            use JsonSerializeTrait;
+
+            public $foo;
+            public $color;
+            public $event;
+
+            public function trigger(string $event, $payload = null)
+            {
+                if (!isset($this->event)) {
+                    $this->event = $event;
+                }
+
+                return $payload;
+            }
+        };
+    }
+
+    /**
+     * Create object, implementing JsonSerializeTrait and DynamicInterface
+     *
+     * @return object
+     */
+    protected function createDynamicObject()
+    {
+        return new class() implements DynamicInterface {
+            use JsonSerializeTrait;
+
+            public function trigger(string $event, $payload = null)
+            {
+                if (!isset($this->event)) {
+                    $this->event = $event;
+                }
+
+                return $payload;
+            }
+        };
     }
 }
