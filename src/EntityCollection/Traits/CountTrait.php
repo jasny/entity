@@ -2,17 +2,24 @@
 
 namespace Jasny\EntityCollection\Traits;
 
-use Closure;
 use Jasny\Entity\EntityInterface;
 
 /**
  * Count entities methods for EntityCollection
- *
- * @property EntityInterface[] $entities
- * @property int $totalCount
  */
 trait CountTrait
 {
+    /**
+     * @var EntityInterface[]
+     */
+    protected $entities = [];
+
+    /**
+     * @var int|\Closure
+     */
+    protected $totalCount;
+
+
     /**
      * Count the number of entities
      *
@@ -24,16 +31,43 @@ trait CountTrait
     }
 
     /**
+     * Resolve total count if it's still a Closure.
+     *
+     * @return void
+     * @throws \UnexpectedValueException if total count closure didn't return a positive integer
+     */
+    protected function resolveTotalCount(): void
+    {
+        if (is_int($this->totalCount) || !is_callable($this->totalCount)) {
+            return;
+        }
+
+        $count = call_user_func($this->totalCount);
+
+        if ((!is_int($count) && !ctype_digit($count)) || $count < 0) {
+            $type = (is_object($count) ? get_class($count) . ' ' : '') . gettype($count);
+            $msg = "Failed to get total count; expected a positive integer got a $type";
+            throw new \UnexpectedValueException($msg);
+        }
+
+        $this->totalCount = (int)$count;
+    }
+
+    /**
      * Count all the entities (if set was limited)
      *
      * @return int
+     * @throws \BadMethodCallException if total count isn't set
+     * @throws \UnexpectedValueException if total count closure didn't return a positive integer
      */
-    public function countTotal()
+    public function countTotal(): int
     {
-        if ($this->totalCount instanceof Closure) {
-            $this->totalCount = call_user_func($this->totalCount);
+        if (!isset($this->totalCount)) {
+            throw new \BadMethodCallException("Total count is not set");
         }
 
-        return $this->totalCount ?? $this->count();
+        $this->resolveTotalCount();
+
+        return $this->totalCount;
     }
 }

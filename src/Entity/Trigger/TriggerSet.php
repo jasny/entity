@@ -6,8 +6,6 @@ namespace Jasny\Entity\Trigger;
 
 use Jasny\EntityInterface;
 
-use function Jasny\expect_type;
-
 /**
  * Triggers that should be applied to Entities.
  * @immutable
@@ -86,7 +84,7 @@ class TriggerSet implements TriggerSetInterface
      * Add triggers to entity.
      *
      * @param EntityInterface $entity
-     * @return TriggerInvoker
+     * @return void
      */
     public function apply(EntityInterface $entity): void
     {

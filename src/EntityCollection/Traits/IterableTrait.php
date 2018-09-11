@@ -2,24 +2,26 @@
 
 namespace Jasny\EntityCollection\Traits;
 
-use ArrayIterator;
 use Jasny\Entity\EntityInterface;
 
 /**
  * Get iterable representation of EntityCollection
- *
- * @property EntityInterface[] $entities
  */
 trait IterableTrait
 {
+    /**
+     * @var array
+     */
+    protected $entities = [];
+
     /**
      * Get the iterator for looping through the set
      *
      * @return \ArrayIterator
      */
-    public function getIterator()
+    public function getIterator(): \ArrayIterator
     {
-        return new ArrayIterator($this->entities);
+        return new \ArrayIterator($this->entities);
     }
 
     /**
@@ -27,7 +29,7 @@ trait IterableTrait
      *
      * @return EntityInterface[]
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->entities;
     }

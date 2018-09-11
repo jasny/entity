@@ -2,17 +2,21 @@
 
 namespace Jasny\Tests\EntityCollection\Traits;
 
+use Jasny\TestHelper;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Jasny\Entity\EntityInterface;
 use Jasny\EntityCollection\Traits\MapReduceTrait;
 
 /**
- * @covers Jasny\EntityCollection\Traits\MapReduceTrait
+ * @covers \Jasny\EntityCollection\Traits\MapReduceTrait
  */
 class MapReduceTraitTest extends TestCase
 {
+    use TestHelper;
+
     /**
-     * Collection trait mock
+     * @var MapReduceTrait|MockObject
      **/
     public $collection;
 
@@ -44,11 +48,12 @@ class MapReduceTraitTest extends TestCase
      */
     public function testMap($entities, $expected)
     {
+        $this->setPrivateProperty($this->collection, 'entities', $entities);
+
         $callback = function($entity, $key) {
             return $entity . $key;
         };
 
-        $this->collection->entities = $entities;
         $result = $this->collection->map($callback);
 
         $this->assertSame($expected, $result);
@@ -61,25 +66,18 @@ class MapReduceTraitTest extends TestCase
      */
     public function mapItemsProvider()
     {
-        $entity1 = $this->createMock(EntityInterface::class);
-        $entity3 = $this->createMock(EntityInterface::class);
-
-        $entity1->foo = 'entity1';
-        $entity3->foo = 'entity3';
-
         return [
             [
                 ['id1' => 'item1', 'id2' => 'item2', 'id3' => 'item3'],
-                [['id1', $entity1], ['id2' => null], ['id3', $entity3]],
                 ['id1' => 'entity1-item1', 'id3' => 'entity3-item3']
             ],
             [
-                ['id1' => 'item1', 'id2' => 'item2', 'id3' => 'item3'],
-                [['id1', null], ['id2' => null], ['id3', null]],
+                ['no1' => 'item1', 'no2' => 'item2', 'no3' => 'item3'],
                 []
             ],
             [
-                [], [], []
+                [],
+                []
             ]
         ];
     }
@@ -89,11 +87,15 @@ class MapReduceTraitTest extends TestCase
      *
      * @dataProvider mapItemsProvider
      */
-    public function testMapItems($items, $mapEntities, $expected)
+    public function testMapItems($items, $expected)
     {
-        if ($mapEntities) {
-            $this->collection->method('get')->will($this->returnValueMap($mapEntities));
-        }
+        $entity1 = $this->createConfiguredMock(EntityInterface::class, ['getId' => 'id1']);
+        $entity3 = $this->createConfiguredMock(EntityInterface::class, ['getId' => 'id3']);
+
+        $entity1->foo = 'entity1';
+        $entity3->foo = 'entity3';
+
+        $this->setPrivateProperty($this->collection, 'entities', [$entity1, $entity3]);
 
         $callback = function($entity, $item) {
             return $entity->foo . '-' . $item;
@@ -128,7 +130,7 @@ class MapReduceTraitTest extends TestCase
      */
     public function testReduce($entities, $initial, $expected)
     {
-        $this->collection->entities = $entities;
+        $this->setPrivateProperty($this->collection, 'entities', $entities);
 
         $callback = function($prevResult, $item) {
             return (isset($prevResult) ? $prevResult : 'start') . '-' . $item;

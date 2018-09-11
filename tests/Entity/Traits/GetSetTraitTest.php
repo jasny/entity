@@ -116,7 +116,7 @@ class GetSetTraitTest extends TestCase
      * Test 'set' method with invalid argument
      *
      * @expectedException \BadMethodCallException
-     * @expectedExceptionMessage Too few arguments to method Jasny\Entity\Traits\GetSetTrait::set(), if first argument is a string, a second argument is required
+     * @expectedExceptionMessage if first argument is a string, a second argument is required
      */
     public function testSetValueInvalidArgument()
     {

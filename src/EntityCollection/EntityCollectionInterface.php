@@ -1,25 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Jasny\EntityCollection;
 
 use Jasny\Entity\EntityInterface;
-use IteratorAggregate;
-use ArrayAccess;
-use Countable;
-use JsonSerializable;
 
 /**
  * A collection (array) of entities
  */
-interface EntityCollectionInterface extends IteratorAggregate, ArrayAccess, Countable, JsonSerializable
+interface EntityCollectionInterface extends \IteratorAggregate, \Countable, \JsonSerializable
 {
     /**
-     * Class constructor
+     * Create new collection.
+     * Prototype interface.
      *
      * @param EntityInterface[]|iterable $entities  Array of entities
      * @param int|\Closure               $total     Total number of entities (if set is limited)
+     * @return static
      */
-    public function __construct(iterable $entities = [], $total = null);
+    public function withEntities(iterable $entities, $total = null);
 
     /**
      * Get the class entities of this set (must) have
@@ -33,53 +33,39 @@ interface EntityCollectionInterface extends IteratorAggregate, ArrayAccess, Coun
      *
      * @return EntityInterface[]
      */
-    public function toArray();
+    public function toArray(): array;
 
     /**
      * Count all the entities (if set was limited)
      *
      * @return int
+     * @throws \BadMethodCallException if total count is unknown
      */
-    public function countTotal();
+    public function countTotal(): int;
 
 
     /**
      * Check if the entity exists in this set
      *
      * @param mixed|EntityInterface $entity   Entity id or Entity
-     * @return boolean
+     * @return bool
      */
-    public function contains($entity);
+    public function contains($entity): bool;
 
     /**
-     * Get an entity from the set by id
+     * Get an entity from the collection by id
      *
      * @param mixed|EntityInterface $entity   Entity id or Entity
-     * @return EntityInterface|null
+     * @return EntityInterface
+     * @throws \OutOfBoundsException if entity is not in collection
      */
     public function get($entity): ?EntityInterface;
-
-    /**
-     * Add an entity to the set
-     *
-     * @param EntityInterface $entity
-     * @return void
-     */
-    public function add(EntityInterface $entity): void;
-
-    /**
-     * Remove an entity from the set
-     *
-     * @param mixed|EntityInterface $entity
-     * @return void
-     */
-    public function remove($entity): void;
 
 
     /**
      * Return a unique set of entities.
      *
-     * @return EntityCollectionInterface
+     * @return EntitySet
      */
     public function unique();
 
@@ -88,35 +74,18 @@ interface EntityCollectionInterface extends IteratorAggregate, ArrayAccess, Coun
      *
      * @param array|callable $filter
      * @param int|bool       $flag    Strict if filter is an array or FILTER_* contant for a callable
-     * @return EntityCollectionInterface
+     * @return self
      */
     public function filter($filter, $flag = 0);
 
     /**
      * Find first entity that passed a filter.
      *
-     * @param array|callable $filter
+     * @param array|\Closure $filter
      * @param int|bool       $flag    Strict if filter is an array or FILTER_* contant for a callable
-     * @return EntityInterface
+     * @return EntityInterface|null
      */
-    public function find($filter, $flag = 0);
-
-
-    /**
-     * Sort the entities as string or on a property.
-     *
-     * @param string $property
-     * @param int    $sortFlags
-     * @return $this
-     */
-    public function sort(string $property = null, int $sortFlags = SORT_REGULAR);
-
-    /**
-     * Sort the entities as string or on a property.
-     *
-     * @return $this
-     */
-    public function reverse();
+    public function find($filter, $flag = 0): ?EntityInterface;
 
 
     /**
@@ -151,25 +120,33 @@ interface EntityCollectionInterface extends IteratorAggregate, ArrayAccess, Coun
      *
      * @param string $property
      * @param bool   $skipNotSet
-     * @return iterable
+     * @return array
      */
-    public function getAll(string $property, bool $skipNotSet = true): iterable;
+    public function getAll(string $property, bool $skipNotSet = true): array;
 
     /**
      * Get property of all entities as associative array with id as key.
      *
      * @param string $property
      * @param bool   $skipNotSet
-     * @return iterable
+     * @return array
      */
-    public function getAllById(string $property, bool $skipNotSet = true): iterable;
+    public function getAllById(string $property, bool $skipNotSet = true): array;
 
     /**
      * Get unique values for property of all entities.
      *
      * @param string $property
      * @param bool   $flatten   Flatten array
-     * @return iterable
+     * @return array
      */
-    public function getUnique(string $property, bool $flatten = false): iterable;
+    public function getUnique(string $property, bool $flatten = false): array;
+
+    /**
+     * Get sum of property values of all entities
+     *
+     * @param string $property
+     * @return int|float
+     */
+    public function getSumOf(string $property);
 }

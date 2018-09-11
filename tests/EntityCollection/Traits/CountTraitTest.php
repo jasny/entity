@@ -2,17 +2,21 @@
 
 namespace Jasny\Tests\EntityCollection\Traits;
 
+use Jasny\Entity\EntityInterface;
+use Jasny\TestHelper;
 use PHPUnit\Framework\TestCase;
 use Jasny\EntityCollection\Traits\CountTrait;
 
 /**
- * @covers Jasny\EntityCollection\Traits\CountTrait
+ * @covers \Jasny\EntityCollection\Traits\CountTrait
  */
 class CountTraitTest extends TestCase
 {
+    use TestHelper;
+
     /**
-     * Collection trait mock
-     **/
+     * @var MockObject|CountTrait
+     */
     public $collection;
 
     /**
@@ -30,8 +34,14 @@ class CountTraitTest extends TestCase
      */
     public function countProvider()
     {
+        $entities = [
+            $this->createMock(EntityInterface::class),
+            $this->createMock(EntityInterface::class),
+            $this->createMock(EntityInterface::class)
+        ];
+
         return [
-            [[1, 2, 3], 3],
+            [$entities, 3],
             [[], 0]
         ];
     }
@@ -43,57 +53,43 @@ class CountTraitTest extends TestCase
      */
     public function testCount($entities, $expected)
     {
-        $this->collection->entities = $entities;
+        $this->setPrivateProperty($this->collection, 'entities', $entities);
 
-        $result = $this->collection->count();
-
-        $this->assertSame($expected, $result);
-    }
-
-    /**
-     * Provide data for testing 'countTotal' method
-     *
-     * @return array
-     */
-    public function countTotalProvider()
-    {
-        $closure = function() {
-            return 10;
-        };
-
-        return [
-            [3, 3],
-            [0, 0],
-            [$closure, 10],
-        ];
+        $this->assertSame($expected, $this->collection->count());
     }
 
     /**
      * Test 'countTotal' method
-     *
-     * @dataProvider countTotalProvider
      */
-    public function testCountTotal($totalCount, $expected)
+    public function testCountTotal()
     {
-        $this->collection->totalCount = $totalCount;
+        $this->setPrivateProperty($this->collection, 'totalCount', 42);
 
-        $result = $this->collection->countTotal();
+        $this->assertSame(42, $this->collection->countTotal());
+    }
 
-        $this->assertSame($expected, $result);
+    /**
+     * Test 'countTotal' method with closure
+     */
+    public function testCountTotalWithClosure()
+    {
+        $closure = $this->createCallbackMock($this->once(), [], 21);
+
+        $this->setPrivateProperty($this->collection, 'totalCount', $closure);
+
+        $this->assertSame(21, $this->collection->countTotal());
+
+        // Closure should not be called twice
+        $this->assertSame(21, $this->collection->countTotal());
     }
 
     /**
      * Test 'countTotal' method, in case when totalCount proerpty is not set
+     *
+     * @expectedException \BadMethodCallException
      */
     public function testCountTotalNotSet()
     {
-        $collection = $this->getMockForTrait(CountTrait::class, [], '', true, true, true, ['count']);
-
-        $collection->totalCount = null;
-        $collection->expects($this->once())->method('count')->willReturn(12);
-
-        $result = $collection->countTotal();
-
-        $this->assertSame(12, $result);
+        $this->collection->countTotal();
     }
 }

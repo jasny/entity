@@ -34,18 +34,6 @@ class EntitySetTest extends TestCase
     }
 
     /**
-     * Test 'assertEntityClass' method
-     *
-     * @expectedException InvalidArgumentException
-     * @expectedExceptionMessageRegExp /[\w\\]+ is not an identifiable, can't create a set/
-     */
-    public function testAssertEntityClass()
-    {
-        $this->setPrivateProperty($this->collection, 'entityClass', Entity::class);
-        $this->callPrivateMethod($this->collection, 'assertEntityClass', []);
-    }
-
-    /**
      * Test creating set
      */
     public function testCreate()

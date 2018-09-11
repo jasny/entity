@@ -2,18 +2,23 @@
 
 namespace Jasny\Tests\EntityCollection\Traits;
 
+use Jasny\EntityCollection\EntitySet;
+use Jasny\TestHelper;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Jasny\Entity\EntityInterface;
 use Jasny\EntityCollection\Traits\FilterTrait;
 
 /**
- * @covers Jasny\EntityCollection\Traits\FilterTrait
+ * @covers \Jasny\EntityCollection\Traits\FilterTrait
  */
 class FilterTraitTest extends TestCase
 {
+    use TestHelper;
+
     /**
-     * Collection trait mock
-     **/
+     * @var MockObject|FilterTrait
+     */
     public $collection;
 
     /**
@@ -21,7 +26,11 @@ class FilterTraitTest extends TestCase
      */
     public function setUp()
     {
-        $this->collection = $this->getMockForTrait(FilterTrait::class);
+        $this->collection = $this->getMockBuilder(FilterTrait::class)
+            ->setMethods(['getEntityClass', 'createEntitySet'])
+            ->getMockForTrait();
+
+        $this->collection->expects($this->any())->method('getEntityClass')->willReturn(EntityInterface::class);
     }
 
     /**
@@ -51,10 +60,10 @@ class FilterTraitTest extends TestCase
         };
 
         return [
-            [$entities, ['foo' => 123], false, [$entity2, $entity4, $entity6]],
-            [$entities, ['foo' => 123], true, [$entity2, $entity6]],
-            [$entities, $filter, false, [$entity2, $entity4]],
-            [$entities, $filter, true, [$entity2, $entity4]],
+            [$entities, ['foo' => 123], false, [1 => $entity2, 3 => $entity4, 5 => $entity6]],
+            [$entities, ['foo' => 123], true, [1 => $entity2, 5 => $entity6]],
+            [$entities, $filter, false, [1 => $entity2, 3 => $entity4]],
+            [$entities, $filter, true, [1 => $entity2, 3 => $entity4]],
             [$entities, [], false, $entities],
             [$entities, [], true, $entities],
             [[], ['foo' => 123], true, []],
@@ -71,13 +80,16 @@ class FilterTraitTest extends TestCase
      */
     public function testFilter($entities, $filter, $strict, $expected)
     {
-        $this->collection->entities = $entities;
+        $newCollection = clone $this->collection;
+
+        $this->setPrivateProperty($this->collection, 'entities', $entities);
+
+        $this->collection->expects($this->once())->method('withEntities')
+            ->with($this->identicalTo($expected))->willReturn($newCollection);
 
         $result = $this->collection->filter($filter, $strict);
 
-        $this->assertSame(get_class($this->collection), get_class($result));
-        $this->assertNotSame($this->collection, $result);
-        $this->assertSame($expected, $result->entities);
+        $this->assertSame($newCollection, $result);
     }
 
     /**
@@ -98,7 +110,7 @@ class FilterTraitTest extends TestCase
         $entities = [$entity1, $entity2, $entity3, $entity4, $entity5, $entity6, $entity7];
 
         return [
-            [$entities, [$entity1, $entity3, $entity4, $entity7]],
+            [$entities, [0 => $entity1, 2 => $entity3, 3 => $entity4, 6 => $entity7]],
             [[], []]
         ];
     }
@@ -110,12 +122,16 @@ class FilterTraitTest extends TestCase
      */
     public function testUnique($entities, $expected)
     {
-        $this->collection->entities = $entities;
+        $entitySet = $this->createMock(EntitySet::class);
+        $entitySet->expects($this->once())->method('withEntities')->with($expected)->willReturnSelf();
+
+        $this->collection->expects($this->once())->method('createEntitySet')->willReturn($entitySet);
+
+        $this->setPrivateProperty($this->collection, 'entities', $entities);
 
         $result = $this->collection->unique();
 
-        $this->assertSame(get_class($this->collection), get_class($result));
         $this->assertNotSame($this->collection, $result);
-        $this->assertSame($expected, $result->entities);
+        $this->assertSame($entitySet, $result);
     }
 }

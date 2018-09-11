@@ -2,46 +2,59 @@
 
 namespace Jasny\EntityCollection\Traits;
 
-use Jasny\EntityCollection\EntitySet;
-use Jasny\EntityCollection\EntityCollectionInterface;
 use Jasny\Entity\EntityInterface;
-use Closure;
-use BadMethodCallException;
-use function Jasny\expect_type;
 
 /**
  * Sort methods for EntityCollection
- *
- * @property EntityInterface[] $entities
  */
 trait SortTrait
 {
     /**
+     * @var EntityInterface[]
+     */
+    protected $entities = [];
+
+    /**
+     * Get the class entities of this collection (must) have.
+     *
+     * @return string
+     */
+    abstract public function getEntityClass(): string;
+
+
+    /**
+     * Determine if entity can be case to a string
+     *
+     * @return bool
+     * @throws \BadMethodCallException if it's Entity class doesn't implement __toString
+     */
+    protected function sortUseToString(): bool
+    {
+        $entityClass = $this->getEntityClass();
+
+        if (!method_exists($entityClass, '__toString')) {
+            throw new \BadMethodCallException("Class {$entityClass} can't be cast to a string; no sort key provided");
+        }
+
+        return true;
+    }
+
+    /**
      * Sort the entities as string or on a property.
      *
      * @param string $property
-     * @param int    $sortFlags
-     * @return $this
+     * @param int    $sortFlags  SORT_* constant
+     * @return void
      * @throws BadMethodCallException If $property param is null and __toString() method is not implemented in entity class
      */
-    public function sort(string $property = null, int $sortFlags = SORT_REGULAR)
+    public function sort(string $property = null, int $sortFlags = SORT_REGULAR): void
     {
         $index = [];
         $entities = [];
-        $useToString = false;
-
-        if (!isset($property)) {
-            if (!method_exists($this->entityClass, '__toString')) {
-                throw new BadMethodCallException("Class {$this->entityClass} does not have __toString method, to use it for sorting");
-            }
-
-            $useToString = true;
-        }
+        $useToString = !isset($property) && $this->sortUseToString();
 
         foreach ($this->entities as $key => $entity) {
-            $index[$key] = $useToString ?
-                (string)$entity :
-                ($entity->$property ?? null);
+            $index[$key] = $useToString ? (string)$entity : ($entity->$property ?? null);
         }
 
         asort($index, $sortFlags);
@@ -51,19 +64,15 @@ trait SortTrait
         }
 
         $this->entities = $entities;
-
-        return $this;
     }
 
     /**
      * Reverse the order of the entities.
      *
-     * @return $this
+     * @return void
      */
-    public function reverse()
+    public function reverse(): void
     {
-        $this->entities = array_reverse($this->entities);
-
-        return $this;
+        $this->entities = array_reverse($this->entities, false);
     }
 }

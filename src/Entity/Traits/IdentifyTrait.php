@@ -2,7 +2,7 @@
 
 namespace Jasny\Entity\Traits;
 
-use BadMethodCallException;
+use Jasny\Entity\Exception\NotIdentifiableException;
 
 /**
  * Entity identifiable implementation
@@ -37,14 +37,14 @@ trait IdentifyTrait
      * Get entity id.
      *
      * @return mixed
-     * @throws BadMethodCallException if the entity is not identifiable.
+     * @throws NotIdentifiableException if the entity is not identifiable.
      */
     public function getId()
     {
         $prop = static::getIdProperty();
 
         if (!isset($prop)) {
-            throw new BadMethodCallException(get_called_class() . " entity is not identifiable");
+            throw new NotIdentifiableException(get_called_class() . " entity is not identifiable");
         }
 
         return $this->$prop;

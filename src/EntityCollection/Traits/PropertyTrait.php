@@ -4,27 +4,35 @@ namespace Jasny\EntityCollection\Traits;
 
 /**
  * Methods to get the values of a property of all entities
- *
- * @property EntityInterface[] $entities
  */
 trait PropertyTrait
 {
+    /**
+     * @var EntityInterface[]
+     */
+    protected $entities = [];
+
+
     /**
      * Get property of all entities.
      *
      * @param string $property
      * @param bool   $skipNotSet
-     * @return iterable
+     * @return array
      */
-    public function getAll(string $property, bool $skipNotSet = true): iterable
+    public function getAll(string $property, bool $skipNotSet = true): array
     {
+        $result = [];
+
         foreach ($this->entities as $index => $entity) {
             if (!isset($entity->$property) && $skipNotSet) {
                 continue;
             }
 
-            yield $index => $entity->$property ?? null;
+            $result[$index] = $entity->$property ?? null;
         }
+
+        return $result;
     }
 
     /**
@@ -32,29 +40,33 @@ trait PropertyTrait
      *
      * @param string $property
      * @param bool   $skipNotSet
-     * @return iterable
+     * @return array
      */
-    public function getAllById(string $property, bool $skipNotSet = true): iterable
+    public function getAllById(string $property, bool $skipNotSet = true): array
     {
+        $result = [];
+
         foreach ($this->entities as $entity) {
             if (!isset($entity->$property) && $skipNotSet) {
                 continue;
             }
 
-            yield $entity->getId() => $entity->$property ?? null;
+            $result[$entity->getId()] = $entity->$property ?? null;
         }
+
+        return $result;
     }
 
     /**
      * Get unique values for property of all entities.
      *
      * @param string $property
-     * @param bool   $flatten   Flatten array
-     * @return iterable
+     * @param bool   $flatten   If property is an array, combine arrays
+     * @return array
      */
-    public function getUnique(string $property, bool $flatten = false): iterable
+    public function getUnique(string $property, bool $flatten = false): array
     {
-        $items = iterator_to_array($this->getAll($property));
+        $items = $this->getAll($property, true);
 
         if ($flatten) {
             $items = array_reduce($items, function($items, $item) {
@@ -72,13 +84,12 @@ trait PropertyTrait
      * Get sum of property values of all entities
      *
      * @param string $property
+     * @return int|float
      */
-    public function sum(string $property)
+    public function getSumOf(string $property)
     {
-        $items = iterator_to_array($this->getAll($property));
-
-        $sum = array_reduce($items, function($sum, $item) {
-            return $sum + $item;
+        $sum = array_reduce($this->entities, function($sum, $item) use ($property) {
+            return $sum + ($item->$property ?? 0);
         }, 0);
 
         return $sum;

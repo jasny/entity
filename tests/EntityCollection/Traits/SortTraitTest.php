@@ -9,15 +9,15 @@ use Jasny\Tests\Support\TestEntity;
 use Jasny\EntityCollection\Traits\SortTrait;
 
 /**
- * @covers Jasny\EntityCollection\Traits\SortTrait
+ * @covers \Jasny\EntityCollection\Traits\SortTrait
  */
 class SortTraitTest extends TestCase
 {
     use \Jasny\TestHelper;
 
     /**
-     * Collection trait mock
-     **/
+     * @var SortTrait
+     */
     public $collection;
 
     /**
@@ -38,7 +38,10 @@ class SortTraitTest extends TestCase
         $source = new class() {
             use SortTrait;
 
-            public $foo;
+            /** @var string */
+            public $foo = '';
+
+            public function getEntityClass() { }
 
             public function __toString()
             {
@@ -79,25 +82,24 @@ class SortTraitTest extends TestCase
      */
     public function testSort($entities, $entityClass, $property, $sortFlags, $expected)
     {
-        $this->collection->entities = $entities;
-        $this->collection->entityClass = $entityClass;
+        $this->setPrivateProperty($this->collection, 'entities', $entities);
+        $this->collection->expects($this->any())->method('getEntityClass')->willReturn($entityClass);
 
-        $result = $this->collection->sort($property, $sortFlags);
+        $this->collection->sort($property, $sortFlags);
 
-        $this->assertSame($this->collection, $result);
-        $this->assertSame($expected, $this->collection->entities);
+        $this->assertAttributeSame($expected, 'entities', $this->collection);
     }
 
     /**
      * Test 'sort' method, in case when $property param is empty and __toString() method is not implemented
      *
      * @expectedException BadMethodCallException
-     * @expectedExceptionMessageRegExp /Class [\w\\]+ does not have __toString method, to use it for sorting/
+     * @expectedExceptionMessageRegExp /Class [\w\\]+ can't be cast to a string; no sort key provided/
      */
     public function testSortException()
     {
-        $this->collection->entities = [];
-        $this->collection->entityClass = Entity::class;
+        $this->setPrivateProperty($this->collection, 'entities', []);
+        $this->collection->expects($this->any())->method('getEntityClass')->willReturn(EntityInterface::class);
 
         $this->collection->sort();
     }

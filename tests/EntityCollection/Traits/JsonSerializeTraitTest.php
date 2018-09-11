@@ -7,7 +7,7 @@ use Jasny\Entity\EntityInterface;
 use Jasny\EntityCollection\Traits\JsonSerializeTrait;
 
 /**
- * @covers Jasny\EntityCollection\Traits\JsonSerializeTrait
+ * @covers \Jasny\EntityCollection\Traits\JsonSerializeTrait
  */
 class JsonSerializeTraitTest extends TestCase
 {
@@ -17,6 +17,7 @@ class JsonSerializeTraitTest extends TestCase
     public function testJsonSerialize()
     {
         $expected = ['foo', 'bar'];
+
         $collection = $this->getMockForTrait(JsonSerializeTrait::class);
         $collection->expects($this->once())->method('toArray')->willReturn($expected);
 

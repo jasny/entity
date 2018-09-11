@@ -6,21 +6,17 @@ use Jasny\Entity\EntityInterface;
 
 /**
  * Map reduce methods for EntityCollection
- *
- * @property EntityInterface[] $entities
  */
 trait MapReduceTrait
 {
     /**
-     * Get an entity from the set by id
-     *
-     * @param mixed|EntityInterface $entity   Entity id or Entity
-     * @return EntityInterface|null
+     * @var array
      */
-    abstract public function get($entity): ?EntityInterface;
+    protected $entities = [];
+
 
     /**
-     * Returns the result of applying a callback to each value
+     * Returns the result of applying a callback to each value.
      *
      * @param callable $callback
      * @return array
@@ -37,21 +33,22 @@ trait MapReduceTrait
     }
 
     /**
-     * Map items to entity via callback
+     * Map items to entity via callback.
      *
      * @param iterable $items     One item per entity, mapped by id (not index)
      * @param callable $callback
      * @return array
+     * @throws
      */
     public function mapItems(iterable $items, callable $callback): array
     {
         $result = [];
 
-        foreach ($items as $id => $item) {
-            $entity = $this->get($id);
+        foreach ($this->entities as $entity) {
+            $id = $entity->getId();
 
-            if (isset($entity)) {
-                $result[$id] = $callback($entity, $item);
+            if (array_key_exists($id, $items)) {
+                $result[$id] = $callback($entity, $items[$id]);
             }
         }
 
@@ -59,7 +56,7 @@ trait MapReduceTrait
     }
 
     /**
-     * Reduce items into a single value via callback
+     * Reduce items into a single value via callback.
      *
      * @param callable $callback
      * @param mixed    $initial

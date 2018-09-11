@@ -2,18 +2,22 @@
 
 namespace Jasny\Tests\EntityCollection\Traits;
 
+use Jasny\TestHelper;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Jasny\Entity\EntityInterface;
 use Jasny\EntityCollection\Traits\PropertyTrait;
 
 /**
- * @covers Jasny\EntityCollection\Traits\PropertyTrait
+ * @covers \Jasny\EntityCollection\Traits\PropertyTrait
  */
 class PropertyTraitTest extends TestCase
 {
+    use TestHelper;
+
     /**
-     * Collection trait mock
-     **/
+     * @var PropertyTrait|MockObject
+     */
     public $collection;
 
     /**
@@ -58,10 +62,9 @@ class PropertyTraitTest extends TestCase
      */
     public function testGetAll($entities, $skipNotSet, $expected)
     {
-        $this->collection->entities = $entities;
+        $this->setPrivateProperty($this->collection, 'entities', $entities);
 
-        $iterator = $this->collection->getAll('foo', $skipNotSet);
-        $result = iterator_to_array($iterator);
+        $result = $this->collection->getAll('foo', $skipNotSet);
 
         $this->assertSame($expected, $result);
     }
@@ -106,10 +109,9 @@ class PropertyTraitTest extends TestCase
      */
     public function testGetAllById($entities, $skipNotSet, $expected)
     {
-        $this->collection->entities = $entities;
+        $this->setPrivateProperty($this->collection, 'entities', $entities);
 
-        $iterator = $this->collection->getAllById('foo', $skipNotSet);
-        $result = iterator_to_array($iterator);
+        $result = $this->collection->getAllById('foo', $skipNotSet);
 
         $this->assertSame($expected, $result);
     }
@@ -148,7 +150,7 @@ class PropertyTraitTest extends TestCase
      */
     public function testGetUnique($entities, $flatten, $expected)
     {
-        $this->collection->entities = $entities;
+        $this->setPrivateProperty($this->collection, 'entities', $entities);
 
         $result = $this->collection->getUnique('foo', $flatten);
 
@@ -184,9 +186,9 @@ class PropertyTraitTest extends TestCase
      */
     public function testSum($entities, $expected)
     {
-        $this->collection->entities = $entities;
+        $this->setPrivateProperty($this->collection, 'entities', $entities);
 
-        $result = $this->collection->sum('foo');
+        $result = $this->collection->getSumOf('foo');
 
         $this->assertSame($expected, $result);
     }

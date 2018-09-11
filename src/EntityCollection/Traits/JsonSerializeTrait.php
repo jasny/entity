@@ -14,7 +14,7 @@ trait JsonSerializeTrait
      *
      * @return EntityInterface[]
      */
-    abstract public function toArray();
+    abstract public function toArray(): array;
 
     /**
      * Prepare for JsonSerialize serialization

@@ -3,26 +3,85 @@
 namespace Jasny\EntityCollection\Traits;
 
 use Jasny\Entity\EntityInterface;
-use Closure;
+use Jasny\EntityCollection\EntitySet;
+use function Jasny\array_find;
 use function Jasny\expect_type;
 
 /**
  * Filter methods for EntityCollection
- *
- * @property EntityInterface[] $entities
  */
 trait FilterTrait
 {
     /**
-     * Return a unique set of entities (based on id)
+     * @var EntityInterface[]
+     */
+    protected $entities = [];
+
+    /**
+     * Get the class entities of this collection (must) have.
      *
+     * @return string
+     */
+    abstract public function getEntityClass(): string;
+
+    /**
+     * Create a new collection.
+     *
+     * @param EntityInterface[]|iterable $entities  Array of entities
+     * @param int|\Closure|null          $total     Total number of entities (if collection is limited)
      * @return static
      */
-    public function unique()
+    abstract public function withEntities(iterable $entities, $total = null): self;
+
+
+    /**
+     * Get filter callback from property filter array
+     *
+     * @param array $filter
+     * @param bool  $strict
+     * @return \Closure
+     */
+    protected function getPropertyFilter(array $filter, bool $strict): \Closure
+    {
+        return function(EntityInterface $entity) use ($filter, $strict) {
+            foreach ($filter as $key => $value) {
+                $check = $entity->$key ?? null;
+
+                if (
+                    ($strict ? $value === $check : $value == $check) ||
+                    (isset($check) && is_array($check) && in_array($value, $check, $strict))
+                ) {
+                    return true;
+                }
+            }
+
+            return !count($filter);
+        };
+    }
+
+
+    /**
+     * Create a new EntitySet.
+     * @codeCoverageIgnore
+     *
+     * @return EntitySet
+     */
+    protected function createEntitySet(): EntitySet
+    {
+        return new EntitySet($this->getEntityClass());
+    }
+
+
+    /**
+     * Return a unique set of entities (based on id).
+     *
+     * @return EntitySet
+     */
+    public function unique(): EntitySet
     {
         $index = [];
 
-        return $this->filter(function(EntityInterface $entity) use (&$index) {
+        $filtered = array_filter($this->entities, function(EntityInterface $entity) use (&$index) {
             $id = $entity->getId();
 
             $double = isset($index[$id]);
@@ -30,52 +89,47 @@ trait FilterTrait
 
             return !$double;
         });
+
+        return $this->createEntitySet()->withEntities($filtered);
     }
 
     /**
      * Filter the elements using a callback or by property
      *
-     * @param array|Closure $filter
-     * @param bool          $strict  Strict comparison when filtering on properties
+     * @param array|\Closure $filter
+     * @param int|bool       $flag    Strict if filter is an array or FILTER_* constant for a callable
      * @return static
      */
-    public function filter($filter, $strict = false)
+    public function filter($filter, $flag = 0): self
     {
-        expect_type($filter, ['array', Closure::class]);
+        expect_type($filter, ['array', \Closure::class]);
 
         if (is_array($filter)) {
-            $filter = function(EntityInterface $entity) use ($filter, $strict) {
-                foreach ($filter as $key => $value) {
-                    $check = $entity->$key ?? null;
-
-                    if (
-                        ($strict ? $value === $check : $value == $check) ||
-                        (isset($check) && is_array($check) && in_array($value, $check, $strict))
-                    ) {
-                        return true;
-                    }
-                }
-
-                return !count($filter);
-            };
+            $filter = $this->getPropertyFilter($filter, (bool)$flag);
+            $flag = 0;
         }
 
-        return $this->applyFilter($filter);
+        $filtered = array_filter($this->entities, $filter, $flag);
+
+        return $this->withEntities($filtered);
     }
 
     /**
-     * Apply filter to entities
+     * Find first entity that passed a filter.
      *
-     * @param callable $filter
-     * @return static
+     * @param array|\Closure $filter
+     * @param int|bool       $flag    Strict if filter is an array or FILTER_* constant for a callable
+     * @return EntityInterface|null
      */
-    protected function applyFilter($filter)
+    public function find($filter, $flag = 0): ?EntityInterface
     {
-        $filtered = array_filter($this->entities, $filter);
+        expect_type($filter, ['array', \Closure::class]);
 
-        $filteredSet = clone $this;
-        $filteredSet->entities = array_values($filtered);
+        if (is_array($filter)) {
+            $filter = $this->getPropertyFilter($filter, (bool)$flag);
+            $flag = 0;
+        }
 
-        return $filteredSet;
+        return array_find($this->entities, $filter, $flag);
     }
 }

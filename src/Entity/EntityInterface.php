@@ -1,15 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Jasny\Entity;
 
-use JsonSerializable;
-use Jasny\Meta\MetaCastInterface;
-use Jasny\ValidationInterface;
+use Jasny\Entity\Exception\NotIdentifiableException;
 
 /**
  * An entity is an object with a (persistent) data representation.
  */
-interface EntityInterface extends JsonSerializable
+interface EntityInterface extends \JsonSerializable
 {
     /**
      * Set a value or multiple values.
@@ -45,10 +45,17 @@ interface EntityInterface extends JsonSerializable
      * Get entity id.
      *
      * @return mixed
-     * @throws BadMethodCallException if the entity is not identifiable.
+     * @throws NotIdentifiableException if the entity is not identifiable.
      */
     public function getId();
 
+    /**
+     * Check if entity is the same as the provided entity or matches id or filter.
+     *
+     * @param EntityInterface|array|mixed $filter
+     * @return bool
+     */
+    public function is($filter): bool;
 
     /**
      * Check if the object is a ghost.

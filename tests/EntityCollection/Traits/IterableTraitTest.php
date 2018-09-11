@@ -7,35 +7,53 @@ use Jasny\Entity\EntityInterface;
 use Jasny\EntityCollection\Traits\IterableTrait;
 
 /**
- * @covers Jasny\EntityCollection\Traits\IterableTrait
+ * @covers \Jasny\EntityCollection\Traits\IterableTrait
  */
 class IterableTraitTest extends TestCase
 {
     /**
-     * Collection trait mock
-     **/
+     * IterableTrait|\IteratorAggregate
+     */
     public $collection;
+
+    /**
+     * @var EntityInterface[]|MockObject[]
+     */
+    protected $entities;
 
     /**
      * Set up dependencies before each test
      */
     public function setUp()
     {
-        $this->collection = $this->getMockForTrait(IterableTrait::class);
+        $this->entities = [
+            $this->createMock(EntityInterface::class),
+            $this->createMock(EntityInterface::class),
+            $this->createMock(EntityInterface::class)
+        ];
+
+        $this->collection = new class($this->entities) implements \IteratorAggregate {
+            use IterableTrait;
+
+            public function __construct(array $entities)
+            {
+                $this->entities = $entities;
+            }
+        };
     }
 
     /**
      * Test 'getIterator' method
      */
-    public function testGetIterator()
+    public function testIterate()
     {
-        $entities = [1, 2, 3];
-        $this->collection->entities = $entities;
+        $result = [];
 
-        $result = $this->collection->getIterator();
+        foreach ($this->collection as $entity) {
+            $result[] = $entity;
+        }
 
-        $this->assertInstanceOf(\ArrayIterator::class, $result);
-        $this->assertSame($entities, $result->getArrayCopy());
+        $this->assertSame($this->entities, $result);
     }
 
     /**
@@ -43,11 +61,8 @@ class IterableTraitTest extends TestCase
      */
     public function testToArray()
     {
-        $entities = [1, 2, 3];
-        $this->collection->entities = $entities;
-
         $result = $this->collection->toArray();
 
-        $this->assertSame($entities, $result);
+        $this->assertSame($this->entities, $result);
     }
 }
