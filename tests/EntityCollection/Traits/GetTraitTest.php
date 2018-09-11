@@ -11,7 +11,6 @@ use Jasny\EntityCollection\Traits\GetTrait;
 
 /**
  * @covers \Jasny\EntityCollection\Traits\GetTrait
- * @covers \Jasny\EntityCollection\Traits\FindEntityTrait
  */
 class GetTraitTest extends TestCase
 {

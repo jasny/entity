@@ -2,7 +2,6 @@
 
 namespace Jasny\Tests\EntityCollection;
 
-use Jasny\Entity\AbstractEntity;
 use PHPUnit\Framework\TestCase;
 use Jasny\EntityCollection\EntityMap;
 use Jasny\Entity\Entity;
