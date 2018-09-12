@@ -1,6 +1,6 @@
 <?php
 
-namespace Jasny\Tests\EntityCollection\Traits;
+namespace Jasny\EntityCollection\Tests\Traits;
 
 use Jasny\TestHelper;
 use PHPUnit\Framework\MockObject\MockObject;

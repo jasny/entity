@@ -1,6 +1,6 @@
 <?php
 
-namespace Jasny\Tests\EntityCollection\Traits;
+namespace Jasny\EntityCollection\Tests\Traits;
 
 use Jasny\Entity\EntityInterface;
 use Jasny\TestHelper;

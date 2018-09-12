@@ -1,6 +1,6 @@
 <?php
 
-namespace Jasny\Tests\EntityCollection;
+namespace Jasny\EntityCollection\Tests;
 
 use Jasny\Entity\AbstractEntity;
 use PHPUnit\Framework\MockObject\MockObject;
