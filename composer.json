@@ -30,18 +30,18 @@
         "jasny/typecast": "dev-master as 2.1.0"
     },
     "suggest": {
+        "jasny/entity-collection": "Data structures for entities",
         "jasny/meta": "Use annotations",
         "jasny/typecast": "Cast values based on entity metadata"
     },
     "autoload": {
         "psr-4": {
-            "Jasny\\Entity\\": "src/Entity",
-            "Jasny\\EntityCollection\\": "src/EntityCollection"
+            "Jasny\\Entity\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Jasny\\Tests\\": "tests/"
+            "Jasny\\Entity\\Tests\\": "tests/"
         }
     },
     "scripts": {

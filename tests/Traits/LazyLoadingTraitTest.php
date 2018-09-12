@@ -1,6 +1,6 @@
 <?php
 
-namespace Jasny\Tests\Entity\Traits;
+namespace Jasny\Entity\Tests\Traits;
 
 use Jasny\Entity\EntityInterface;
 use Jasny\Entity\Traits\LazyLoadingTrait;
