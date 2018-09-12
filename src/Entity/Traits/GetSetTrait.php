@@ -55,7 +55,8 @@ trait GetSetTrait
         expect_type($key, ['array', 'string']);
 
         if (func_num_args() === 1 && is_string($key)) {
-            throw new \BadMethodCallException("Too few arguments to method " . __METHOD__ . "(), " .
+            $method = sprintf('%s::%s()', __CLASS__, __FUNCTION__);
+            throw new \BadMethodCallException("Too few arguments to method $method, " .
                 "if first argument is a string, a second argument is required");
         }
 
