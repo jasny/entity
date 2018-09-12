@@ -18,7 +18,8 @@
     },
     "require": {
         "php": ">=7.1.0",
-        "jasny/php-functions": "^4.0"
+        "jasny/php-functions": "^4.0",
+        "jasny/entity": "dev-master"
     },
     "conflicts": {
         "jasny/meta": "< 3.0 || >= 4.0",
