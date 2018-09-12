@@ -1,10 +1,10 @@
 {
-    "name": "jasny/entity",
+    "name": "jasny/entity-collection",
     "type": "library",
-    "description": "Object representation for stateful entities",
+    "description": "Data structures for Entities",
     "keywords": [],
     "license": "MIT",
-    "homepage": "http://jasny.github.com/entity",
+    "homepage": "http://jasny.github.com/entity-collection",
     "authors": [
         {
             "name": "Arnold Daniels",
@@ -13,8 +13,8 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/jasny/entity/issues",
-        "source": "https://github.com/jasny/entity"
+        "issues": "https://github.com/jasny/entity-collection/issues",
+        "source": "https://github.com/jasny/entity-collection"
     },
     "require": {
         "php": ">=7.1.0",
@@ -35,13 +35,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Jasny\\Entity\\": "src/Entity",
-            "Jasny\\EntityCollection\\": "src/EntityCollection"
+            "Jasny\\EntityCollection\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Jasny\\Tests\\": "tests/"
+            "Jasny\\EntityCollection\\Tests\\": "tests/"
         }
     },
     "scripts": {
