@@ -6,6 +6,7 @@ namespace Jasny\EntityCollection;
 
 use Jasny\Entity\EntityInterface;
 use Jasny\EntityCollection\Traits;
+use function Jasny\expect_type;
 
 /**
  * An entity collection that works as an ordered list.
@@ -39,5 +40,7 @@ class EntityList extends AbstractEntityCollection implements EntityListInterface
         foreach ($this->findEntity($entity) as $index => $cur) {
             unset($this->entities[$index]);
         }
+
+        $this->entities = array_values($this->entities);
     }
 }
