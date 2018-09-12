@@ -15,13 +15,13 @@ trait Implementation
      * @var boolean
      * @ignore
      */
-    private $i__censor_default = false;
+    private $__censor_default = false;
     
     /**
      * @var array
      * @ignore
      */
-    private $i__censored = [];
+    private $__censored = [];
     
     
     /**
@@ -122,7 +122,7 @@ trait Implementation
     }
     
     /**
-     * Censor all except the specified properties.
+     * Censor all  only the specified properties.
      * Enriches with related data if needed.
      * 
      * @param string[] $properties
@@ -138,10 +138,6 @@ trait Implementation
         
         if ($this instanceof Enrichable) {
             $this->with($properties);
-        } else {
-            foreach ((array)$properties as $property) {
-                $this->markAsCensored($property, false);
-            }
         }
     }
 
