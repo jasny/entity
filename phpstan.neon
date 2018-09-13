@@ -2,8 +2,6 @@ parameters:
     level: 4
     paths:
         - src
-    ignoreErrors:
-        - "#Call to function property_exists\\(\\) with string and 'id' will always evaluate to false#"
 includes:
   	- vendor/phpstan/phpstan-strict-rules/rules.neon
 

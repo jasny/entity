@@ -57,8 +57,7 @@ class TriggerSet implements TriggerSetInterface
     protected function assertTriggers(string $name, array $triggers): void
     {
         foreach ($triggers as $handler) {
-            if (
-                !$handler instanceof HandlerInterface &&
+            if (!$handler instanceof HandlerInterface &&
                 !$handler instanceof \Closure &&
                 (is_object($handler) || !is_callable($handler))
             ) {

@@ -48,7 +48,7 @@
     "scripts": {
         "test": [
             "phpunit",
-            "phpstan analyse src",
+            "phpstan analyse src --level=4 --configuration=phpstan.neon",
             "phpcs -p src"
         ]
     },
