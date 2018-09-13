@@ -34,7 +34,7 @@ abstract class AbstractEntityCollection implements EntityCollectionInterface
 
     /**
      * Total number of entities (if collection is limited).
-     * @var int|Closure
+     * @var int|\Closure
      */
     protected $totalCount;
 

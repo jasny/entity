@@ -43,19 +43,18 @@ trait FilterTrait
      */
     protected function getPropertyFilter(array $filter, bool $strict): \Closure
     {
-        return function(EntityInterface $entity) use ($filter, $strict) {
+        return function (EntityInterface $entity) use ($filter, $strict) {
             foreach ($filter as $key => $value) {
                 $check = $entity->$key ?? null;
 
-                if (
-                    ($strict ? $value === $check : $value == $check) ||
+                if (($strict ? $value === $check : $value == $check) ||
                     (isset($check) && is_array($check) && in_array($value, $check, $strict))
                 ) {
                     return true;
                 }
             }
 
-            return !count($filter);
+            return count($filter) === 0;
         };
     }
 

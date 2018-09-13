@@ -45,7 +45,8 @@ trait SortTrait
      * @param string $property
      * @param int    $sortFlags  SORT_* constant
      * @return void
-     * @throws BadMethodCallException If $property param is null and __toString() method is not implemented in entity class
+     * @throws BadMethodCallException If $property param is null and __toString() method is not implemented in entity
+     *   class
      */
     public function sort(string $property = null, int $sortFlags = SORT_REGULAR): void
     {

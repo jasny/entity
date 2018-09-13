@@ -27,12 +27,7 @@
     },
     "require-dev": {
         "jasny/php-code-quality": "^2.3",
-        "jasny/meta": "^3.0",
-        "jasny/typecast": "dev-master as 2.1.0"
-    },
-    "suggest": {
-        "jasny/meta": "Use annotations",
-        "jasny/typecast": "Cast values based on entity metadata"
+        "phpstan/phpstan": "0.9.2"
     },
     "autoload": {
         "psr-4": {
@@ -45,6 +40,17 @@
         }
     },
     "scripts": {
-        "test": "phpunit"
-    }
+        "test": [
+            "phpunit",
+            "phpstan analyse src --level=4 --configuration=phpstan.neon",
+            "phpcs -p src"
+        ]
+    },
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "optimize-autoloader": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

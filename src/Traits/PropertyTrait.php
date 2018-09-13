@@ -69,7 +69,7 @@ trait PropertyTrait
         $items = $this->getAll($property, true);
 
         if ($flatten) {
-            $items = array_reduce($items, function($items, $item) {
+            $items = array_reduce($items, function ($items, $item) {
                 return array_merge($items, is_array($item) ? $item : [$item]);
             }, []);
         }
@@ -88,7 +88,7 @@ trait PropertyTrait
      */
     public function getSumOf(string $property)
     {
-        $sum = array_reduce($this->entities, function($sum, $item) use ($property) {
+        $sum = array_reduce($this->entities, function ($sum, $item) use ($property) {
             return $sum + ($item->$property ?? 0);
         }, 0);
 

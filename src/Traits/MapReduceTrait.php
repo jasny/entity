@@ -38,7 +38,6 @@ trait MapReduceTrait
      * @param iterable $items     One item per entity, mapped by id (not index)
      * @param callable $callback
      * @return array
-     * @throws
      */
     public function mapItems(iterable $items, callable $callback): array
     {
