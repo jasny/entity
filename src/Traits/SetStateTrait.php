@@ -2,16 +2,14 @@
 
 namespace Jasny\Entity\Traits;
 
-use ReflectionClass;
-use Jasny\Entity\DynamicInterface;
+use Jasny\Entity\EntityInterface;
+use Jasny\Entity\IdentifiableEntityInterface;
+use Jasny\Entity\DynamicEntityInterface;
 use function Jasny\object_set_properties;
+use function Jasny\expect_type;
 
 /**
  * Entity::__set_state method
- *
- * @author  Arnold Daniels <arnold@jasny.net>
- * @license https://raw.github.com/jasny/entity/master/LICENSE MIT
- * @link    https://jasny.github.com/entity
  */
 trait SetStateTrait
 {
@@ -61,8 +59,8 @@ trait SetStateTrait
     public static function __set_state(array $data)
     {
         $class = get_called_class();
-        $isDynamic = is_a($class, DynamicInterface::class, true);
-        $entity = (new ReflectionClass($class))->newInstanceWithoutConstructor();
+        $isDynamic = is_a($class, DynamicEntityInterface::class, true);
+        $entity = (new \ReflectionClass($class))->newInstanceWithoutConstructor();
 
         object_set_properties($entity, $data, $isDynamic);
 
@@ -88,15 +86,31 @@ trait SetStateTrait
         return $this;
     }
 
-    /**
-     * Reload with data from persisted storage.
-     * @internal
-     *
-     * @param array $data
-     * @return $this
-     */
-    public function applyState(array $data)
-    {
 
+    /**
+     * Refresh with data from persisted storage.
+     *
+     * @param static $replacement
+     * @return $this
+     * @throws InvalidArgumentException if replacement is a different entity
+     */
+    public function refresh($replacement): void
+    {
+        expect_type($replacement, get_class($this));
+
+        if ($this instanceof IdentifiableEntityInterface && !$this->is($replacement)) {
+            $msg = sprintf("Replacement %s is not the same entity; id %s doesn't match %s",
+                get_class($this), json_encode($replacement->getId()), json_encode($this->getId()));
+            throw new \InvalidArgumentException($msg);
+        }
+
+        $replacement = $this->trigger("refresh.before", $replacement);
+        expect_type($replacement, [EntityInterface::class, 'array'], \UnexpectedValueException::class);
+
+        $data = $replacement instanceof EntityInterface ? $replacement->toAssoc() : $replacement;
+        $isDynamic = $this instanceof DynamicEntityInterface;
+        object_set_properties($this, $data, $isDynamic);
+
+        $this->trigger("refresh.after", $data);
     }
 }

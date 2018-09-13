@@ -5,17 +5,14 @@ declare(strict_types=1);
 namespace Jasny\Entity\Traits;
 
 use Jasny\Entity\EntityInterface;
+use Jasny\Entity\IdentifiableEntityInterface;
 use function Jasny\is_associative_array;
 
+/**
+ * Check if two entities are the same.
+ */
 trait CompareTrait
 {
-    /**
-     * Check if the entity has an id property.
-     *
-     * @return bool
-     */
-    abstract public static function hasIdProperty(): bool;
-
     /**
      * Get entity id.
      *
@@ -27,11 +24,19 @@ trait CompareTrait
 
     /**
      * Check if this entity is the same as another entity
+     *
+     * @param EntityInterface $entity
+     * @return bool
      */
-    protected function isSameAsEntity($entity)
+    protected function isSameAsEntity(EntityInterface $entity): bool
     {
-        return $this === $entity ||
-            (get_class($this) === get_class($entity) && static::hasIdProperty() && $this->getId() === $entity->getId());
+        return
+            $this === $entity ||
+            (
+                get_class($this) === get_class($entity) &&
+                $this instanceof IdentifiableEntityInterface &&
+                $this->getId() === $entity->getId()
+            );
     }
 
     /**
@@ -67,6 +72,6 @@ trait CompareTrait
             return $this->matchesFilter($filter);
         }
 
-        return static::hasIdProperty() && $this->getId() === $filter;
+        return $this instanceof IdentifiableEntityInterface && $this->getId() === $filter;
     }
 }

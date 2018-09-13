@@ -2,9 +2,8 @@
 
 namespace Jasny\Entity\Tests\Traits;
 
-use Jasny\Entity\DynamicInterface;
-use Jasny\Entity\Traits\GetSetTrait;
-use Jasny\Entity\EntityInterface;
+use Jasny\Entity\AbstractBasicEntity;
+use Jasny\Entity\DynamicEntityInterface;
 use Jasny\TestHelper;
 use PHPUnit\Framework\TestCase;
 
@@ -17,37 +16,23 @@ class GetSetTraitTest extends TestCase
 
     protected function createObject()
     {
-        return new class() {
-            use GetSetTrait;
-
+        return new class() extends AbstractBasicEntity {
             public $foo;
             public $num = 0;
-
-            public function trigger($event, $payload) {
-                return $payload;
-            }
         };
     }
 
     protected function createDynamicObject()
     {
-        return new class() implements DynamicInterface {
-            use GetSetTrait;
-
+        return new class() extends AbstractBasicEntity implements DynamicEntityInterface {
             public $foo;
             public $num = 0;
-
-            public function trigger($event, $payload) {
-                return $payload;
-            }
         };
     }
 
     protected function createObjectWithTrigger(callable $trigger)
     {
-        return new class($trigger) {
-            use GetSetTrait;
-
+        return new class($trigger) extends AbstractBasicEntity {
             private $trigger;
 
             public function __construct(callable $trigger) {

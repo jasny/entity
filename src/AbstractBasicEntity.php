@@ -11,13 +11,12 @@ use Jasny\Entity\Traits;
 /**
  * Base class for an entity.
  */
-abstract class AbstractEntity implements EntityInterface
+abstract class AbstractBasicEntity implements EntityInterface
 {
     use Traits\GetSetTrait;
     use Traits\CompareTrait;
     use Traits\IdentifyTrait;
     use Traits\JsonSerializeTrait;
-    use Traits\LazyLoadingTrait;
     use Traits\SetStateTrait;
     use Traits\TriggerTrait;
 

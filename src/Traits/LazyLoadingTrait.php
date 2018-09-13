@@ -2,19 +2,10 @@
 
 namespace Jasny\Entity\Traits;
 
-use BadMethodCallException;
-use InvalidArgumentException;
-use ReflectionClass;
-use Jasny\Entity\DynamicInterface;
-use function Jasny\array_only;
-use function Jasny\object_set_properties;
+use Jasny\Entity\IdentifiableEntityInterface;
 
 /**
  * Entity lazy loading implementation
- *
- * @author  Arnold Daniels <arnold@jasny.net>
- * @license https://raw.github.com/jasny/entity/master/LICENSE MIT
- * @link    https://jasny.github.com/entity
  */
 trait LazyLoadingTrait
 {
@@ -34,18 +25,11 @@ trait LazyLoadingTrait
     abstract public function getId();
 
     /**
-     * Check if the entity has an id property
-     *
-     * @return bool
-     */
-    abstract public static function hasIdProperty(): bool;
-
-    /**
      * Get the id property of the entity.
      *
      * @return string|null
      */
-    abstract protected static function getIdProperty(): ?string;
+    abstract public function getIdProperty(): ?string;
 
     /**
      * Trigger before an event.
@@ -56,8 +40,9 @@ trait LazyLoadingTrait
      */
     abstract public function trigger(string $event, $payload = null);
 
+
     /**
-     * Set the ghost state
+     * Set the ghost state.
      *
      * @param bool $state
      */
@@ -88,11 +73,11 @@ trait LazyLoadingTrait
     {
         $class = get_called_class();
 
-        if (!static::hasIdProperty()) {
-            throw new BadMethodCallException("$class entity is not identifiable");
+        if (!is_a($class, IdentifiableEntityInterface::class, true)) {
+            throw new \BadMethodCallException("$class entity is not identifiable");
         }
 
-        $entity = (new ReflectionClass($class))->newInstanceWithoutConstructor();
+        $entity = (new \ReflectionClass($class))->newInstanceWithoutConstructor();
 
         foreach (array_keys(get_class_vars($class)) as $prop) {
             unset($entity->$prop);
@@ -104,38 +89,5 @@ trait LazyLoadingTrait
         $entity->markAsGhost(true);
 
         return $entity;
-    }
-
-    /**
-     * Reload with data from persisted storage.
-     *
-     * @param array $values
-     * @return $this
-     * @throws BadMethodCallException if entity is not identifiable
-     * @throws InvalidArgumentException if data doesn't belong to entity
-     */
-    public function reload(array $values)
-    {
-        $class = get_class($this);
-
-        if (!static::hasIdProperty()) {
-            throw new BadMethodCallException("$class entity is not identifiable");
-        }
-
-        $data = $this->trigger("before:reload", $values);
-
-        $id = $this->getId();
-        $idProp = static::getIdProperty();
-
-        if ($data[$idProp] !== $id) {
-            throw new InvalidArgumentException("Id in reload data doesn't match entity id");
-        }
-
-        $isDynamic = $this instanceof DynamicInterface;
-        object_set_properties($this, $data, $isDynamic);
-
-        $this->trigger("after:reload");
-
-        return $this;
     }
 }

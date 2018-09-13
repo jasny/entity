@@ -2,79 +2,37 @@
 
 namespace Jasny\Entity\Tests\Traits;
 
-use Jasny\Entity\Traits\IdentifyTrait;
+use Jasny\Entity\AbstractIdentifiableEntity;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers Jasny\Entity\Traits\IdentifyTrait
- * @group entity
+ * @covers \Jasny\Entity\Traits\IdentifyTrait
  */
 class IdentifyTraitTest extends TestCase
 {
-    /**
-     * Provide data for testing 'hasIdProperty' method
-     *
-     * @return array
-     */
-    public function hasIdPropertyProvider()
-    {
-        $entity1 = static::createIdentifiableObject();
-        $entity2 = $this->getMockForTrait(IdentifyTrait::class);
-
-        return [
-            [$entity1, true],
-            [$entity2, false]
-        ];
-    }
-
-    /**
-     * Test 'hasIdProperty' method
-     *
-     * @dataProvider hasIdPropertyProvider
-     */
-    public function testHasIdProperty($entity, $expected)
-    {
-        $result = $entity->hasIdProperty();
-
-        $this->assertSame($expected, $result);
-    }
-
     /**
      * Test 'getId' method
      */
     public function testGetId()
     {
-        $entity = static::createIdentifiableObject();
-        $entity->id = 'foo';
+        $entity = new class() extends AbstractIdentifiableEntity {
+            public $id = 'foo';
+        };
 
-        $result = $entity->getId();
-
-        $this->assertSame('foo', $result);
+        $this->assertSame('foo', $entity->getId());
     }
 
     /**
      * Test 'getId' method, in case when id is not set
      *
-     * @expectedException BadMethodCallException
-     * @expectedExceptionMessageRegExp /\w+ entity is not identifiable/
+     * @expectedException \LogicException
+     * @expectedExceptionMessag Unknown id property
      */
     public function testGetIdException()
     {
-        $entity = $this->getMockForTrait(IdentifyTrait::class);
-        $result = $entity->getId();
-    }
-
-    /**
-     * Get identifiable object
-     *
-     * @return object
-     */
-    protected static function createIdentifiableObject()
-    {
-        return new class() {
-            use IdentifyTrait;
-
-            public $id;
+        $entity = new class() extends AbstractIdentifiableEntity {
         };
+
+        $entity->getId();
     }
 }

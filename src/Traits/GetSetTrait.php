@@ -2,17 +2,13 @@
 
 namespace Jasny\Entity\Traits;
 
-use Jasny\Entity\DynamicInterface;
+use Jasny\Entity\DynamicEntityInterface;
 use function Jasny\expect_type;
 use function Jasny\object_set_properties;
 use function Jasny\object_get_properties;
 
 /**
  * Get and set entity properties
- *
- * @author  Arnold Daniels <arnold@jasny.net>
- * @license https://raw.github.com/jasny/entity/master/LICENSE MIT
- * @link    https://jasny.github.com/entity
  */
 trait GetSetTrait
 {
@@ -32,7 +28,7 @@ trait GetSetTrait
      */
     public function toAssoc(): array
     {
-        $values = object_get_properties($this);
+        $values = object_get_properties($this, $this instanceof DynamicEntityInterface);
 
         return $this->trigger('toAssoc', $values);
     }
@@ -63,7 +59,7 @@ trait GetSetTrait
         $payload = func_num_args() === 1 ? (array)$key : [$key => $value];
 
         $data = $this->trigger('before:set', $payload);
-        $isDynamic = $this instanceof DynamicInterface;
+        $isDynamic = $this instanceof DynamicEntityInterface;
 
         object_set_properties($this, $data, $isDynamic);
 

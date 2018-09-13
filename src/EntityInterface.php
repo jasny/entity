@@ -35,13 +35,6 @@ interface EntityInterface extends \JsonSerializable
 
 
     /**
-     * Check if the entity has an id property
-     *
-     * @return bool
-     */
-    public static function hasIdProperty(): bool;
-
-    /**
      * Get entity id.
      *
      * @return mixed
@@ -56,22 +49,6 @@ interface EntityInterface extends \JsonSerializable
      * @return bool
      */
     public function is($filter): bool;
-
-    /**
-     * Check if the object is a ghost.
-     *
-     * @return bool
-     */
-    public function isGhost(): bool;
-
-    /**
-     * Lazy load an entity, only the id is known.
-     *
-     * @param mixed             $id
-     * @return static
-     * @throws BadMethodCallException if the entity is not identifiable.
-     */
-    public static function lazyload($id);
 
 
     /**
@@ -111,11 +88,10 @@ interface EntityInterface extends \JsonSerializable
     public static function __set_state(array $data);
 
     /**
-     * Reload with data from persisted storage.
-     * @internal
+     * Refresh with data from persisted storage.
      *
-     * @param array $data
-     * @return $this
+     * @param static $replacement
+     * @return void
      */
-    public function applyState(array $data);
+    public function refresh($replacement): void;
 }
