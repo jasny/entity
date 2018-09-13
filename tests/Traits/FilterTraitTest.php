@@ -8,6 +8,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Jasny\Entity\EntityInterface;
 use Jasny\EntityCollection\Traits\FilterTrait;
+use function Jasny\array_only;
 
 /**
  * @covers \Jasny\EntityCollection\Traits\FilterTrait
@@ -17,28 +18,16 @@ class FilterTraitTest extends TestCase
     use TestHelper;
 
     /**
-     * @var MockObject|FilterTrait
+     * @var FilterTrait|MockObject
      */
-    public $collection;
+    protected $collection;
 
     /**
-     * Set up dependencies before each test
+     * @var EntityInterface[]
      */
-    public function setUp()
-    {
-        $this->collection = $this->getMockBuilder(FilterTrait::class)
-            ->setMethods(['getEntityClass', 'createEntitySet'])
-            ->getMockForTrait();
+    protected $entities;
 
-        $this->collection->expects($this->any())->method('getEntityClass')->willReturn(EntityInterface::class);
-    }
-
-    /**
-     * Provide data for testing 'filter' method
-     *
-     * @return array
-     */
-    public function filterProvider()
+    protected function setUpEntities()
     {
         $entity1 = $this->createMock(EntityInterface::class);
         $entity2 = $this->createMock(EntityInterface::class);
@@ -53,23 +42,37 @@ class FilterTraitTest extends TestCase
         $entity5->foo = ['1230'];
         $entity6->foo = [1234, 123, 'teta'];
 
-        $entities = [$entity1, $entity2, $entity3, $entity4, $entity5, $entity6];
+        $this->entities = [$entity1, $entity2, $entity3, $entity4, $entity5, $entity6];
+    }
 
-        $filter = function($entity) {
-            return isset($entity->foo) && $entity->foo == 123;
-        };
+    /**
+     * Set up dependencies before each test
+     */
+    public function setUp()
+    {
+        $this->setUpEntities();
 
+        $this->collection = $this->getMockBuilder(FilterTrait::class)
+            ->setMethods(['getEntityClass', 'createEntitySet'])
+            ->getMockForTrait();
+
+        $this->collection->expects($this->any())->method('getEntityClass')->willReturn(EntityInterface::class);
+
+        $this->setPrivateProperty($this->collection, 'entities', $this->entities);
+    }
+
+    /**
+     * Provide data for testing 'filter' method
+     *
+     * @return array
+     */
+    public function filterProvider()
+    {
         return [
-            [$entities, ['foo' => 123], false, [1 => $entity2, 3 => $entity4, 5 => $entity6]],
-            [$entities, ['foo' => 123], true, [1 => $entity2, 5 => $entity6]],
-            [$entities, $filter, false, [1 => $entity2, 3 => $entity4]],
-            [$entities, $filter, true, [1 => $entity2, 3 => $entity4]],
-            [$entities, [], false, $entities],
-            [$entities, [], true, $entities],
-            [[], ['foo' => 123], true, []],
-            [[], ['foo' => 123], false, []],
-            [[], $filter, true, []],
-            [[], $filter, false, []],
+            [['foo' => 123], false, [1, 3, 5]],
+            [['foo' => 123], true, [1, 5]],
+            [[], false, [0, 1, 2, 3, 4, 5]],
+            [['foo' => 'non_existing'], false, []]
         ];
     }
 
@@ -78,11 +81,10 @@ class FilterTraitTest extends TestCase
      *
      * @dataProvider filterProvider
      */
-    public function testFilter($entities, $filter, $strict, $expected)
+    public function testFilter($filter, $strict, $only)
     {
         $newCollection = clone $this->collection;
-
-        $this->setPrivateProperty($this->collection, 'entities', $entities);
+        $expected = array_only($this->entities, $only);
 
         $this->collection->expects($this->once())->method('withEntities')
             ->with($this->identicalTo($expected))->willReturn($newCollection);
@@ -92,42 +94,115 @@ class FilterTraitTest extends TestCase
         $this->assertSame($newCollection, $result);
     }
 
+    public function testFilterCallback()
+    {
+        $filter = function($entity) {
+            return isset($entity->foo) && is_string($entity->foo);
+        };
+
+        $this->collection->expects($this->once())->method('withEntities')
+            ->with(array_only($this->entities, [0, 3]))->willReturnSelf();
+
+        $this->collection->filter($filter);
+    }
+
+    public function testFilterCallbackWithKeys()
+    {
+        $filter = function($key) {
+            return $key > 1 && $key <= 4;
+        };
+
+        $this->collection->expects($this->once())->method('withEntities')
+            ->with(array_only($this->entities, [2, 3, 4]))->willReturnSelf();
+
+        $this->collection->filter($filter, ARRAY_FILTER_USE_KEY);
+    }
+
+    public function testFilterCallbackWithPairs()
+    {
+        $filter = function($entity, $key) {
+            return ($key > 1 && $key <= 4) || (isset($entity->foo) && is_string($entity->foo));
+        };
+
+        $this->collection->expects($this->once())->method('withEntities')
+            ->with(array_only($this->entities, [0, 2, 3, 4]))->willReturnSelf();
+
+        $this->collection->filter($filter, ARRAY_FILTER_USE_BOTH);
+    }
+
+
     /**
-     * Provide data for testing 'unique' method
+     * Provide data for testing 'find' method
      *
      * @return array
      */
-    public function uniqueProvider()
+    public function findProvider()
     {
-        $entity1 = $this->createConfiguredMock(EntityInterface::class, ['getId' => 'a']);
-        $entity2 = $this->createConfiguredMock(EntityInterface::class, ['getId' => 'a']);
-        $entity3 = $this->createConfiguredMock(EntityInterface::class, ['getId' => 'b']);
-        $entity4 = $this->createConfiguredMock(EntityInterface::class, ['getId' => 'c']);
-        $entity5 = $this->createConfiguredMock(EntityInterface::class, ['getId' => 'a']);
-        $entity6 = $this->createConfiguredMock(EntityInterface::class, ['getId' => 'c']);
-        $entity7 = $this->createConfiguredMock(EntityInterface::class, ['getId' => 'd']);
-
-        $entities = [$entity1, $entity2, $entity3, $entity4, $entity5, $entity6, $entity7];
-
         return [
-            [$entities, [0 => $entity1, 2 => $entity3, 3 => $entity4, 6 => $entity7]],
-            [[], []]
+            [['foo' => '123'], false, 1],
+            [['foo' => '123'], true, 3],
+            [[], false, 0],
+            [['foo' => 'non_existing'], false, null]
         ];
     }
 
     /**
-     * Test 'unique' method
+     * Test 'find' method
      *
-     * @dataProvider uniqueProvider
+     * @dataProvider findProvider
      */
-    public function testUnique($entities, $expected)
+    public function testFind($filter, $strict, $index)
+    {
+        $expected = isset($index) ? $this->entities[$index] : null;
+        $result = $this->collection->find($filter, $strict);
+
+        $this->assertSame($expected, $result);
+    }
+
+    public function testFindCallback()
+    {
+        $filter = function($entity) {
+            return isset($entity->foo) && is_array($entity->foo);
+        };
+
+        $result = $this->collection->find($filter);
+
+        $this->assertSame($this->entities[4], $result);
+    }
+
+    public function testFindCallbackWithKeys()
+    {
+        $filter = function($key) {
+            return $key > 1 && $key <= 4;
+        };
+
+        $result = $this->collection->find($filter, ARRAY_FILTER_USE_KEY);
+
+        $this->assertSame($this->entities[2], $result);
+    }
+
+    public function testFindCallbackWithPairs()
+    {
+        $filter = function($entity, $key) {
+            return $key > 0 && isset($entity->foo) && is_string($entity->foo);
+        };
+
+        $result = $this->collection->find($filter, ARRAY_FILTER_USE_BOTH);
+
+        $this->assertSame($this->entities[3], $result);
+    }
+    
+    
+    /**
+     * Test 'unique' method.
+     * Making is unique is done by EntitySet, so the entities are simply passed.
+     */
+    public function testUnique()
     {
         $entitySet = $this->createMock(EntitySet::class);
-        $entitySet->expects($this->once())->method('withEntities')->with($expected)->willReturnSelf();
+        $entitySet->expects($this->once())->method('withEntities')->with($this->entities)->willReturnSelf();
 
         $this->collection->expects($this->once())->method('createEntitySet')->willReturn($entitySet);
-
-        $this->setPrivateProperty($this->collection, 'entities', $entities);
 
         $result = $this->collection->unique();
 

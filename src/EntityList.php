@@ -37,7 +37,13 @@ class EntityList extends AbstractEntityCollection implements EntityListInterface
      */
     public function remove($entity): void
     {
-        foreach ($this->findEntity($entity) as $index => $cur) {
+        $remove = $this->findEntity($entity);
+
+        if (!$remove->valid()) {
+            return;
+        }
+
+        foreach ($remove as $index => $cur) {
             unset($this->entities[$index]);
         }
 

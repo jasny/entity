@@ -53,7 +53,8 @@ trait GetTrait
         $found = $this->findEntity($entity)->current();
 
         if (!$found) {
-            throw new \OutOfBoundsException("Entity not found");
+            $classname = preg_replace('~^.*/~', '', get_class($this));
+            throw new \OutOfBoundsException("Entity not found in $classname");
         }
 
         return $found;

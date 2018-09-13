@@ -2,6 +2,8 @@
 
 namespace Jasny\EntityCollection\Tests\Traits;
 
+use Jasny\Entity\AbstractBasicEntity;
+use Jasny\TestHelper;
 use PHPUnit\Framework\TestCase;
 use Jasny\Entity\Entity;
 use Jasny\Entity\EntityInterface;
@@ -13,7 +15,7 @@ use Jasny\EntityCollection\Traits\SortTrait;
  */
 class SortTraitTest extends TestCase
 {
-    use \Jasny\TestHelper;
+    use TestHelper;
 
     /**
      * @var SortTrait
@@ -35,17 +37,12 @@ class SortTraitTest extends TestCase
      */
     public function sortProvider()
     {
-        $source = new class() {
-            use SortTrait;
-
-            /** @var string */
+        $source = new class() extends AbstractBasicEntity {
             public $foo = '';
-
-            public function getEntityClass() { }
 
             public function __toString()
             {
-                return $this->foo;
+                return $this->foo ?? '';
             }
         };
 
@@ -102,5 +99,22 @@ class SortTraitTest extends TestCase
         $this->collection->expects($this->any())->method('getEntityClass')->willReturn(EntityInterface::class);
 
         $this->collection->sort();
+    }
+
+    public function testReverse()
+    {
+        $entities = [
+            $this->createMock(EntityInterface::class),
+            $this->createMock(EntityInterface::class),
+            $this->createMock(EntityInterface::class),
+            $this->createMock(EntityInterface::class)
+        ];
+
+        $this->setPrivateProperty($this->collection, 'entities', $entities);
+
+        $this->collection->reverse();
+
+        $expected = [$entities[3], $entities[2], $entities[1], $entities[0]];
+        $this->assertAttributeSame($expected, 'entities', $this->collection);
     }
 }

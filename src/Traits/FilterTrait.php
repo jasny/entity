@@ -79,25 +79,14 @@ trait FilterTrait
      */
     public function unique(): EntitySet
     {
-        $index = [];
-
-        $filtered = array_filter($this->entities, function(EntityInterface $entity) use (&$index) {
-            $id = $entity->getId();
-
-            $double = isset($index[$id]);
-            $index[$id] = true;
-
-            return !$double;
-        });
-
-        return $this->createEntitySet()->withEntities($filtered);
+        return $this->createEntitySet()->withEntities($this->entities);
     }
 
     /**
      * Filter the elements using a callback or by property
      *
      * @param array|\Closure $filter
-     * @param int|bool       $flag    Strict if filter is an array or FILTER_* constant for a callable
+     * @param int|bool       $flag    Strict if filter is an array or ARRAY_FILTER_* constant for a callable
      * @return static
      */
     public function filter($filter, $flag = 0): self
@@ -118,7 +107,7 @@ trait FilterTrait
      * Find first entity that passed a filter.
      *
      * @param array|\Closure $filter
-     * @param int|bool       $flag    Strict if filter is an array or FILTER_* constant for a callable
+     * @param int|bool       $flag    Strict if filter is an array or ARRAY_FILTER_* constant for a callable
      * @return EntityInterface|null
      */
     public function find($filter, $flag = 0): ?EntityInterface
@@ -130,6 +119,8 @@ trait FilterTrait
             $flag = 0;
         }
 
-        return array_find($this->entities, $filter, $flag);
+        $found = array_find($this->entities, $filter, $flag);
+
+        return $found !== false ? $found : null;
     }
 }

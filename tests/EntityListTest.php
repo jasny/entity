@@ -2,7 +2,7 @@
 
 namespace Jasny\EntityCollection\Tests;
 
-use Jasny\Entity\AbstractEntity;
+use Jasny\Entity\AbstractBasicEntity;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Jasny\Entity\EntityInterface;
@@ -62,9 +62,9 @@ class EntityListTest extends TestCase
 
     public function testGetEntityClass()
     {
-        $list = new EntityList(AbstractEntity::class);
+        $list = new EntityList(AbstractBasicEntity::class);
 
-        $this->assertEquals(AbstractEntity::class, $list->getEntityClass());
+        $this->assertEquals(AbstractBasicEntity::class, $list->getEntityClass());
     }
 
     public function testAdd()
@@ -73,7 +73,7 @@ class EntityListTest extends TestCase
         $this->collection->add($newEntity);
 
         $this->assertCount(4, $this->collection);
-        $this->assertSame(array_merge($this->entities, [$newEntity]), iterator_to_array($this->collection));
+        $this->assertSame(array_merge($this->entities, [$newEntity]), $this->collection->toArray());
     }
 
     public function testRemoveById()
@@ -85,7 +85,7 @@ class EntityListTest extends TestCase
         $this->collection->remove(42);
 
         $this->assertCount(2, $this->collection);
-        $this->assertSame([$this->entities[0], $this->entities[2]], iterator_to_array($this->collection));
+        $this->assertSame([$this->entities[0], $this->entities[2]], $this->collection->toArray());
     }
 
     public function testRemoveByRef()
@@ -100,7 +100,7 @@ class EntityListTest extends TestCase
         $this->collection->remove($this->entities[1]);
 
         $this->assertCount(2, $this->collection);
-        $this->assertSame([$this->entities[0], $this->entities[2]], iterator_to_array($this->collection));
+        $this->assertSame([$this->entities[0], $this->entities[2]], $this->collection->toArray());
     }
 
     public function testRemoveMultiple()
@@ -112,6 +112,19 @@ class EntityListTest extends TestCase
         $this->collection->remove(42);
 
         $this->assertCount(1, $this->collection);
-        $this->assertSame([$this->entities[0]], iterator_to_array($this->collection));
+        $this->assertSame([$this->entities[0]], $this->collection->toArray());
+    }
+
+
+    public function testRemoveNotExist()
+    {
+        $this->entities[0]->expects($this->once())->method('is')->with(42)->willReturn(false);
+        $this->entities[1]->expects($this->once())->method('is')->with(42)->willReturn(false);
+        $this->entities[2]->expects($this->once())->method('is')->with(42)->willReturn(false);
+
+        $this->collection->remove(42);
+
+        $this->assertCount(3, $this->collection);
+        $this->assertSame($this->entities, $this->collection->toArray());
     }
 }

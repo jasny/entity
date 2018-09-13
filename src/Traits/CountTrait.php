@@ -46,8 +46,8 @@ trait CountTrait
 
         if ((!is_int($count) && !ctype_digit($count)) || $count < 0) {
             $type = (is_object($count) ? get_class($count) . ' ' : '') . gettype($count);
-            $msg = "Failed to get total count; expected a positive integer got a $type";
-            throw new \UnexpectedValueException($msg);
+            throw new \UnexpectedValueException("Failed to get total count: " .
+                "Expected a positive integer, got " . (is_int($count) ? $count : $type));
         }
 
         $this->totalCount = (int)$count;

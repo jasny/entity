@@ -92,4 +92,32 @@ class CountTraitTest extends TestCase
     {
         $this->collection->countTotal();
     }
+
+    /**
+     * Test 'countTotal' method with closure that returns a negative number
+     *
+     * @expectedException \UnexpectedValueException
+     * @expectedExceptionMessage Failed to get total count: Expected a positive integer, got -1
+     */
+    public function testCountTotalWithClosureNegative()
+    {
+        $closure = $this->createCallbackMock($this->once(), [], -1);
+        $this->setPrivateProperty($this->collection, 'totalCount', $closure);
+
+        $this->collection->countTotal();
+    }
+
+    /**
+     * Test 'countTotal' method with closure that returns a string
+     *
+     * @expectedException \UnexpectedValueException
+     * @expectedExceptionMessage Failed to get total count: Expected a positive integer, got string
+     */
+    public function testCountTotalWithClosureString()
+    {
+        $closure = $this->createCallbackMock($this->once(), [], 'foo');
+        $this->setPrivateProperty($this->collection, 'totalCount', $closure);
+
+        $this->collection->countTotal();
+    }
 }

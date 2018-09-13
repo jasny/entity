@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Jasny\EntityCollection;
 
 use Jasny\Entity\EntityInterface;
+use Jasny\Entity\IdentifiableEntityInterface;
 use function Jasny\expect_type;
 
 /**
@@ -16,33 +17,23 @@ class EntitySet extends AbstractEntityCollection implements EntitySetInterface
     use Traits\SortTrait;
 
     /**
-     * Entities mapped by id
-     * @var EntityInterface[]
-     */
-    protected $map = [];
-
-
-    /**
      * Class constructor
      *
      * @param string  $entityClass  Class name of entities in the collection
-     * @throws \InvalidArgumentException if entity class is not EntityInterface or not Identifiable
+     * @throws \InvalidArgumentException if entity class is not an identifiable entity
      */
     public function __construct(string $entityClass)
     {
-        if (!is_a($entityClass, EntityInterface::class, true)) {
-            throw new \InvalidArgumentException("$entityClass does not implement " . EntityInterface::class);
-        }
-
-        if (!is_callable([$entityClass, 'hasIdProperty']) || !$entityClass::hasIdProperty()) {
-            throw new \InvalidArgumentException("$entityClass is not uniquely identifiable; can't create unique set");
+        if (!is_a($entityClass, IdentifiableEntityInterface::class, true)) {
+            $identifiable = IdentifiableEntityInterface::class;
+            throw new \InvalidArgumentException("$entityClass does not implement $identifiable");
         }
 
         parent::__construct($entityClass);
     }
 
     /**
-     * Set the entities
+     * Set the (unique) entities.
      *
      * @param EntityInterface[]|iterable $entities
      * @return void
@@ -50,33 +41,20 @@ class EntitySet extends AbstractEntityCollection implements EntitySetInterface
     protected function setEntities(iterable $entities): void
     {
         $this->entities = [];
-        $this->map = [];
+        $ids = [];
 
         foreach ($entities as $entity) {
             expect_type($entity, $this->getEntityClass());
 
             $id = $entity->getId();
 
-            if (isset($this->map[$id])) {
+            if ((isset($id) && in_array($id, $ids)) || in_array($entity, $this->entities, true)) {
                 continue;
             }
 
             $this->entities[] = $entity;
-            $this->map[$id] = $entity;
+            $ids[] = $id;
         }
-    }
-
-    /**
-     * Check if the entity exists in this set.
-     *
-     * @param mixed|EntityInterface $entity
-     * @return bool
-     */
-    public function contains($entity): bool
-    {
-        $id = $entity instanceof EntityInterface ? $entity->getId() : $entity;
-
-        return isset($this->map[$id]);
     }
 
     /**
@@ -89,24 +67,8 @@ class EntitySet extends AbstractEntityCollection implements EntitySetInterface
         return $this;
     }
 
-
     /**
-     * Get an entity from the set by id
-     *
-     * @param mixed|EntityInterface $entity   Entity id or Entity
-     * @return EntityInterface
-     * @throws \OutOfBoundsException if entity is not in collection
-     */
-    public function get($entity): EntityInterface
-    {
-        $id = $entity instanceof EntityInterface ? $entity->getId() : $entity;
-
-        return isset($id) && isset($this->map[$id]) ? $this->map[$id] : null;
-    }
-
-    /**
-     * Add an entity to the set.
-     * If the entity already is in the set, it's replaced.
+     * Add an entity to the set
      *
      * @param EntityInterface $entity
      * @return void
@@ -115,33 +77,23 @@ class EntitySet extends AbstractEntityCollection implements EntitySetInterface
     {
         expect_type($entity, $this->getEntityClass());
 
-        $id = $entity instanceof EntityInterface ? $entity->getId() : $entity;
-
-        if (isset($this->map[$id])) {
-            $index = $this->findEntityById($id)->key();
-
-            $this->map[$id] = $entity;
-            $this->entities[$index] = $entity;
-        } else {
+        if (!$this->findEntity($entity)->valid()) {
             $this->entities[] = $entity;
-            $this->map[$entity->getId()] = $entity;
         }
     }
 
     /**
      * Remove an entity from the set
      *
-     * @param mixed|EntityInterface $entity   Entity id or Entity
+     * @param mixed|EntityInterface $entity  Entity id or entity
      * @return void
      */
     public function remove($entity): void
     {
-        $id = $entity instanceof EntityInterface ? $entity->getId() : $entity;
+        $index = $this->findEntity($entity)->key();
 
-        if (isset($this->map[$id])) {
-            $index = $this->findEntityById($id)->key();
-            unset($this->map[$id], $this->entities[$index]);
-
+        if (isset($index)) {
+            unset($this->entities[$index]);
             $this->entities = array_values($this->entities);
         }
     }
