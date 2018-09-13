@@ -76,11 +76,7 @@ trait LazyLoadingTrait
     {
         $class = get_called_class();
 
-        if (!is_a($class, IdentifiableEntityInterface::class, true)) {
-            throw new \BadMethodCallException("$class entity is not identifiable");
-        }
-
-        /** @var self $entity */
+        /** @var static $entity */
         $entity = (new \ReflectionClass($class))->newInstanceWithoutConstructor();
 
         foreach (array_keys(get_class_vars($class)) as $prop) {

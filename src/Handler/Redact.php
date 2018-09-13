@@ -1,10 +1,10 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Jasny\Entity\Handler;
 
 use Jasny\Entity\EntityInterface;
-
 use function Jasny\expect_type;
 use function Jasny\array_only;
 
@@ -40,7 +40,7 @@ class Redact
      */
     public function __invoke(EntityInterface $entity, $data = null)
     {
-        expect_type($entity, ['array', \stdClass::class]);
+        expect_type($data, ['array', \stdClass::class]);
 
         $result = array_only((array)$data, $this->properties);
 

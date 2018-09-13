@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Jasny\Entity\Trigger;
 
 use Jasny\Entity\EntityInterface;
+use Jasny\Entity\Handler\HandlerInterface;
 
 /**
  * Triggers that should be applied to Entities.
@@ -45,16 +46,41 @@ class TriggerSet implements TriggerSetInterface
         return $this->triggers[$name];
     }
 
+    /**
+     * Assert that all triggers are a handler or callable.
+     *
+     * @param string $name
+     * @param array  $triggers
+     * @return void
+     * @throws \InvalidArgumentException
+     */
+    protected function assertTriggers(string $name, array $triggers): void
+    {
+        foreach ($triggers as $handler) {
+            if (
+                !$handler instanceof HandlerInterface &&
+                !$handler instanceof \Closure &&
+                (is_object($handler) || !is_callable($handler))
+            ) {
+                $type = (is_object($handler) ? get_class($handler) . ' ' : '') . gettype($handler);
+
+                throw new \InvalidArgumentException("Unable to add '$name' trigger(s); " .
+                    "Expected " . HandlerInterface::class . " or (non-object) callable, got a $type");
+            }
+        }
+    }
 
     /**
      * Add trigger(s).
      *
-     * @param string $name
-     * @param callable[] $triggers
+     * @param string                        $name
+     * @param HandlerInterface[]|callable[] $triggers
      * @return static
      */
     public function with(string $name, array $triggers): self
     {
+        $this->assertTriggers($name, $triggers);
+
         $clone = clone $this;
         $clone->triggers[$name] = $triggers;
 

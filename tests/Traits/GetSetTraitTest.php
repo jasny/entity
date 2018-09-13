@@ -30,22 +30,6 @@ class GetSetTraitTest extends TestCase
         };
     }
 
-    protected function createObjectWithTrigger(callable $trigger)
-    {
-        return new class($trigger) extends AbstractBasicEntity {
-            private $trigger;
-
-            public function __construct(callable $trigger) {
-                $this->trigger = $trigger;
-            }
-
-            public function trigger() {
-                $args = func_get_args();
-                return call_user_func_array($this->trigger, $args);
-            }
-        };
-    }
-
 
     /**
      * Test 'set' method for single value

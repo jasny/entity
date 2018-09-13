@@ -47,17 +47,38 @@ trait CompareTrait
      */
     protected function matchesFilter(array $filter): bool
     {
-        foreach ($filter as $key => $value) {
-            if (($this->$key ?? null) !== $value) {
+        foreach ($filter as $key => $comp) {
+            $value = ($this->$key ?? null);
+            $match = is_scalar($value) && is_scalar($comp) ? (string)$value === (string)$comp : $value === $comp;
+
+            if (!$match) {
                 return false;
             }
         }
 
-        return false;
+        return true;
+    }
+
+    /**
+     * Check if entity matches given id.
+     *
+     * @param mixed $filter
+     * @return bool
+     */
+    protected function matchedId($filter): bool
+    {
+        if (!$this instanceof IdentifiableEntityInterface) {
+            return false;
+        }
+
+        $id = $this->getId();
+
+        return is_scalar($id) && is_scalar($filter) ? (string)$id === (string)$filter : $id === $filter;
     }
 
     /**
      * Check if entity is the same as the provided entity or matches id or filter.
+     * For a filter, scalars are compared as string.
      *
      * @param EntityInterface|array|mixed $filter
      * @return bool
@@ -72,6 +93,6 @@ trait CompareTrait
             return $this->matchesFilter($filter);
         }
 
-        return $this instanceof IdentifiableEntityInterface && $this->getId() === $filter;
+        return $this->matchedId($filter);
     }
 }
