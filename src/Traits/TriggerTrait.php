@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Jasny\Entity\Traits;
 
 /**
@@ -21,11 +23,9 @@ trait TriggerTrait
      * @param callable $callback
      * @return void
      */
-    final protected function addTrigger(string $event, callable $callback): self
+    final protected function addTrigger(string $event, callable $callback): void
     {
         $this->i__triggers[$event][] = $callback;
-
-        return $this;
     }
 
     /**
@@ -47,9 +47,11 @@ trait TriggerTrait
      * @param callable $callback
      * @return $this
      */
-    public function on(string $event, callable $callback)
+    public function on(string $event, callable $callback): self
     {
-        return $this->addTrigger($event, $callback);
+        $this->addTrigger($event, $callback);
+
+        return $this;
     }
 
     /**
@@ -57,7 +59,7 @@ trait TriggerTrait
      *
      * @param string $event
      * @param mixed  $payload
-     * @return mixed|void
+     * @return mixed
      */
     public function trigger(string $event, $payload = null)
     {

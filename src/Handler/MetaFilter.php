@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Jasny\Entity\Handler;
 
-use Jasny\EntityInterface;
+use Jasny\Entity\EntityInterface;
 use Jasny\Meta\Factory as MetaFactory;
 use Jasny\Meta;
-use ReflectionClass;
+use function Jasny\expect_type;
 
 /**
  * Filter properties base on meta data
@@ -51,12 +51,16 @@ class MetaFilter implements HandlerInterface
      * Invoke the modifier as callback
      *
      * @param EntityInterface $entity
-     * @param array|stdClass  $data
-     * @return array|stdClass
+     * @param array|\stdClass  $data
+     * @return array|\stdClass
      */
     public function __invoke(EntityInterface $entity, $data = null)
     {
-        $meta = $this->metaFactory->create(get_class($entity)); // Factory will cache
+        expect_type($data, ['array', \stdClass::class]);
+
+        $class = get_class($entity);
+
+        $meta = $this->metaFactory->create($class); // Factory will cache
         $result = $this->redactArray((array)$data, $meta);
 
         return is_object($data) ? (object)$result : $result;
@@ -72,7 +76,7 @@ class MetaFilter implements HandlerInterface
     protected function redactArray(array $data, Meta $meta): array
     {
         foreach (array_keys($data) as $property) {
-            if ($meta->ofProperty($property)->get($this->tag, false)) {
+            if ((bool)($meta->ofProperty($property)[$this->tag] ?? false)) {
                 unset($data[$property]);
             }
         }

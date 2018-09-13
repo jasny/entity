@@ -1,19 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Jasny\Entity\Traits;
 
-use stdClass;
-use DateTime;
-use JsonSerializable;
 use Jasny\Entity\DynamicEntityInterface;
 use function Jasny\object_get_properties;
+use function Jasny\expect_type;
 
 /**
  * Entity json serialize implementation
- *
- * @author  Arnold Daniels <arnold@jasny.net>
- * @license https://raw.github.com/jasny/entity/master/LICENSE MIT
- * @link    https://jasny.github.com/entity
  */
 trait JsonSerializeTrait
 {
@@ -30,45 +26,16 @@ trait JsonSerializeTrait
     /**
      * Prepare entity for JsonSerialize encoding
      *
-     * @param EntityInterface $entity
-     * @return stdClass
+     * @return \stdClass
      */
-    public function jsonSerialize(): stdClass
+    public function jsonSerialize(): \stdClass
     {
         $isDynamic = $this instanceof DynamicEntityInterface;
-
         $object = (object)object_get_properties($this, $isDynamic);
-        $object = $this->jsonSerializeCast($object);
 
-        return $this->trigger('jsonSerialize', $object);
-    }
+        $result = $this->trigger('jsonSerialize', $object);
+        expect_type($result, \stdClass::class, \UnexpectedValueException::class);
 
-    /**
-     * Cast value for json serialization.
-     *
-     * @param mixed $value
-     * @return mixed
-     */
-    protected function jsonSerializeCast($value)
-    {
-        if ($value instanceof DateTime) {
-            return $value->format(DateTime::ISO8601);
-        }
-
-        if ($value instanceof JsonSerializable) {
-            return $value->jsonSerialize();
-        }
-
-        if (!is_array($value) && is_iterable($value)) {
-            $value = iterator_to_array($value);
-        }
-
-        if ($value instanceof stdClass || is_array($value)) {
-            foreach ($value as &$prop) {
-                $prop = $this->jsonSerializeCast($prop); // Recursion
-            }
-        }
-
-        return $value;
+        return $result;
     }
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Jasny\Entity\Trigger;
 
-use Jasny\EntityInterface;
+use Jasny\Entity\EntityInterface;
 
 /**
  * Triggers that should be applied to Entities.

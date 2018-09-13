@@ -2,8 +2,6 @@
 
 namespace Jasny\Entity\Traits;
 
-use Jasny\Entity\Exception\NotIdentifiableException;
-
 /**
  * Entity identifiable implementation
  */
@@ -13,7 +11,7 @@ trait IdentifyTrait
      * Get the id property of the entity.
      *
      * @return string|null
-     * @throws LogicException if id property is unknown
+     * @throws \LogicException if id property is unknown
      */
     protected static function getIdProperty(): ?string
     {

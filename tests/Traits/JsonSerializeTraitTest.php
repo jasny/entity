@@ -53,52 +53,6 @@ class JsonSerializeTraitTest extends TestCase
     }
 
     /**
-     * Test 'jsonSerialize' method for DateTime value
-     */
-    public function testJsonSerializeCastDateTime()
-    {
-        $data = (object)['foo' => new \DateTime('2013-03-01 16:04:00 +01:00'), 'color' => 'pink'];
-        $expected = (object)['foo' => '2013-03-01T16:04:00+0100', 'color' => 'pink'];
-
-        $this->entity->foo = $data->foo;
-        $this->entity->color = $data->color;
-
-        $result = $this->entity->jsonSerialize();
-
-        $this->assertEquals($expected, $result);
-    }
-
-    /**
-     * Test 'jsonSerialize' method for serializable value
-     */
-    public function testJsonSerializeCastJsonSerializable()
-    {
-        $this->entity->foo = $this->getMockForAbstractClass(\JsonSerializable::class);
-        $this->entity->foo->expects($this->once())->method('jsonSerialize')->willReturn('bar');
-
-        $expected = (object)['foo' => 'bar', 'color' => null];
-
-        $result = $this->entity->jsonSerialize();
-
-        $this->assertEquals($expected, $result);
-    }
-
-    /**
-     * Test 'jsonSerialize' method for iterable value
-     */
-    public function testJsonSerializeIterable()
-    {
-        $entity = $this->entity;
-        $entity->foo = new \ArrayObject(['zoo' => 'bar']);
-
-        $expected = (object)['foo' => ['zoo' => 'bar'], 'color' => null];
-
-        $result = $entity->jsonSerialize();
-
-        $this->assertEquals($expected, $result);
-    }
-
-    /**
      * Test 'jsonSerialize' method for dynamic entity
      */
     public function testJsonSerializeDynamic()

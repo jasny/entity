@@ -3,10 +3,10 @@
 
 namespace Jasny\Entity\Handler;
 
-use Jasny\EntityInterface;
+use Jasny\Entity\EntityInterface;
 
 use function Jasny\expect_type;
-use function Jasny\array_without;
+use function Jasny\array_only;
 
 /**
  * Redact an entity, removing values except for given properties.

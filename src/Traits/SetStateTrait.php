@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Jasny\Entity\Traits;
 
 use Jasny\Entity\EntityInterface;
@@ -33,8 +35,9 @@ trait SetStateTrait
      * Mark entity as new or persisted
      *
      * @param bool $state
+     * @return void
      */
-    final protected function markNew(bool $state)
+    final protected function markNew(bool $state): void
     {
         $this->i__new = $state;
     }
@@ -60,6 +63,8 @@ trait SetStateTrait
     {
         $class = get_called_class();
         $isDynamic = is_a($class, DynamicEntityInterface::class, true);
+
+        /** @var static $entity */
         $entity = (new \ReflectionClass($class))->newInstanceWithoutConstructor();
 
         object_set_properties($entity, $data, $isDynamic);
@@ -76,7 +81,7 @@ trait SetStateTrait
     /**
      * Mark entity as persisted
      *
-     * @return this
+     * @return $this
      */
     public function markAsPersisted(): self
     {
@@ -91,16 +96,20 @@ trait SetStateTrait
      * Refresh with data from persisted storage.
      *
      * @param static $replacement
-     * @return $this
+     * @return void
      * @throws InvalidArgumentException if replacement is a different entity
      */
-    public function refresh($replacement): void
+    public function refresh(EntityInterface $replacement): void
     {
         expect_type($replacement, get_class($this));
 
         if ($this instanceof IdentifiableEntityInterface && !$this->is($replacement)) {
-            $msg = sprintf("Replacement %s is not the same entity; id %s doesn't match %s",
-                get_class($this), json_encode($replacement->getId()), json_encode($this->getId()));
+            $msg = sprintf(
+                "Replacement %s is not the same entity; id %s doesn't match %s",
+                get_class($this),
+                json_encode($replacement->getId()),
+                json_encode($this->getId())
+            );
             throw new \InvalidArgumentException($msg);
         }
 

@@ -38,7 +38,6 @@ interface EntityInterface extends \JsonSerializable
      * Get entity id.
      *
      * @return mixed
-     * @throws NotIdentifiableException if the entity is not identifiable.
      */
     public function getId();
 
@@ -93,5 +92,5 @@ interface EntityInterface extends \JsonSerializable
      * @param static $replacement
      * @return void
      */
-    public function refresh($replacement): void;
+    public function refresh(EntityInterface $replacement): void;
 }

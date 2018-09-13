@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Jasny\Entity\Traits;
 
 use Jasny\Entity\DynamicEntityInterface;
@@ -16,8 +18,8 @@ trait GetSetTrait
      * Trigger before an event.
      *
      * @param string $event
-     * @param mixed $payload
-     * @return mixed|void
+     * @param mixed  $payload
+     * @return mixed
      */
     abstract public function trigger(string $event, $payload = null);
 

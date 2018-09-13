@@ -27,7 +27,8 @@
     "require-dev": {
         "jasny/php-code-quality": "^2.3",
         "jasny/meta": "^3.0",
-        "jasny/typecast": "dev-master as 2.1.0"
+        "jasny/typecast": "dev-master as 2.1.0",
+        "phpstan/phpstan": "0.9.2 as 0.10.0-beta1"
     },
     "suggest": {
         "jasny/entity-collection": "Data structures for entities",
@@ -45,6 +46,17 @@
         }
     },
     "scripts": {
-        "test": "phpunit"
-    }
+        "test": [
+            "phpunit",
+            "phpstan analyse src",
+            "phpcs -p src"
+        ]
+    },
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "optimize-autoloader": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

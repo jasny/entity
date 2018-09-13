@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Jasny\Entity\Traits;
 
 use Jasny\Entity\IdentifiableEntityInterface;
@@ -20,7 +22,7 @@ trait LazyLoadingTrait
      * Get entity id.
      *
      * @return mixed
-     * @throws BadMethodCallException if the entity is not identifiable.
+     * @throws \BadMethodCallException if the entity is not identifiable.
      */
     abstract public function getId();
 
@@ -45,8 +47,9 @@ trait LazyLoadingTrait
      * Set the ghost state.
      *
      * @param bool $state
+     * @return void
      */
-    final protected function markAsGhost(bool $state)
+    final protected function markAsGhost(bool $state): void
     {
         $this->i__ghost = $state;
     }
@@ -66,7 +69,7 @@ trait LazyLoadingTrait
      *
      * @param mixed $id
      * @return static
-     * @throws BadMethodCallException if the entity is not identifiable.
+     * @throws \BadMethodCallException if the entity is not identifiable.
      * @throws \ReflectionException
      */
     public static function lazyload($id)
@@ -77,6 +80,7 @@ trait LazyLoadingTrait
             throw new \BadMethodCallException("$class entity is not identifiable");
         }
 
+        /** @var self $entity */
         $entity = (new \ReflectionClass($class))->newInstanceWithoutConstructor();
 
         foreach (array_keys(get_class_vars($class)) as $prop) {

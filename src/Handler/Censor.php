@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Jasny\Entity\Handler;
 
-use Jasny\EntityInterface;
+use Jasny\Entity\EntityInterface;
 
 use function Jasny\expect_type;
 use function Jasny\array_without;
