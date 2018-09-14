@@ -34,22 +34,37 @@ class JsonCast implements HandlerInterface
      */
     protected function cast($value)
     {
-        if ($value instanceof \DateTime) {
-            return $value->format(\DateTime::ISO8601);
+        switch (true) {
+            case $value instanceof \DateTime:
+                return $value->format(\DateTime::ISO8601);
+            case $value instanceof \JsonSerializable:
+                return $value->jsonSerialize();
+            case $value instanceof \stdClass || is_array($value) || is_iterable($value):
+                return $this->castIterate($value);
+            default:
+                return $value;
         }
+    }
 
-        if ($value instanceof \JsonSerializable) {
-            return $value->jsonSerialize();
-        }
-
-        if (!is_array($value) && is_iterable($value)) {
+    /**
+     * Cast iterable or object
+     *
+     * @param mixed $value
+     * @return mixed
+     */
+    protected function castIterate($value)
+    {
+        // Duck typing; EntityCollection, DS, SPL
+        if (method_exists($value, 'toArray')) {
+            $value = $value->toArray();
+        } elseif (method_exists($value, 'getArrayCopy')) {
+            $value = $value->getArrayCopy();
+        } elseif ($value instanceof \Traversable) {
             $value = iterator_to_array($value);
         }
 
-        if ($value instanceof \stdClass || is_array($value)) {
-            foreach ($value as &$prop) {
-                $prop = $this->cast($prop); // Recursion
-            }
+        foreach ($value as &$prop) {
+            $prop = $this->cast($prop); // Recursion
         }
 
         return $value;

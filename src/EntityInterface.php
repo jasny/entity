@@ -33,13 +33,6 @@ interface EntityInterface extends \JsonSerializable
 
 
     /**
-     * Get entity id.
-     *
-     * @return mixed
-     */
-    public function getId();
-
-    /**
      * Check if entity is the same as the provided entity or matches id or filter.
      *
      * @param EntityInterface|array|mixed $filter

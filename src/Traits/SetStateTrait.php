@@ -107,7 +107,7 @@ trait SetStateTrait
             $msg = sprintf(
                 "Replacement %s is not the same entity; id %s doesn't match %s",
                 get_class($this),
-                json_encode($replacement->getId()),
+                $replacement instanceof IdentifiableEntityInterface ? json_encode($replacement->getId()) : '',
                 json_encode($this->getId())
             );
             throw new \InvalidArgumentException($msg);

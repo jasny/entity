@@ -33,8 +33,9 @@ trait CompareTrait
         return
             $this === $entity ||
             (
-                get_class($this) === get_class($entity) &&
                 $this instanceof IdentifiableEntityInterface &&
+                $entity instanceof IdentifiableEntityInterface &&
+                get_class($this) === get_class($entity) &&
                 $this->getId() === $entity->getId()
             );
     }
