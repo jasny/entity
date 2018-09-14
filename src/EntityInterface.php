@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Jasny\Entity;
 
-use Jasny\Entity\Exception\NotIdentifiableException;
-
 /**
  * An entity is an object with a (persistent) data representation.
  */

@@ -31,7 +31,7 @@ trait LazyLoadingTrait
      *
      * @return string|null
      */
-    abstract public function getIdProperty(): ?string;
+    abstract static public function getIdProperty(): ?string;
 
     /**
      * Trigger before an event.

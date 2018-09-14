@@ -4,6 +4,7 @@ namespace Jasny\Entity\Tests;
 
 use Jasny\Entity\AbstractBasicEntity;
 use Jasny\TestHelper;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -31,6 +32,7 @@ class AbstractBasicEntityTest extends TestCase
 
     public function testDestruct()
     {
+        /** @var callable|MockObject $callback */
         $callback = $this->createCallbackMock($this->once(), ['destruct']);
         $entity = $this->createObjectWithTrigger($callback);
 
