@@ -97,6 +97,7 @@ trait FilterTrait
             $flag = 0;
         }
 
+        expect_type($flag, 'int', \InvalidArgumentException::class);
         $filtered = array_filter($this->entities, $filter, $flag);
 
         return $this->withEntities($filtered);
@@ -118,6 +119,7 @@ trait FilterTrait
             $flag = 0;
         }
 
+        expect_type($flag, 'int', \InvalidArgumentException::class);
         $found = array_find($this->entities, $filter, $flag);
 
         return $found !== false ? $found : null;

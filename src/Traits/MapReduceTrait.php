@@ -35,11 +35,11 @@ trait MapReduceTrait
     /**
      * Map items to entity via callback.
      *
-     * @param iterable $items     One item per entity, mapped by id (not index)
+     * @param array    $items     One item per entity, mapped by id (not index)
      * @param callable $callback
      * @return array
      */
-    public function mapItems(iterable $items, callable $callback): array
+    public function mapItems(array $items, callable $callback): array
     {
         $result = [];
 
