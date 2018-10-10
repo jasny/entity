@@ -16,10 +16,9 @@ interface EntityCollectionInterface extends \IteratorAggregate, \Countable, \Jso
      * Prototype interface.
      *
      * @param EntityInterface[]|iterable $entities  Array of entities
-     * @param int|\Closure               $total     Total number of entities (if set is limited)
      * @return static
      */
-    public function withEntities(iterable $entities, $total = null);
+    public function withEntities(iterable $entities);
 
     /**
      * Get the class entities of this set (must) have
@@ -34,14 +33,6 @@ interface EntityCollectionInterface extends \IteratorAggregate, \Countable, \Jso
      * @return EntityInterface[]
      */
     public function toArray(): array;
-
-    /**
-     * Count all the entities (if set was limited)
-     *
-     * @return int
-     * @throws \BadMethodCallException if total count is unknown
-     */
-    public function countTotal(): int;
 
 
     /**
