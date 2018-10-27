@@ -2,7 +2,7 @@
 
 namespace Jasny\EntityCollection\Tests\Traits;
 
-use Jasny\Entity\EntityInterface;
+use Jasny\Entity\Entity;
 use Jasny\TestHelper;
 use PHPUnit\Framework\TestCase;
 use Jasny\EntityCollection\Traits\CountTrait;
@@ -35,9 +35,9 @@ class CountTraitTest extends TestCase
     public function countProvider()
     {
         $entities = [
-            $this->createMock(EntityInterface::class),
-            $this->createMock(EntityInterface::class),
-            $this->createMock(EntityInterface::class)
+            $this->createMock(Entity::class),
+            $this->createMock(Entity::class),
+            $this->createMock(Entity::class)
         ];
 
         return [

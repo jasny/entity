@@ -2,7 +2,7 @@
 
 namespace Jasny\EntityCollection\Traits;
 
-use Jasny\Entity\EntityInterface;
+use Jasny\Entity\Entity;
 
 /**
  * Get methods for EntityCollection
@@ -10,7 +10,7 @@ use Jasny\Entity\EntityInterface;
 trait GetTrait
 {
     /**
-     * @var EntityInterface[]
+     * @var Entity[]
      */
     protected $entities = [];
 
@@ -18,7 +18,7 @@ trait GetTrait
     /**
      * Find an entity by id or reference
      *
-     * @param mixed|EntityInterface $entity
+     * @param mixed|Entity $entity
      * @return \Generator
      */
     protected function findEntity($entity): \Generator
@@ -33,7 +33,7 @@ trait GetTrait
     /**
      * Check if the entity exists in this set
      *
-     * @param mixed|EntityInterface $entity  Entity id or Entity
+     * @param mixed|Entity $entity  Entity id or Entity
      * @return bool
      */
     public function contains($entity): bool
@@ -44,11 +44,11 @@ trait GetTrait
     /**
      * Get an entity from the set by id
      *
-     * @param mixed|EntityInterface $entity   Entity id or Entity
-     * @return EntityInterface
+     * @param mixed|Entity $entity   Entity id or Entity
+     * @return Entity
      * @throws \OutOfBoundsException if entity is not in collection
      */
-    public function get($entity): EntityInterface
+    public function get($entity): Entity
     {
         $found = $this->findEntity($entity)->current();
 

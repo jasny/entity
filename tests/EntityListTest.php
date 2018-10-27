@@ -5,12 +5,12 @@ namespace Jasny\EntityCollection\Tests;
 use Jasny\Entity\AbstractBasicEntity;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Jasny\Entity\EntityInterface;
+use Jasny\Entity\Entity;
 use Jasny\EntityCollection\EntityList;
 
 /**
  * @covers \Jasny\EntityCollection\EntityList
- * @covers \Jasny\EntityCollection\AbstractEntityCollection
+ * @covers \Jasny\EntityCollection\EntityCollection
  */
 class EntityListTest extends TestCase
 {
@@ -22,7 +22,7 @@ class EntityListTest extends TestCase
     protected $collection;
 
     /**
-     * @var EntityInterface[]|MockObject[]
+     * @var Entity[]|MockObject[]
      */
     protected $entities;
 
@@ -32,12 +32,12 @@ class EntityListTest extends TestCase
     public function setUp()
     {
         $this->entities = [
-            $this->createMock(EntityInterface::class),
-            $this->createMock(EntityInterface::class),
-            $this->createMock(EntityInterface::class)
+            $this->createMock(Entity::class),
+            $this->createMock(Entity::class),
+            $this->createMock(Entity::class)
         ];
 
-        $this->collection = (new EntityList(EntityInterface::class))
+        $this->collection = (new EntityList(Entity::class))
             ->withEntities($this->entities);
     }
 
@@ -45,7 +45,7 @@ class EntityListTest extends TestCase
     {
         $entities = array_combine([0, 1, 27], $this->entities);
 
-        $list = (new EntityList(EntityInterface::class))
+        $list = (new EntityList(Entity::class))
             ->withEntities($entities);
 
         $this->assertSame($this->entities, iterator_to_array($list));
@@ -53,7 +53,7 @@ class EntityListTest extends TestCase
 
     /**
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage NotExist does not implement Jasny\Entity\EntityInterface
+     * @expectedExceptionMessage NotExist does not implement Jasny\Entity\Entity
      */
     public function testCreateInvalidClass()
     {
@@ -69,7 +69,7 @@ class EntityListTest extends TestCase
 
     public function testAdd()
     {
-        $newEntity = $this->createMock(EntityInterface::class);
+        $newEntity = $this->createMock(Entity::class);
         $this->collection->add($newEntity);
 
         $this->assertCount(4, $this->collection);

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Jasny\EntityCollection;
 
-use Jasny\Entity\EntityInterface;
+use Jasny\Entity\Entity;
 use Jasny\EntityCollection\Traits;
 use function Jasny\expect_type;
 
@@ -12,17 +12,17 @@ use function Jasny\expect_type;
  * An entity collection that works as an ordered list.
  * @see https://en.wikipedia.org/wiki/List_(abstract_data_type)
  */
-class EntityList extends AbstractEntityCollection implements EntityListInterface
+class EntityList extends EntityCollection
 {
     use Traits\SortTrait;
 
     /**
      * Add an entity to the set
      *
-     * @param EntityInterface $entity
+     * @param Entity $entity
      * @return void
      */
-    public function add(EntityInterface $entity): void
+    public function add(Entity $entity): void
     {
         expect_type($entity, $this->getEntityClass());
 
@@ -32,7 +32,7 @@ class EntityList extends AbstractEntityCollection implements EntityListInterface
     /**
      * Remove an entity from the set
      *
-     * @param mixed|EntityInterface $entity  Entity id or entity
+     * @param mixed|Entity $entity  Entity id or entity
      * @return void
      */
     public function remove($entity): void

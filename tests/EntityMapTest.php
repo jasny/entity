@@ -5,7 +5,6 @@ namespace Jasny\EntityCollection\Tests;
 use PHPUnit\Framework\TestCase;
 use Jasny\EntityCollection\EntityMap;
 use Jasny\Entity\Entity;
-use Jasny\Entity\EntityInterface;
 
 /**
  * @covers \Jasny\EntityCollection\EntityMap
@@ -20,7 +19,7 @@ class EntityMapTest extends TestCase
     protected $collection;
 
     /**
-     * @var EntityInterface[]
+     * @var Entity[]
      */
     protected $entities;
 
@@ -30,12 +29,12 @@ class EntityMapTest extends TestCase
     public function setUp()
     {
         $this->entities = [
-            'one' => $this->createMock(EntityInterface::class),
-            'two' => $this->createMock(EntityInterface::class),
-            'three' => $this->createMock(EntityInterface::class)
+            'one' => $this->createMock(Entity::class),
+            'two' => $this->createMock(Entity::class),
+            'three' => $this->createMock(Entity::class)
         ];
 
-        $this->collection = (new EntityMap(EntityInterface::class))
+        $this->collection = (new EntityMap(Entity::class))
             ->withEntities($this->entities);
     }
 
@@ -84,7 +83,7 @@ class EntityMapTest extends TestCase
      */
     public function testOffsetSet()
     {
-        $entity = $this->createMock(EntityInterface::class);
+        $entity = $this->createMock(Entity::class);
         $this->collection['foo'] = $entity;
 
         $this->assertCount(4, $this->collection->toArray());
@@ -97,7 +96,7 @@ class EntityMapTest extends TestCase
      */
     public function testOffsetSetOverwrite()
     {
-        $entity = $this->createMock(EntityInterface::class);
+        $entity = $this->createMock(Entity::class);
         $this->collection['two'] = $entity;
 
         $this->assertCount(3, $this->collection->toArray());
@@ -114,7 +113,7 @@ class EntityMapTest extends TestCase
      */
     public function testOffsetSetIntIndex()
     {
-        $this->collection[42] = $this->createMock(EntityInterface::class);
+        $this->collection[42] = $this->createMock(Entity::class);
     }
 
     /**
@@ -125,7 +124,7 @@ class EntityMapTest extends TestCase
      */
     public function testOffsetSetNullIndex()
     {
-        $this->collection[] = $this->createMock(EntityInterface::class);
+        $this->collection[] = $this->createMock(Entity::class);
     }
 
     /**

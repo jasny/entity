@@ -2,10 +2,11 @@
 
 namespace Jasny\EntityCollection\Tests\Traits;
 
+use Jasny\Entity\IdentifiableEntity;
 use Jasny\TestHelper;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Jasny\Entity\EntityInterface;
+use Jasny\Entity\Entity;
 use Jasny\EntityCollection\Traits\PropertyTrait;
 
 /**
@@ -76,11 +77,11 @@ class PropertyTraitTest extends TestCase
      */
     public function getAllByIdProvider()
     {
-        $entity1 = $this->createConfiguredMock(EntityInterface::class, ['getId' => 'id1']);
-        $entity2 = $this->createConfiguredMock(EntityInterface::class, ['getId' => 'id2']);
-        $entity3 = $this->createConfiguredMock(EntityInterface::class, ['getId' => 'id3']);
-        $entity4 = $this->createConfiguredMock(EntityInterface::class, ['getId' => 'id4']);
-        $entity5 = $this->createConfiguredMock(EntityInterface::class, ['getId' => 'id5']);
+        $entity1 = $this->createConfiguredMock(IdentifiableEntity::class, ['getId' => 'id1']);
+        $entity2 = $this->createConfiguredMock(IdentifiableEntity::class, ['getId' => 'id2']);
+        $entity3 = $this->createConfiguredMock(IdentifiableEntity::class, ['getId' => 'id3']);
+        $entity4 = $this->createConfiguredMock(IdentifiableEntity::class, ['getId' => 'id4']);
+        $entity5 = $this->createConfiguredMock(IdentifiableEntity::class, ['getId' => 'id5']);
 
         $entity1->foo = 1;
         $entity2->foo = 2;

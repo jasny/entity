@@ -2,7 +2,7 @@
 
 namespace Jasny\EntityCollection\Traits;
 
-use Jasny\Entity\EntityInterface;
+use Jasny\Entity\Entity;
 use Jasny\EntityCollection\EntitySet;
 use function Jasny\array_find;
 use function Jasny\expect_type;
@@ -13,7 +13,7 @@ use function Jasny\expect_type;
 trait FilterTrait
 {
     /**
-     * @var EntityInterface[]
+     * @var Entity[]
      */
     protected $entities = [];
 
@@ -27,7 +27,7 @@ trait FilterTrait
     /**
      * Create a new collection.
      *
-     * @param EntityInterface[]|iterable $entities  Array of entities
+     * @param Entity[]|iterable $entities  Array of entities
      * @param int|\Closure|null          $total     Total number of entities (if collection is limited)
      * @return static
      */
@@ -43,7 +43,7 @@ trait FilterTrait
      */
     protected function getPropertyFilter(array $filter, bool $strict): \Closure
     {
-        return function (EntityInterface $entity) use ($filter, $strict) {
+        return function (Entity $entity) use ($filter, $strict) {
             foreach ($filter as $key => $value) {
                 $check = $entity->$key ?? null;
 
@@ -108,9 +108,9 @@ trait FilterTrait
      *
      * @param array|\Closure $filter
      * @param int|bool       $flag    Strict if filter is an array or ARRAY_FILTER_* constant for a callable
-     * @return EntityInterface|null
+     * @return Entity|null
      */
-    public function find($filter, $flag = 0): ?EntityInterface
+    public function find($filter, $flag = 0): ?Entity
     {
         expect_type($filter, ['array', \Closure::class]);
 

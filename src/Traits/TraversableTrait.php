@@ -2,12 +2,12 @@
 
 namespace Jasny\EntityCollection\Traits;
 
-use Jasny\Entity\EntityInterface;
+use Jasny\Entity\Entity;
 
 /**
  * Get iterable representation of EntityCollection
  */
-trait IterableTrait
+trait TraversableTrait
 {
     /**
      * @var array
@@ -27,7 +27,7 @@ trait IterableTrait
     /**
      * Get the entities as array
      *
-     * @return EntityInterface[]
+     * @return Entity[]
      */
     public function toArray(): array
     {

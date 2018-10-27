@@ -2,7 +2,7 @@
 
 namespace Jasny\EntityCollection\Traits;
 
-use Jasny\Entity\EntityInterface;
+use Jasny\Entity\Entity;
 
 /**
  * Count entities methods for EntityCollection
@@ -10,7 +10,7 @@ use Jasny\Entity\EntityInterface;
 trait CountTrait
 {
     /**
-     * @var EntityInterface[]
+     * @var Entity[]
      */
     protected $entities = [];
 

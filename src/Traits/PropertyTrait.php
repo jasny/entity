@@ -8,7 +8,7 @@ namespace Jasny\EntityCollection\Traits;
 trait PropertyTrait
 {
     /**
-     * @var EntityInterface[]
+     * @var Entity[]
      */
     protected $entities = [];
 

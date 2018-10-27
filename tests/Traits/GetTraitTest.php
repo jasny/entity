@@ -6,7 +6,7 @@ use Jasny\EntityCollection\Traits\FindEntityTrait;
 use Jasny\TestHelper;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Jasny\Entity\EntityInterface;
+use Jasny\Entity\Entity;
 use Jasny\EntityCollection\Traits\GetTrait;
 
 /**
@@ -22,7 +22,7 @@ class GetTraitTest extends TestCase
     protected $collection;
 
     /**
-     * @var EntityInterface[]|MockObject[]
+     * @var Entity[]|MockObject[]
      */
     protected $entities;
 
@@ -34,9 +34,9 @@ class GetTraitTest extends TestCase
         $this->collection = $this->getMockForTrait(GetTrait::class);
 
         $this->entities = [
-            $this->createMock(EntityInterface::class),
-            $this->createMock(EntityInterface::class),
-            $this->createMock(EntityInterface::class)
+            $this->createMock(Entity::class),
+            $this->createMock(Entity::class),
+            $this->createMock(Entity::class)
         ];
     }
 
@@ -53,7 +53,7 @@ class GetTraitTest extends TestCase
 
     public function testContainsByRefNotFound()
     {
-        $otherEntity = $this->createMock(EntityInterface::class);
+        $otherEntity = $this->createMock(Entity::class);
 
         $this->entities[0]->expects($this->any())->method('is')->with($otherEntity)->willReturn(false);
         $this->entities[1]->expects($this->any())->method('is')->with($otherEntity)->willReturn(false);
@@ -103,7 +103,7 @@ class GetTraitTest extends TestCase
      */
     public function testGetByRefNotFound()
     {
-        $otherEntity = $this->createMock(EntityInterface::class);
+        $otherEntity = $this->createMock(Entity::class);
 
         $this->entities[0]->expects($this->any())->method('is')->with($otherEntity)->willReturn(false);
         $this->entities[1]->expects($this->any())->method('is')->with($otherEntity)->willReturn(false);

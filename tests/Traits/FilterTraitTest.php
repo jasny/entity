@@ -6,7 +6,7 @@ use Jasny\EntityCollection\EntitySet;
 use Jasny\TestHelper;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Jasny\Entity\EntityInterface;
+use Jasny\Entity\Entity;
 use Jasny\EntityCollection\Traits\FilterTrait;
 use function Jasny\array_only;
 
@@ -23,18 +23,18 @@ class FilterTraitTest extends TestCase
     protected $collection;
 
     /**
-     * @var EntityInterface[]
+     * @var Entity[]
      */
     protected $entities;
 
     protected function setUpEntities()
     {
-        $entity1 = $this->createMock(EntityInterface::class);
-        $entity2 = $this->createMock(EntityInterface::class);
-        $entity3 = $this->createMock(EntityInterface::class);
-        $entity4 = $this->createMock(EntityInterface::class);
-        $entity5 = $this->createMock(EntityInterface::class);
-        $entity6 = $this->createMock(EntityInterface::class);
+        $entity1 = $this->createMock(Entity::class);
+        $entity2 = $this->createMock(Entity::class);
+        $entity3 = $this->createMock(Entity::class);
+        $entity4 = $this->createMock(Entity::class);
+        $entity5 = $this->createMock(Entity::class);
+        $entity6 = $this->createMock(Entity::class);
 
         $entity1->foo = 'bar';
         $entity2->foo = 123;
@@ -56,7 +56,7 @@ class FilterTraitTest extends TestCase
             ->setMethods(['getEntityClass', 'createEntitySet'])
             ->getMockForTrait();
 
-        $this->collection->expects($this->any())->method('getEntityClass')->willReturn(EntityInterface::class);
+        $this->collection->expects($this->any())->method('getEntityClass')->willReturn(Entity::class);
 
         $this->setPrivateProperty($this->collection, 'entities', $this->entities);
     }

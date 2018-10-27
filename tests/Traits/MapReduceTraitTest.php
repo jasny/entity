@@ -2,10 +2,11 @@
 
 namespace Jasny\EntityCollection\Tests\Traits;
 
+use Jasny\Entity\IdentifiableEntity;
 use Jasny\TestHelper;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Jasny\Entity\EntityInterface;
+use Jasny\Entity\Entity;
 use Jasny\EntityCollection\Traits\MapReduceTrait;
 
 /**
@@ -89,8 +90,8 @@ class MapReduceTraitTest extends TestCase
      */
     public function testMapItems($items, $expected)
     {
-        $entity1 = $this->createConfiguredMock(EntityInterface::class, ['getId' => 'id1']);
-        $entity3 = $this->createConfiguredMock(EntityInterface::class, ['getId' => 'id3']);
+        $entity1 = $this->createConfiguredMock(IdentifiableEntity::class, ['getId' => 'id1']);
+        $entity3 = $this->createConfiguredMock(IdentifiableEntity::class, ['getId' => 'id3']);
 
         $entity1->foo = 'entity1';
         $entity3->foo = 'entity3';

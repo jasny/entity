@@ -2,7 +2,7 @@
 
 namespace Jasny\EntityCollection\Traits;
 
-use Jasny\Entity\EntityInterface;
+use Jasny\Entity\Entity;
 
 /**
  * Sort methods for EntityCollection
@@ -10,7 +10,7 @@ use Jasny\Entity\EntityInterface;
 trait SortTrait
 {
     /**
-     * @var EntityInterface[]
+     * @var Entity[]
      */
     protected $entities = [];
 

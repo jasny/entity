@@ -3,21 +3,21 @@
 namespace Jasny\EntityCollection\Tests\Traits;
 
 use PHPUnit\Framework\TestCase;
-use Jasny\Entity\EntityInterface;
-use Jasny\EntityCollection\Traits\IterableTrait;
+use Jasny\Entity\Entity;
+use Jasny\EntityCollection\Traits\TraversableTrait;
 
 /**
- * @covers \Jasny\EntityCollection\Traits\IterableTrait
+ * @covers \Jasny\EntityCollection\Traits\TraversableTrait
  */
 class IterableTraitTest extends TestCase
 {
     /**
-     * IterableTrait|\IteratorAggregate
+     * TraversableTrait|\IteratorAggregate
      */
     public $collection;
 
     /**
-     * @var EntityInterface[]|MockObject[]
+     * @var Entity[]|MockObject[]
      */
     protected $entities;
 
@@ -27,13 +27,13 @@ class IterableTraitTest extends TestCase
     public function setUp()
     {
         $this->entities = [
-            $this->createMock(EntityInterface::class),
-            $this->createMock(EntityInterface::class),
-            $this->createMock(EntityInterface::class)
+            $this->createMock(Entity::class),
+            $this->createMock(Entity::class),
+            $this->createMock(Entity::class)
         ];
 
         $this->collection = new class($this->entities) implements \IteratorAggregate {
-            use IterableTrait;
+            use TraversableTrait;
 
             public function __construct(array $entities)
             {

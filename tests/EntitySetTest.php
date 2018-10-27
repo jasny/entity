@@ -2,13 +2,12 @@
 
 namespace Jasny\EntityCollection\Tests;
 
-use Jasny\Entity\EntityInterface;
-use Jasny\Entity\IdentifiableEntityInterface;
+use Jasny\Entity\Entity;
+use Jasny\Entity\IdentifiableEntity;
+use Jasny\EntityCollection\EntitySet;
 use Jasny\TestHelper;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Jasny\Entity\Entity;
-use Jasny\EntityCollection\EntitySet;
 
 /**
  * @covers Jasny\EntityCollection\EntitySet
@@ -23,7 +22,7 @@ class EntitySetTest extends TestCase
     protected $collection;
 
     /**
-     * @var IdentifiableEntityInterface[]|MockObject[]
+     * @var IdentifiableEntity[]|MockObject[]
      */
     protected $entities;
 
@@ -33,12 +32,12 @@ class EntitySetTest extends TestCase
     public function setUp()
     {
         $this->entities = [
-            $this->createConfiguredMock(IdentifiableEntityInterface::class, ['getId' => 'one']),
-            $this->createConfiguredMock(IdentifiableEntityInterface::class, ['getId' => 'two']),
-            $this->createConfiguredMock(IdentifiableEntityInterface::class, ['getId' => null])
+            $this->createConfiguredMock(IdentifiableEntity::class, ['getId' => 'one']),
+            $this->createConfiguredMock(IdentifiableEntity::class, ['getId' => 'two']),
+            $this->createConfiguredMock(IdentifiableEntity::class, ['getId' => null])
         ];
 
-        $this->collection = (new EntitySet(IdentifiableEntityInterface::class))
+        $this->collection = (new EntitySet(IdentifiableEntity::class))
             ->withEntities($this->entities);
     }
 
@@ -52,9 +51,9 @@ class EntitySetTest extends TestCase
     {
         $entities = array_merge(
             $this->entities,
-            [$this->createConfiguredMock(IdentifiableEntityInterface::class, ['getId' => 'one'])]
+            [$this->createConfiguredMock(IdentifiableEntity::class, ['getId' => 'one'])]
         );
-        $collection = (new EntitySet(IdentifiableEntityInterface::class))
+        $collection = (new EntitySet(IdentifiableEntity::class))
             ->withEntities($entities);
 
         $this->assertCount(3, $collection);
@@ -63,11 +62,11 @@ class EntitySetTest extends TestCase
 
     /**
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Jasny\Entity\EntityInterface does not implement Jasny\Entity\IdentifiableEntityInterface
+     * @expectedExceptionMessage Jasny\Entity\Entity does not implement Jasny\Entity\IdentifiableEntity
      */
     public function testCreateNonIndentifiable()
     {
-        new EntitySet(EntityInterface::class);
+        new EntitySet(Entity::class);
     }
 
 
@@ -79,7 +78,7 @@ class EntitySetTest extends TestCase
 
     public function testAdd()
     {
-        $newEntity = $this->createMock(IdentifiableEntityInterface::class);
+        $newEntity = $this->createMock(IdentifiableEntity::class);
 
         foreach ($this->entities as $entity) {
             $entity->expects($this->once())->method('is')->with($this->identicalTo($newEntity))->willReturn(false);
@@ -93,7 +92,7 @@ class EntitySetTest extends TestCase
 
     public function testAddExisting()
     {
-        $newEntity = $this->createMock(IdentifiableEntityInterface::class);
+        $newEntity = $this->createMock(IdentifiableEntity::class);
 
         $this->entities[0]->expects($this->once())->method('is')
             ->with($this->identicalTo($newEntity))->willReturn(false);
@@ -122,7 +121,7 @@ class EntitySetTest extends TestCase
 
     public function testRemoveByRef()
     {
-        $newEntity = $this->createMock(IdentifiableEntityInterface::class);
+        $newEntity = $this->createMock(IdentifiableEntity::class);
 
         $this->entities[0]->expects($this->once())->method('is')
             ->with($this->identicalTo($newEntity))->willReturn(false);

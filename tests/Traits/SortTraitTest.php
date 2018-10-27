@@ -3,12 +3,11 @@
 namespace Jasny\EntityCollection\Tests\Traits;
 
 use Jasny\Entity\AbstractBasicEntity;
-use Jasny\TestHelper;
-use PHPUnit\Framework\TestCase;
 use Jasny\Entity\Entity;
-use Jasny\Entity\EntityInterface;
-use Jasny\Tests\Support\TestEntity;
 use Jasny\EntityCollection\Traits\SortTrait;
+use Jasny\TestHelper;
+use Jasny\Tests\Support\TestEntity;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Jasny\EntityCollection\Traits\SortTrait
@@ -96,7 +95,7 @@ class SortTraitTest extends TestCase
     public function testSortException()
     {
         $this->setPrivateProperty($this->collection, 'entities', []);
-        $this->collection->expects($this->any())->method('getEntityClass')->willReturn(EntityInterface::class);
+        $this->collection->expects($this->any())->method('getEntityClass')->willReturn(Entity::class);
 
         $this->collection->sort();
     }
@@ -104,10 +103,10 @@ class SortTraitTest extends TestCase
     public function testReverse()
     {
         $entities = [
-            $this->createMock(EntityInterface::class),
-            $this->createMock(EntityInterface::class),
-            $this->createMock(EntityInterface::class),
-            $this->createMock(EntityInterface::class)
+            $this->createMock(Entity::class),
+            $this->createMock(Entity::class),
+            $this->createMock(Entity::class),
+            $this->createMock(Entity::class)
         ];
 
         $this->setPrivateProperty($this->collection, 'entities', $entities);

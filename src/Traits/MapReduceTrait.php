@@ -2,7 +2,7 @@
 
 namespace Jasny\EntityCollection\Traits;
 
-use Jasny\Entity\EntityInterface;
+use Jasny\Entity\Entity;
 
 /**
  * Map reduce methods for EntityCollection

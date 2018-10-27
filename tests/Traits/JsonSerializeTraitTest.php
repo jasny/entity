@@ -3,7 +3,7 @@
 namespace Jasny\EntityCollection\Tests\Traits;
 
 use PHPUnit\Framework\TestCase;
-use Jasny\Entity\EntityInterface;
+use Jasny\Entity\Entity;
 use Jasny\EntityCollection\Traits\JsonSerializeTrait;
 
 /**

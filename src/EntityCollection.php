@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Jasny\EntityCollection;
 
-use Jasny\Entity\EntityInterface;
+use Jasny\Entity\Entity;
 use Jasny\EntityCollection\Traits;
 use function Jasny\expect_type;
 
 /**
  * Base class for entity collections.
  */
-abstract class AbstractEntityCollection implements EntityCollectionInterface
+abstract class EntityCollection implements \IteratorAggregate, \Countable, \JsonSerializable
 {
     use Traits\CountTrait;
     use Traits\FilterTrait;
     use Traits\GetTrait;
-    use Traits\IterableTrait;
+    use Traits\TraversableTrait;
     use Traits\JsonSerializeTrait;
     use Traits\MapReduceTrait;
     use Traits\PropertyTrait;
@@ -28,27 +28,21 @@ abstract class AbstractEntityCollection implements EntityCollectionInterface
     private $entityClass;
 
     /**
-     * @var EntityInterface[]
+     * @var Entity[]
      */
     protected $entities = [];
-
-    /**
-     * Total number of entities (if collection is limited).
-     * @var int|\Closure
-     */
-    protected $totalCount;
 
 
     /**
      * Class constructor
      *
      * @param string $entityClass  Class name of entities in the collection
-     * @throws \InvalidArgumentException if entity class doesn't implement EntityInterface
+     * @throws \InvalidArgumentException if entity class doesn't implement Entity
      */
     public function __construct(string $entityClass)
     {
-        if (!is_a($entityClass, EntityInterface::class, true)) {
-            throw new \InvalidArgumentException("$entityClass does not implement " . EntityInterface::class);
+        if (!is_a($entityClass, Entity::class, true)) {
+            throw new \InvalidArgumentException("$entityClass does not implement " . Entity::class);
         }
 
         $this->entityClass = $entityClass;
@@ -68,7 +62,7 @@ abstract class AbstractEntityCollection implements EntityCollectionInterface
     /**
      * Set the entities.
      *
-     * @param EntityInterface[]|iterable $entities  Array of entities
+     * @param Entity[]|iterable $entities  Array of entities
      * @return void
      */
     protected function setEntities(iterable $entities): void
@@ -85,17 +79,13 @@ abstract class AbstractEntityCollection implements EntityCollectionInterface
     /**
      * Create a new collection.
      *
-     * @param EntityInterface[]|iterable $entities  Array of entities
-     * @param int|\Closure|null          $total     Total number of entities (if collection is limited)
+     * @param Entity[]|iterable $entities  Array of entities
      * @return static
      */
-    public function withEntities(iterable $entities, $total = null): self
+    public function withEntities(iterable $entities): self
     {
-        expect_type($total, ['int', \Closure::class, 'null']);
-
         $collection = clone $this;
         $collection->setEntities($entities);
-        $collection->totalCount = $total;
 
         return $collection;
     }

@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Jasny\EntityCollection;
 
-use Jasny\Entity\EntityInterface;
+use Jasny\Entity\Entity;
 use function Jasny\expect_type;
 
 /**
  * An entity collection that works as a map, so a key/value pairs.
  * @see https://en.wikipedia.org/wiki/Associative_array
  */
-class EntityMap extends AbstractEntityCollection implements EntityMapInterface
+class EntityMap extends EntityCollection implements \ArrayAccess
 {
     /**
      * Create a new collection.
      *
-     * @param EntityInterface[]|iterable $entities  Array of entities
+     * @param Entity[]|iterable $entities  Array of entities
      * @return void
      */
     protected function setEntities(iterable $entities): void
@@ -48,7 +48,7 @@ class EntityMap extends AbstractEntityCollection implements EntityMapInterface
      * Get the entity of a specific index or find entity in set
      *
      * @param string $index
-     * @return EntityInterface
+     * @return Entity
      * @throws \OutOfBoundsException
      */
     public function offsetGet($index)
@@ -66,7 +66,7 @@ class EntityMap extends AbstractEntityCollection implements EntityMapInterface
      * Replace the entity of a specific index
      *
      * @param string          $index
-     * @param EntityInterface $entity  Entity or data representation of entity
+     * @param Entity $entity  Entity or data representation of entity
      * @return void
      */
     public function offsetSet($index, $entity)

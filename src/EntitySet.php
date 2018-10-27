@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Jasny\EntityCollection;
 
-use Jasny\Entity\EntityInterface;
-use Jasny\Entity\IdentifiableEntityInterface;
+use Jasny\Entity\Entity;
+use Jasny\Entity\IdentifiableEntity;
 use function Jasny\expect_type;
 
 /**
  * An entity collection that works as an ordered set, so with unique items.
  * @see https://en.wikipedia.org/wiki/Set_(abstract_data_type)
  */
-class EntitySet extends AbstractEntityCollection implements EntitySetInterface
+class EntitySet extends EntityCollection
 {
     use Traits\SortTrait;
 
@@ -24,8 +24,8 @@ class EntitySet extends AbstractEntityCollection implements EntitySetInterface
      */
     public function __construct(string $entityClass)
     {
-        if (!is_a($entityClass, IdentifiableEntityInterface::class, true)) {
-            $identifiable = IdentifiableEntityInterface::class;
+        if (!is_a($entityClass, IdentifiableEntity::class, true)) {
+            $identifiable = IdentifiableEntity::class;
             throw new \InvalidArgumentException("$entityClass does not implement $identifiable");
         }
 
@@ -35,7 +35,7 @@ class EntitySet extends AbstractEntityCollection implements EntitySetInterface
     /**
      * Set the (unique) entities.
      *
-     * @param EntityInterface[]|iterable $entities
+     * @param Entity[]|iterable $entities
      * @return void
      */
     protected function setEntities(iterable $entities): void
@@ -70,10 +70,10 @@ class EntitySet extends AbstractEntityCollection implements EntitySetInterface
     /**
      * Add an entity to the set
      *
-     * @param EntityInterface $entity
+     * @param Entity $entity
      * @return void
      */
-    public function add(EntityInterface $entity): void
+    public function add(Entity $entity): void
     {
         expect_type($entity, $this->getEntityClass());
 
@@ -85,7 +85,7 @@ class EntitySet extends AbstractEntityCollection implements EntitySetInterface
     /**
      * Remove an entity from the set
      *
-     * @param mixed|EntityInterface $entity  Entity id or entity
+     * @param mixed|Entity $entity  Entity id or entity
      * @return void
      */
     public function remove($entity): void
