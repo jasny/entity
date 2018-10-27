@@ -1,19 +1,19 @@
 <?php
 
-namespace Jasny\Entity\Tests\Handler;
+namespace Jasny\Entity\Tests\EventHandler;
 
-use Jasny\Entity\EntityInterface;
-use Jasny\Entity\Handler\Censor;
+use Jasny\Entity\Entity;
+use Jasny\Entity\EventHandler\Censor;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Jasny\Entity\Handler\Censor
+ * @covers \Jasny\Entity\EventHandler\Censor
  */
 class CensorTest extends TestCase
 {
     public function testInvoke()
     {
-        $entity = $this->createMock(EntityInterface::class);
+        $entity = $this->createMock(Entity::class);
 
         $handler = new Censor(['foo', 'bar', 'qux']);
         $result = $handler($entity, ['foo' => 'hello', 'bar' => 42, 'other' => 'good']);
@@ -23,7 +23,7 @@ class CensorTest extends TestCase
 
     public function testInvokeWithObject()
     {
-        $entity = $this->createMock(EntityInterface::class);
+        $entity = $this->createMock(Entity::class);
 
         $handler = new Censor(['foo', 'bar', 'qux']);
         $result = $handler($entity, (object)['foo' => 'hello', 'bar' => 42, 'other' => 'good']);
@@ -36,7 +36,7 @@ class CensorTest extends TestCase
      */
     public function testInvokeWithNull()
     {
-        $entity = $this->createMock(EntityInterface::class);
+        $entity = $this->createMock(Entity::class);
 
         $handler = new Censor(['foo', 'bar', 'qux']);
         $handler($entity, null);

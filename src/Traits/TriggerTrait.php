@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Jasny\Entity\Traits;
 
+use Jasny\Entity\Trigger\EventDispatcher;
+
 /**
  * Entity triggers implementation
  */
@@ -11,32 +13,38 @@ trait TriggerTrait
 {
     /**
      * @ignore
-     * @var array
+     * @var EventDispatcher
      */
-    private $i__triggers = [];
+    private $i__dispatcher;
 
 
     /**
-     * Add a trigger
+     * Set the event dispatcher
      *
-     * @param string $event
-     * @param callable $callback
+     * @param EventDispatcher $dispatcher
      * @return void
      */
-    final protected function addTrigger(string $event, callable $callback): void
+    final public function setEventDispatcher(EventDispatcher $dispatcher): void
     {
-        $this->i__triggers[$event][] = $callback;
+        if (isset($dispatcher)) {
+            throw new \BadMethodCallException("Event dispatcher is already set");
+        }
+
+        $this->i__dispatcher = $dispatcher;
     }
 
     /**
      * Get trigger for an event
      *
-     * @param string $event
-     * @return array
+     * @return EventDispatcher
      */
-    final protected function getTriggers(string $event): array
+    final protected function getEventDispatcher(): EventDispatcher
     {
-        return $this->i__triggers[$event] ?? [];
+        if (!isset($this->i__dispatcher)) {
+            throw new \BadMethodCallException("Event dispatcher has not been set");
+        }
+
+        return $this->i__dispatcher;
     }
 
 
@@ -49,7 +57,7 @@ trait TriggerTrait
      */
     public function on(string $event, callable $callback): self
     {
-        $this->addTrigger($event, $callback);
+        $this->i__dispatcher = $this->getEventDispatcher()->with($event, $callback);
 
         return $this;
     }
@@ -63,12 +71,6 @@ trait TriggerTrait
      */
     public function trigger(string $event, $payload = null)
     {
-        $callbacks = $this->getTriggers($event);
-
-        foreach ($callbacks as $callback) {
-            $payload = call_user_func($callback, $this, $payload);
-        }
-
-        return $payload;
+        return $this->getEventDispatcher()->dispatch($event, $this, $payload);
     }
 }

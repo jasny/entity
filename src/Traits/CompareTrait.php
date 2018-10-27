@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Jasny\Entity\Traits;
 
-use Jasny\Entity\EntityInterface;
-use Jasny\Entity\IdentifiableEntityInterface;
+use Jasny\Entity\Entity;
+use Jasny\Entity\IdentifiableEntity;
 use function Jasny\is_associative_array;
 
 /**
@@ -25,16 +25,16 @@ trait CompareTrait
     /**
      * Check if this entity is the same as another entity
      *
-     * @param EntityInterface $entity
+     * @param Entity $entity
      * @return bool
      */
-    protected function isSameAsEntity(EntityInterface $entity): bool
+    protected function isSameAsEntity(Entity $entity): bool
     {
         return
             $this === $entity ||
             (
-                $this instanceof IdentifiableEntityInterface &&
-                $entity instanceof IdentifiableEntityInterface &&
+                $this instanceof IdentifiableEntity &&
+                $entity instanceof IdentifiableEntity &&
                 get_class($this) === get_class($entity) &&
                 $this->getId() === $entity->getId()
             );
@@ -68,7 +68,7 @@ trait CompareTrait
      */
     protected function matchedId($filter): bool
     {
-        if (!$this instanceof IdentifiableEntityInterface) {
+        if (!$this instanceof IdentifiableEntity) {
             return false;
         }
 
@@ -81,12 +81,12 @@ trait CompareTrait
      * Check if entity is the same as the provided entity or matches id or filter.
      * For a filter, scalars are compared as string.
      *
-     * @param EntityInterface|array|mixed $filter
+     * @param Entity|array|mixed $filter
      * @return bool
      */
     public function is($filter): bool
     {
-        if ($filter instanceof EntityInterface) {
+        if ($filter instanceof Entity) {
             return $this->isSameAsEntity($filter);
         }
 

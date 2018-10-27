@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Jasny\Entity\Handler;
+namespace Jasny\Entity\EventHandler;
 
-use Jasny\Entity\EntityInterface;
+use Jasny\Entity\Entity;
 use Jasny\Meta\Factory as MetaFactory;
 use Jasny\Meta;
 use function Jasny\expect_type;
@@ -12,7 +12,7 @@ use function Jasny\expect_type;
 /**
  * Filter properties base on meta data
  */
-class MetaFilter implements HandlerInterface
+class MetaFilter implements EventHandlerInterface
 {
     /**
      * @var string
@@ -50,11 +50,11 @@ class MetaFilter implements HandlerInterface
     /**
      * Invoke the modifier as callback
      *
-     * @param EntityInterface $entity
+     * @param Entity $entity
      * @param array|\stdClass  $data
      * @return array|\stdClass
      */
-    public function __invoke(EntityInterface $entity, $data = null)
+    public function __invoke(Entity $entity, $data = null)
     {
         expect_type($data, ['array', \stdClass::class]);
 

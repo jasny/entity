@@ -3,7 +3,7 @@
 namespace Jasny\Entity\Tests\Traits;
 
 use Jasny\Entity\AbstractBasicEntity;
-use Jasny\Entity\DynamicEntityInterface;
+use Jasny\Entity\DynamicEntity;
 use Jasny\TestHelper;
 use PHPUnit\Framework\TestCase;
 
@@ -24,7 +24,7 @@ class GetSetTraitTest extends TestCase
 
     protected function createDynamicObject()
     {
-        return new class() extends AbstractBasicEntity implements DynamicEntityInterface {
+        return new class() extends AbstractBasicEntity implements DynamicEntity {
             public $foo;
             public $num = 0;
         };

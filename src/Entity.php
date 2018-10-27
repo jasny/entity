@@ -7,7 +7,7 @@ namespace Jasny\Entity;
 /**
  * An entity is an object with a (persistent) data representation.
  */
-interface EntityInterface extends \JsonSerializable
+interface Entity extends \JsonSerializable
 {
     /**
      * Set a value or multiple values.
@@ -35,7 +35,7 @@ interface EntityInterface extends \JsonSerializable
     /**
      * Check if entity is the same as the provided entity or matches id or filter.
      *
-     * @param EntityInterface|array|mixed $filter
+     * @param Entity|array|mixed $filter
      * @return bool
      */
     public function is($filter): bool;
@@ -80,8 +80,8 @@ interface EntityInterface extends \JsonSerializable
     /**
      * Refresh with data from persisted storage.
      *
-     * @param static $replacement
+     * @param static|array $replacement
      * @return void
      */
-    public function refresh(EntityInterface $replacement): void;
+    public function refresh($replacement): void;
 }

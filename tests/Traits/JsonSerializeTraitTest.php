@@ -3,7 +3,7 @@
 namespace Jasny\Entity\Tests\Traits;
 
 use Jasny\Entity\AbstractBasicEntity;
-use Jasny\Entity\DynamicEntityInterface;
+use Jasny\Entity\DynamicEntity;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -57,7 +57,7 @@ class JsonSerializeTraitTest extends TestCase
      */
     public function testJsonSerializeDynamic()
     {
-        $this->entity = new class() extends AbstractBasicEntity implements DynamicEntityInterface {
+        $this->entity = new class() extends AbstractBasicEntity implements DynamicEntity {
         };
 
         $this->entity->foo = 'bar';

@@ -4,9 +4,9 @@ namespace Jasny\Entity\Tests\Traits;
 
 use Jasny\Entity\AbstractBasicEntity;
 use Jasny\Entity\AbstractIdentifiableEntity;
-use Jasny\Entity\DynamicEntityInterface;
-use Jasny\Entity\EntityInterface;
-use Jasny\Entity\IdentifiableEntityInterface;
+use Jasny\Entity\DynamicEntity;
+use Jasny\Entity\Entity;
+use Jasny\Entity\IdentifiableEntity;
 use Jasny\Entity\Traits\SetStateTrait;
 use Jasny\TestHelper;
 use PHPUnit\Framework\MockObject\Builder\InvocationMocker;
@@ -19,7 +19,7 @@ class SetStateTraitTest extends TestCase
 {
     use TestHelper;
 
-    protected function createObject(): EntityInterface
+    protected function createObject(): Entity
     {
         return new class() extends AbstractBasicEntity {
             public $foo;
@@ -27,15 +27,15 @@ class SetStateTraitTest extends TestCase
         };
     }
 
-    protected function createDynamicObject(): DynamicEntityInterface
+    protected function createDynamicObject(): DynamicEntity
     {
-        return new class() extends AbstractBasicEntity implements DynamicEntityInterface {
+        return new class() extends AbstractBasicEntity implements DynamicEntity {
             public $foo;
             public $num = 0;
         };
     }
 
-    protected function createObjectWithConstructor(): EntityInterface
+    protected function createObjectWithConstructor(): Entity
     {
         return new class() extends AbstractBasicEntity {
             public $foo;
@@ -48,7 +48,7 @@ class SetStateTraitTest extends TestCase
         };
     }
 
-    protected function createObjectWithTrigger(): EntityInterface
+    protected function createObjectWithTrigger(): Entity
     {
         return new class() extends AbstractBasicEntity {
             public $foo;
@@ -65,7 +65,7 @@ class SetStateTraitTest extends TestCase
         };
     }
 
-    protected function createIdentifiableObject(): IdentifiableEntityInterface
+    protected function createIdentifiableObject(): IdentifiableEntity
     {
         return new class() extends AbstractIdentifiableEntity {
             public $id;

@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Jasny\Entity;
 
 use stdClass;
-use Jasny\Entity\EntityInterface;
+use Jasny\Entity\Entity;
 use Jasny\Entity\Traits;
 
 /**
  * Base class for an entity.
  */
-abstract class AbstractBasicEntity implements EntityInterface
+abstract class AbstractBasicEntity implements Entity
 {
     use Traits\GetSetTrait;
     use Traits\CompareTrait;

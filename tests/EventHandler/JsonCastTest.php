@@ -1,13 +1,13 @@
 <?php
 
-namespace Jasny\Entity\Tests\Handler;
+namespace Jasny\Entity\Tests\EventHandler;
 
-use Jasny\Entity\EntityInterface;
-use Jasny\Entity\Handler\JsonCast;
+use Jasny\Entity\Entity;
+use Jasny\Entity\EventHandler\JsonCast;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Jasny\Entity\Handler\JsonCast
+ * @covers \Jasny\Entity\EventHandler\JsonCast
  */
 class JsonCastTest extends TestCase
 {
@@ -16,7 +16,7 @@ class JsonCastTest extends TestCase
      */
     public function testCastDateTime()
     {
-        $entity = $this->createMock(EntityInterface::class);
+        $entity = $this->createMock(Entity::class);
 
         $data = (object)['foo' => new \DateTime('2013-03-01 16:04:00 +01:00'), 'color' => 'pink'];
         $expected = (object)['foo' => '2013-03-01T16:04:00+0100', 'color' => 'pink'];
@@ -32,7 +32,7 @@ class JsonCastTest extends TestCase
      */
     public function testCastJsonSerializable()
     {
-        $entity = $this->createMock(EntityInterface::class);
+        $entity = $this->createMock(Entity::class);
 
         $data = (object)['color' => null];
         $data->foo = $this->getMockForAbstractClass(\JsonSerializable::class);
@@ -51,7 +51,7 @@ class JsonCastTest extends TestCase
      */
     public function testCastToArray()
     {
-        $entity = $this->createMock(EntityInterface::class);
+        $entity = $this->createMock(Entity::class);
 
         $foo = new \SplFixedArray(2);
         $foo[0] = 'zoo';
@@ -71,7 +71,7 @@ class JsonCastTest extends TestCase
      */
     public function testCastGetArrayCopy()
     {
-        $entity = $this->createMock(EntityInterface::class);
+        $entity = $this->createMock(Entity::class);
 
         $data = (object)['foo' => new \ArrayObject(['zoo' => 'bar', 'one' => 'two']), 'color' => null];
         $expected = (object)['foo' => ['zoo' => 'bar', 'one' => 'two'], 'color' => null];
@@ -94,7 +94,7 @@ class JsonCastTest extends TestCase
      */
     public function testCastTraversable()
     {
-        $entity = $this->createMock(EntityInterface::class);
+        $entity = $this->createMock(Entity::class);
 
         $data = (object)['foo' => $this->generator(), 'color' => null];
         $expected = (object)['foo' => ['zoo' => 'bar', 'one' => 'two'], 'color' => null];
@@ -110,7 +110,7 @@ class JsonCastTest extends TestCase
      */
     public function testCastRecursive()
     {
-        $entity = $this->createMock(EntityInterface::class);
+        $entity = $this->createMock(Entity::class);
 
         $foo = [
             'zoo' => 'bar',
@@ -155,7 +155,7 @@ class JsonCastTest extends TestCase
      */
     public function testInvokeWithNull()
     {
-        $entity = $this->createMock(EntityInterface::class);
+        $entity = $this->createMock(Entity::class);
 
         $handler = new JsonCast();
         $handler($entity, null);

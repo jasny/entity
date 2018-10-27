@@ -4,7 +4,7 @@ namespace Jasny\Entity\Tests\Traits;
 
 use Jasny\Entity\AbstractBasicEntity;
 use Jasny\Entity\AbstractIdentifiableEntity;
-use Jasny\Entity\DynamicEntityInterface;
+use Jasny\Entity\DynamicEntity;
 use PHPUnit\Framework\TestCase;
 
 /**

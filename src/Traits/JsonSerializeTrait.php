@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Jasny\Entity\Traits;
 
-use Jasny\Entity\DynamicEntityInterface;
+use Jasny\Entity\DynamicEntity;
 use function Jasny\object_get_properties;
 use function Jasny\expect_type;
 
@@ -30,7 +30,7 @@ trait JsonSerializeTrait
      */
     public function jsonSerialize(): \stdClass
     {
-        $isDynamic = $this instanceof DynamicEntityInterface;
+        $isDynamic = $this instanceof DynamicEntity;
         $object = (object)object_get_properties($this, $isDynamic);
 
         $result = $this->trigger('jsonSerialize', $object);

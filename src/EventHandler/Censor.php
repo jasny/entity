@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Jasny\Entity\Handler;
+namespace Jasny\Entity\EventHandler;
 
-use Jasny\Entity\EntityInterface;
+use Jasny\Entity\Entity;
 use function Jasny\expect_type;
 use function Jasny\array_without;
 
@@ -12,7 +12,7 @@ use function Jasny\array_without;
  * Censor an entity, removing values for given properties.
  * @immutable
  */
-class Censor
+class Censor implements EventHandlerInterface
 {
     /**
      * @var array
@@ -34,11 +34,11 @@ class Censor
     /**
      * Invoke the modifier as callback
      *
-     * @param EntityInterface $entity
+     * @param Entity $entity
      * @param array|\stdClass $data
      * @return array|\stdClass
      */
-    public function __invoke(EntityInterface $entity, $data = null)
+    public function __invoke(Entity $entity, $data = null)
     {
         expect_type($data, ['array', \stdClass::class]);
 

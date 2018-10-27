@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Jasny\Entity;
 
 /**
- * Identifiable entity
+ * Entity with an id property.
  */
-interface IdentifiableEntityInterface extends EntityInterface
+interface IdentifiableEntity extends Entity
 {
     /**
      * Get entity id.

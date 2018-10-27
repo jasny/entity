@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Jasny\Entity\Traits;
 
-use Jasny\Entity\IdentifiableEntityInterface;
+use Jasny\Entity\IdentifiableEntity;
 
 /**
  * Entity lazy loading implementation
