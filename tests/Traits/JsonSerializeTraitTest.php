@@ -5,7 +5,7 @@ namespace Jasny\Entity\Tests\Traits;
 use Jasny\Entity\AbstractBasicEntity;
 use Jasny\Entity\DynamicEntity;
 use Jasny\Entity\Entity;
-use Jasny\Entity\EntityTraits;
+use Jasny\Entity\BasicEntityTraits;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -21,7 +21,7 @@ class JsonSerializeTraitTest extends TestCase
     public function setUp()
     {
         $this->entity = new class() implements Entity {
-            use EntityTraits;
+            use BasicEntityTraits;
 
             public $foo;
             public $color;
@@ -49,7 +49,7 @@ class JsonSerializeTraitTest extends TestCase
     public function testJsonSerializeDynamic()
     {
         $this->entity = new class() implements DynamicEntity {
-            use EntityTraits;
+            use BasicEntityTraits;
         };
 
         $this->entity->foo = 'bar';

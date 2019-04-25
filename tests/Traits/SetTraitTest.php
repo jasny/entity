@@ -3,48 +3,28 @@
 namespace Jasny\Entity\Tests\Traits;
 
 use Jasny\Entity\AbstractBasicEntity;
-use Jasny\Entity\DynamicEntity;
-use Jasny\Entity\Entity;
-use Jasny\Entity\EntityTraits;
+use Jasny\Entity\Tests\CreateEntityTrait;
 use Jasny\TestHelper;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Jasny\Entity\Traits\SetTrait
  */
-class GetSetTraitTest extends TestCase
+class SetTraitTest extends TestCase
 {
     use TestHelper;
-
-    protected function createObject()
-    {
-        return new class() implements Entity {
-            use EntityTraits;
-            public $foo;
-            public $num = 0;
-        };
-    }
-
-    protected function createDynamicObject()
-    {
-        return new class() implements DynamicEntity {
-            use EntityTraits;
-            public $foo;
-            public $num = 0;
-        };
-    }
-
+    use CreateEntityTrait;
 
     /**
      * Test 'set' method for single value
      */
     public function testSetValue()
     {
-        $object = $this->createObject();
+        $object = $this->createBasicEntity();
         $object->set('foo', 'bar');
 
         $this->assertEquals('bar', $object->foo);
-        $this->assertEquals(0, $object->num);
+        $this->assertEquals(0, $object->bar);
     }
 
     /**
@@ -52,11 +32,11 @@ class GetSetTraitTest extends TestCase
      */
     public function testSetValueToNull()
     {
-        $object = $this->createObject();
-        $object->set('num', null);
+        $object = $this->createBasicEntity();
+        $object->set('bar', null);
 
         $this->assertEquals(null, $object->foo);
-        $this->assertEquals(null, $object->num);
+        $this->assertEquals(null, $object->bar);
     }
 
     /**
@@ -64,11 +44,11 @@ class GetSetTraitTest extends TestCase
      */
     public function testSetValues()
     {
-        $object = $this->createObject();
-        $object->set(['foo' => 'bar', 'num' => 100, 'dyn' => 'woof']);
+        $object = $this->createBasicEntity();
+        $object->set(['foo' => 'bar', 'bar' => 100, 'dyn' => 'woof']);
 
         $this->assertEquals('bar', $object->foo);
-        $this->assertEquals(100, $object->num);
+        $this->assertEquals(100, $object->bar);
         $this->assertObjectNotHasAttribute('dyn', $object);
     }
 
@@ -77,11 +57,11 @@ class GetSetTraitTest extends TestCase
      */
     public function testSetValuesDynamic()
     {
-        $object = $this->createDynamicObject();
-        $object->set(['foo' => 'bar', 'num' => 100, 'dyn' => 'woof']);
+        $object = $this->createDynamicEntity();
+        $object->set(['foo' => 'bar', 'bar' => 100, 'dyn' => 'woof']);
 
         $this->assertEquals('bar', $object->foo);
-        $this->assertEquals(100, $object->num);
+        $this->assertEquals(100, $object->bar);
         $this->assertEquals('woof', $object->dyn);
     }
 
@@ -93,7 +73,7 @@ class GetSetTraitTest extends TestCase
      */
     public function testSetValueInvalidArgument()
     {
-        $object = $this->createDynamicObject();
+        $object = $this->createDynamicEntity();
         $object->set('foo');
     }
 
@@ -102,12 +82,12 @@ class GetSetTraitTest extends TestCase
      */
     public function testToAssoc()
     {
-        $expected = ['foo' => 'bar', 'num' => 23];
+        $expected = ['foo' => 'bar', 'bar' => 23];
 
-        $object = $this->createDynamicObject();
+        $object = $this->createDynamicEntity();
 
         $object->foo = 'bar';
-        $object->num = 23;
+        $object->bar = 23;
 
         $result = $object->toAssoc();
 

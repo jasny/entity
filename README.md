@@ -7,6 +7,10 @@ Jasny Entity
 [![Packagist Stable Version](https://img.shields.io/packagist/v/jasny/entity.svg)](https://packagist.org/packages/jasny/entity)
 [![Packagist License](https://img.shields.io/packagist/l/jasny/entity.svg)](https://packagist.org/packages/jasny/entity)
 
+An entity is a "thing" you want to represent in a database or other data stores. It can be a new article on your blog,
+a user in your message board or a permission in your rights management system.
+
+The properties of an entity object is a representation of persisted data.
 
 ## Installation
 
@@ -41,30 +45,35 @@ class User implements IdentifiableEntity
 }
 ```
 
-A quick and dirty script to create and output the JSON of a User entity could be
+A quick and dirty script to create and output the JSON of a `User` entity could be
 
 ```php
 use App\User;
 
-$data = fetch_user_from_db($id);
-$user = User::__set_state($data);
+$data = $db->prepare("SELECT * FROM user WHERE id = ?")->execute($id)->fetch(PDO::FETCH_ASSOC);
+$user = User::fromData($data);
 
 header('Content-Type: application\json');
 echo json_serialize($user);
 ```
 
+> _In this example you could just as well json serialize the data directly :-s, but you get the idea._
+
 ## Documentation
 
-An entity is a "thing" you want to represent in a database or other data stores. It can be a new article on your blog,
-a user in your message board or a permission in your rights management system.
-
-The properties of an entity object is a representation of persisted data.
-
-### Instantiation
+### New entity
 Using the `new` keyword is reserved for creating a new entity.
 
-When the data of an entity is fetched, the `__set_state()` method is used to create the entity. This method sets the
+### Existing entity
+When the data of an entity is fetched, the `fromData()` method is used to create the entity. This method sets the
 properties of the entity object before calling the constructor.
+
+```php
+$data = fetch_user_from_db($id);
+$user = User::fromData($data);
+```
+
+The `__set_state()` method is an alias of `fromData()`. 
 
 #### Stubs
 Entities supports [lazy loading](http://en.wikipedia.org/wiki/Lazy_loading) of entities by allowing them to be created

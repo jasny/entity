@@ -11,6 +11,7 @@ use Jasny\Entity\Entity;
 use Jasny\Entity\Event;
 use function Jasny\object_set_properties;
 use function Jasny\object_get_properties;
+use LogicException;
 use stdClass;
 
 /**

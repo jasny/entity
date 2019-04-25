@@ -4,15 +4,22 @@ declare(strict_types=1);
 
 namespace Jasny\Entity\Traits;
 
+use Improved as i;
 use InvalidArgumentException;
 use Jasny\Entity\DynamicEntity;
 use Jasny\Entity\Event;
 use Jasny\Entity\Entity;
 use Jasny\Entity\IdentifiableEntity;
 use function Jasny\object_set_properties;
+use UnexpectedValueException;
 
 trait RefreshTrait
 {
+    /**
+     * Mark entity as persisted.
+     */
+    abstract public function markAsPersisted(): void;
+
     /**
      * Dispatch an event.
      *
@@ -30,7 +37,7 @@ trait RefreshTrait
      */
     public function refresh($replacement): void
     {
-        expect_type($replacement, get_class($this));
+        i\type_check($replacement, get_class($this));
 
         if ($this instanceof IdentifiableEntity && !$this->is($replacement)) {
             $msg = sprintf(
@@ -42,13 +49,18 @@ trait RefreshTrait
             throw new InvalidArgumentException($msg);
         }
 
-        $replacement = $this->dispatchEvent(new Event\BeforeRefresh($this, $replacement))->getPayload();
-        expect_type($replacement, [Entity::class, 'array'], \UnexpectedValueException::class);
+        $replacementData = i\type_check(
+            $this->dispatchEvent(new Event\BeforeRefresh($this, $replacement))->getPayload(),
+            [Entity::class, 'array'],
+            new UnexpectedValueException('Event listener(s) changed replacement into %s')
+        );
 
-        $data = $replacement instanceof Entity ? $replacement->toAssoc() : $replacement;
+        $data = $replacementData instanceof Entity ? $replacementData->toAssoc() : $replacementData;
         object_set_properties($this, $data, $this instanceof DynamicEntity);
 
-        $this->
+        if (!$replacement->isNew()) {
+            $this->markAsPersisted();
+        }
 
         $this->dispatchEvent(new Event\AfterRefresh($this, $data));
     }

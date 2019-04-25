@@ -7,12 +7,20 @@ namespace Jasny\Entity\Traits;
 use Jasny\Entity\Entity;
 use Jasny\Entity\IdentifiableEntity;
 use function Jasny\is_associative_array;
+use LogicException;
 
 /**
  * Check if two entities are the same.
  */
 trait CompareTrait
 {
+    /**
+     * Assert that the object isn't a ghost.
+     *
+     * @throws LogicException if object is a ghost
+     */
+    abstract protected function assertNotGhost(): void;
+
     /**
      * Check if this entity is the same as another entity
      *
@@ -39,6 +47,8 @@ trait CompareTrait
      */
     protected function matchesFilter(array $filter): bool
     {
+        $this->assertNotGhost();
+
         foreach ($filter as $key => $comp) {
             $value = ($this->$key ?? null);
             $match = is_scalar($value) && is_scalar($comp) ? (string)$value === (string)$comp : $value === $comp;

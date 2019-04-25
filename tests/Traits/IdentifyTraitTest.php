@@ -4,6 +4,7 @@ namespace Jasny\Entity\Tests\Traits;
 
 use Jasny\Entity\IdentifiableEntity;
 use Jasny\Entity\IdentifiableEntityTraits;
+use Jasny\Entity\Tests\CreateEntityTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -11,15 +12,14 @@ use PHPUnit\Framework\TestCase;
  */
 class IdentifyTraitTest extends TestCase
 {
+    use CreateEntityTrait;
+
     /**
      * Test 'getId' method
      */
     public function testGetId()
     {
-        $entity = new class() implements IdentifiableEntity {
-            use IdentifiableEntityTraits;
-            public $id = 'foo';
-        };
+        $entity = $this->createIdentifiableEntity('foo');
 
         $this->assertSame('foo', $entity->getId());
     }

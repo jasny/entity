@@ -7,17 +7,22 @@ namespace Jasny\Entity\Traits;
 use Improved as i;
 use BadMethodCallException;
 use Jasny\Entity\DynamicEntity;
-use Jasny\Entity\Entity;
 use Jasny\Entity\Event;
 use function Jasny\object_set_properties;
-use function Jasny\object_get_properties;
-use stdClass;
+use LogicException;
 
 /**
  * Get and set entity properties
  */
 trait SetTrait
 {
+    /**
+     * Assert that the object isn't a ghost.
+     *
+     * @throws LogicException if object is a ghost
+     */
+    abstract protected function assertNotGhost(): void;
+
     /**
      * Dispatch an event.
      *
@@ -50,6 +55,8 @@ trait SetTrait
                 __FUNCTION__
             ));
         }
+
+        $this->assertNotGhost();
 
         $input = func_num_args() === 1 ? (array)$key : [$key => $value];
         $data = $this->dispatchEvent(new Event\BeforeSet($this, $input))->getPayload();

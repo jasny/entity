@@ -37,16 +37,17 @@ class LazyLoadingTraitTest extends TestCase
     }
 
     /**
-     * Test 'lazyload' method
+     * Test 'fromId' method
      */
-    public function testLazyload()
+    public function testFromId()
     {
         $class = get_class($this->entity);
-        $entity = $class::lazyload('foo');
+        $entity = $class::fromId('foo');
 
         $this->assertInstanceOf($class, $entity);
         $this->assertTrue($entity->isGhost());
 
         $this->assertSame('foo', $entity->getId());
+        $this->assertArrayNotHasKey('bar', (array)$entity);
     }
 }

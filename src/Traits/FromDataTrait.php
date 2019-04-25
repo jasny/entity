@@ -4,17 +4,13 @@ declare(strict_types=1);
 
 namespace Jasny\Entity\Traits;
 
-use InvalidArgumentException;
-use Jasny\Entity\Entity;
-use Jasny\Entity\IdentifiableEntity;
 use Jasny\Entity\DynamicEntity;
 use function Jasny\object_set_properties;
-use function Jasny\expect_type;
 
 /**
  * Entity::__set_state method
  */
-trait SetStateTrait
+trait FromDataTrait
 {
     /**
      * @var bool
@@ -49,7 +45,7 @@ trait SetStateTrait
      * @return static
      * @throws \ReflectionException
      */
-    public static function __set_state(array $data)
+    public static function fromData(array $data)
     {
         $class = get_called_class();
         $isDynamic = is_a($class, DynamicEntity::class, true);
@@ -69,9 +65,21 @@ trait SetStateTrait
     }
 
     /**
+     * Alias of `fromData()`
+     *
+     * @param array $data
+     * @return static
+     * @throws \ReflectionException
+     */
+    final public static function __set_state(array $data)
+    {
+        return static::fromData($data);
+    }
+
+    /**
      * Mark entity as persisted.
      */
-    public function markAsPersisted(): self
+    public function markAsPersisted(): void
     {
         $this->markNew(false);
     }

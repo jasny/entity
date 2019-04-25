@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Jasny\Entity\Traits;
 
 use BadMethodCallException;
+use LogicException;
 use ReflectionClass;
 use ReflectionException;
 
@@ -68,11 +69,13 @@ trait LazyLoadingTrait
     public static function fromId($id)
     {
         $class = get_called_class();
+        $refl = new ReflectionClass($class);
 
         /** @var static $entity */
-        $entity = (new ReflectionClass($class))->newInstanceWithoutConstructor();
+        $entity = $refl->newInstanceWithoutConstructor();
 
-        foreach (array_keys(get_class_vars($class)) as $prop) {
+        foreach ($refl->getProperties() as $reflProp) {
+            $prop = $reflProp->getName();
             unset($entity->$prop);
         }
 
