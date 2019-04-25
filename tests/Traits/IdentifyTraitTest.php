@@ -2,7 +2,8 @@
 
 namespace Jasny\Entity\Tests\Traits;
 
-use Jasny\Entity\AbstractIdentifiableEntity;
+use Jasny\Entity\IdentifiableEntity;
+use Jasny\Entity\IdentifiableEntityTraits;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -15,7 +16,8 @@ class IdentifyTraitTest extends TestCase
      */
     public function testGetId()
     {
-        $entity = new class() extends AbstractIdentifiableEntity {
+        $entity = new class() implements IdentifiableEntity {
+            use IdentifiableEntityTraits;
             public $id = 'foo';
         };
 
@@ -30,7 +32,8 @@ class IdentifyTraitTest extends TestCase
      */
     public function testGetIdException()
     {
-        $entity = new class() extends AbstractIdentifiableEntity {
+        $entity = new class() implements IdentifiableEntity {
+            use IdentifiableEntityTraits;
         };
 
         $entity->getId();

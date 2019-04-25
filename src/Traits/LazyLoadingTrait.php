@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Jasny\Entity\Traits;
 
-use Jasny\Entity\IdentifiableEntity;
+use BadMethodCallException;
+use ReflectionClass;
+use ReflectionException;
 
 /**
  * Entity lazy loading implementation
@@ -31,16 +33,7 @@ trait LazyLoadingTrait
      *
      * @return string|null
      */
-    abstract static public function getIdProperty(): ?string;
-
-    /**
-     * Trigger before an event.
-     *
-     * @param string $event
-     * @param mixed  $payload
-     * @return mixed|void
-     */
-    abstract public function trigger(string $event, $payload = null);
+    abstract protected static function getIdProperty(): ?string;
 
 
     /**
@@ -69,15 +62,15 @@ trait LazyLoadingTrait
      *
      * @param mixed $id
      * @return static
-     * @throws \BadMethodCallException if the entity is not identifiable.
-     * @throws \ReflectionException
+     * @throws BadMethodCallException if the entity is not identifiable.
+     * @throws ReflectionException
      */
-    public static function lazyload($id)
+    public static function fromId($id)
     {
         $class = get_called_class();
 
         /** @var static $entity */
-        $entity = (new \ReflectionClass($class))->newInstanceWithoutConstructor();
+        $entity = (new ReflectionClass($class))->newInstanceWithoutConstructor();
 
         foreach (array_keys(get_class_vars($class)) as $prop) {
             unset($entity->$prop);

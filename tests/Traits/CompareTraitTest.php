@@ -1,9 +1,12 @@
 <?php
 
-namespace Jasny\Entity\Traits;
+namespace Jasny\Entity\Tests\Traits;
 
 use Jasny\Entity\AbstractBasicEntity;
-use Jasny\Entity\AbstractIdentifiableEntity;
+use Jasny\Entity\Entity;
+use Jasny\Entity\EntityTraits;
+use Jasny\Entity\IdentifiableEntity;
+use Jasny\Entity\IdentifiableEntityTraits;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -13,7 +16,9 @@ class CompareTraitTest extends TestCase
 {
     public function testIsSameObject()
     {
-        $object = new class() extends AbstractBasicEntity { };
+        $object = new class() implements Entity {
+            use EntityTraits;
+        };
         $same = $object;
 
         $this->assertTrue($object->is($same));
@@ -21,8 +26,12 @@ class CompareTraitTest extends TestCase
 
     public function testIsNotSameObject()
     {
-        $object = new class() extends AbstractBasicEntity { };
-        $other = new class() extends AbstractBasicEntity { };
+        $object = new class() implements Entity {
+            use EntityTraits;
+        };
+        $other = new class() implements Entity {
+            use EntityTraits;
+        };
 
         $this->assertFalse($object->is($other));
     }
@@ -30,7 +39,8 @@ class CompareTraitTest extends TestCase
 
     public function testIsWithId()
     {
-        $object = new class() extends AbstractIdentifiableEntity {
+        $object = new class() implements IdentifiableEntity {
+            use IdentifiableEntityTraits;
             public $id = 42;
         };
 
@@ -39,7 +49,8 @@ class CompareTraitTest extends TestCase
 
     public function testIsWithIdNotStrict()
     {
-        $object = new class() extends AbstractIdentifiableEntity {
+        $object = new class() implements IdentifiableEntity {
+            use IdentifiableEntityTraits;
             public $id = 42;
         };
 
@@ -48,7 +59,8 @@ class CompareTraitTest extends TestCase
 
     public function testIsNotWithId()
     {
-        $object = new class() extends AbstractIdentifiableEntity {
+        $object = new class() implements IdentifiableEntity {
+            use IdentifiableEntityTraits;
             public $id = 42;
         };
 
@@ -57,7 +69,8 @@ class CompareTraitTest extends TestCase
 
     public function testIsNotWithIdNotIdentifiable()
     {
-        $object = new class() extends AbstractBasicEntity {
+        $object = new class() implements Entity {
+            use EntityTraits;
         };
 
         $this->assertFalse($object->is(21));
@@ -65,7 +78,8 @@ class CompareTraitTest extends TestCase
 
     public function testIsWithIdentifiable()
     {
-        $object = new class() extends AbstractIdentifiableEntity {
+        $object = new class() implements IdentifiableEntity {
+            use IdentifiableEntityTraits;
             public $id = 42;
             public $foo = 10;
         };
@@ -78,7 +92,8 @@ class CompareTraitTest extends TestCase
 
     public function testIsNotWithIdentifiable()
     {
-        $object = new class() extends AbstractIdentifiableEntity {
+        $object = new class() implements IdentifiableEntity {
+            use IdentifiableEntityTraits;
             public $id = 42;
             public $foo = 10;
         };
@@ -92,10 +107,12 @@ class CompareTraitTest extends TestCase
 
     public function testIsNotWithOtherClass()
     {
-        $object = new class() extends AbstractIdentifiableEntity {
+        $object = new class() implements IdentifiableEntity {
+            use IdentifiableEntityTraits;
             public $id = 42;
         };
-        $other = new class() extends AbstractIdentifiableEntity {
+        $other = new class() implements IdentifiableEntity {
+            use IdentifiableEntityTraits;
             public $id = 42;
         };
 
@@ -105,7 +122,8 @@ class CompareTraitTest extends TestCase
 
     public function testIsWithFilter()
     {
-        $object = new class() extends AbstractBasicEntity {
+        $object = new class() implements Entity {
+            use EntityTraits;
             public $foo = 42;
             public $bar = 99;
         };
@@ -116,7 +134,8 @@ class CompareTraitTest extends TestCase
 
     public function testIsWithFilterNotStrict()
     {
-        $object = new class() extends AbstractBasicEntity {
+        $object = new class() implements Entity {
+            use EntityTraits;
             public $foo = 42;
         };
 
@@ -125,7 +144,8 @@ class CompareTraitTest extends TestCase
 
     public function testIsNotWithFilter()
     {
-        $object = new class() extends AbstractBasicEntity {
+        $object = new class() implements Entity {
+            use EntityTraits;
             public $foo = 42;
             public $bar = 99;
         };

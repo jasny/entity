@@ -14,15 +14,6 @@ use function Jasny\is_associative_array;
 trait CompareTrait
 {
     /**
-     * Get entity id.
-     *
-     * @return mixed
-     * @throws \BadMethodCallException if the entity is not identifiable.
-     */
-    abstract public function getId();
-
-
-    /**
      * Check if this entity is the same as another entity
      *
      * @param Entity $entity

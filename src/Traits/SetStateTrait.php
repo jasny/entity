@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Jasny\Entity\Traits;
 
+use InvalidArgumentException;
 use Jasny\Entity\Entity;
 use Jasny\Entity\IdentifiableEntity;
 use Jasny\Entity\DynamicEntity;
@@ -19,17 +20,6 @@ trait SetStateTrait
      * @var bool
      */
     private $i__new = true;
-
-
-    /**
-     * Trigger before an event.
-     *
-     * @param string $event
-     * @param mixed $payload
-     * @return mixed|void
-     */
-    abstract public function trigger(string $event, $payload = null);
-
 
     /**
      * Mark entity as new or persisted
@@ -53,7 +43,7 @@ trait SetStateTrait
     }
 
     /**
-     * Create an entity from persisted data
+     * Create an entity from persisted data.
      *
      * @param array $data
      * @return static
@@ -79,47 +69,10 @@ trait SetStateTrait
     }
 
     /**
-     * Mark entity as persisted
-     *
-     * @return $this
+     * Mark entity as persisted.
      */
     public function markAsPersisted(): self
     {
         $this->markNew(false);
-        $this->trigger('persisted');
-
-        return $this;
-    }
-
-
-    /**
-     * Refresh with data from persisted storage.
-     *
-     * @param static $replacement
-     * @return void
-     * @throws InvalidArgumentException if replacement is a different entity
-     */
-    public function refresh($replacement): void
-    {
-        expect_type($replacement, get_class($this));
-
-        if ($this instanceof IdentifiableEntity && !$this->is($replacement)) {
-            $msg = sprintf(
-                "Replacement %s is not the same entity; id %s doesn't match %s",
-                get_class($this),
-                $replacement instanceof IdentifiableEntity ? json_encode($replacement->getId()) : '',
-                json_encode($this->getId())
-            );
-            throw new \InvalidArgumentException($msg);
-        }
-
-        $replacement = $this->trigger("before-refresh", $replacement);
-        expect_type($replacement, [Entity::class, 'array'], \UnexpectedValueException::class);
-
-        $data = $replacement instanceof Entity ? $replacement->toAssoc() : $replacement;
-        $isDynamic = $this instanceof DynamicEntity;
-        object_set_properties($this, $data, $isDynamic);
-
-        $this->trigger("after-refresh", $data);
     }
 }

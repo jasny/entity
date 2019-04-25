@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Jasny\Entity;
 
+use BadMethodCallException;
+use Psr\EventDispatcher\EventDispatcherInterface;
+
 /**
  * An entity is an object with a (persistent) data representation.
  */
@@ -48,26 +51,6 @@ interface Entity extends \JsonSerializable
      */
     public function isNew(): bool;
 
-
-    /**
-     * Bind a handler for an event.
-     *
-     * @param string   $event
-     * @param callable $handler
-     * @return $this
-     */
-    public function on(string $event, callable $handler);
-
-    /**
-     * Trigger an event.
-     *
-     * @param string $event
-     * @param mixed  $payload
-     * @return mixed
-     */
-    public function trigger(string $event, $payload = null);
-
-
     /**
      * Create an entity from persisted data.
      * @internal
@@ -84,4 +67,28 @@ interface Entity extends \JsonSerializable
      * @return void
      */
     public function refresh($replacement): void;
+
+
+    /**
+     * Set the event dispatcher
+     *
+     * @param EventDispatcherInterface $dispatcher
+     * @return void
+     */
+    public function setEventDispatcher(EventDispatcherInterface $dispatcher): void;
+
+    /**
+     * Get trigger for an event
+     *
+     * @return EventDispatcherInterface
+     */
+    public function getEventDispatcher(): EventDispatcherInterface;
+
+    /**
+     * Dispatch an event.
+     *
+     * @param object $event
+     * @return object  The event.
+     */
+    public function dispatchEvent(object $event): object;
 }

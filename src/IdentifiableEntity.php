@@ -30,5 +30,5 @@ interface IdentifiableEntity extends Entity
      * @param mixed $id
      * @return static
      */
-    public static function lazyload($id);
+    public static function fromId($id);
 }

@@ -2,8 +2,8 @@
 
 namespace Jasny\Entity\Tests\Traits;
 
-use Jasny\Entity\AbstractBasicEntity;
-use Jasny\Entity\AbstractIdentifiableEntity;
+use Jasny\Entity\EntityTraits;
+use Jasny\Entity\IdentifiableEntityTraits;
 use Jasny\Entity\DynamicEntity;
 use Jasny\Entity\Entity;
 use Jasny\Entity\IdentifiableEntity;
@@ -21,7 +21,8 @@ class SetStateTraitTest extends TestCase
 
     protected function createObject(): Entity
     {
-        return new class() extends AbstractBasicEntity {
+        return new class() implements Entity {
+            use EntityTraits;
             public $foo;
             public $num = 0;
         };
@@ -29,7 +30,8 @@ class SetStateTraitTest extends TestCase
 
     protected function createDynamicObject(): DynamicEntity
     {
-        return new class() extends AbstractBasicEntity implements DynamicEntity {
+        return new class() implements DynamicEntity {
+            use EntityTraits;
             public $foo;
             public $num = 0;
         };
@@ -37,7 +39,8 @@ class SetStateTraitTest extends TestCase
 
     protected function createObjectWithConstructor(): Entity
     {
-        return new class() extends AbstractBasicEntity {
+        return new class() implements Entity {
+            use EntityTraits;
             public $foo;
             public $num;
 
@@ -50,7 +53,9 @@ class SetStateTraitTest extends TestCase
 
     protected function createObjectWithTrigger(): Entity
     {
-        return new class() extends AbstractBasicEntity {
+        return new class() implements Entity {
+            use EntityTraits;
+
             public $foo;
             public $num = 0;
             protected $trigger;
@@ -67,7 +72,9 @@ class SetStateTraitTest extends TestCase
 
     protected function createIdentifiableObject(): IdentifiableEntity
     {
-        return new class() extends AbstractIdentifiableEntity {
+        return new class() implements IdentifiableEntity {
+            use IdentifiableEntityTraits;
+
             public $id;
             public $foo;
             public $num;

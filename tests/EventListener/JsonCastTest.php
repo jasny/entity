@@ -1,13 +1,13 @@
 <?php
 
-namespace Jasny\Entity\Tests\EventHandler;
+namespace Jasny\Entity\Tests\EventListener;
 
 use Jasny\Entity\Entity;
-use Jasny\Entity\EventHandler\JsonCast;
+use Jasny\Entity\EventListener\JsonCast;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Jasny\Entity\EventHandler\JsonCast
+ * @covers \Jasny\Entity\EventListener\JsonCast
  */
 class JsonCastTest extends TestCase
 {

@@ -4,11 +4,13 @@ namespace Jasny\Entity\Tests\Traits;
 
 use Jasny\Entity\AbstractBasicEntity;
 use Jasny\Entity\DynamicEntity;
+use Jasny\Entity\Entity;
+use Jasny\Entity\EntityTraits;
 use Jasny\TestHelper;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Jasny\Entity\Traits\GetSetTrait
+ * @covers \Jasny\Entity\Traits\SetTrait
  */
 class GetSetTraitTest extends TestCase
 {
@@ -16,7 +18,8 @@ class GetSetTraitTest extends TestCase
 
     protected function createObject()
     {
-        return new class() extends AbstractBasicEntity {
+        return new class() implements Entity {
+            use EntityTraits;
             public $foo;
             public $num = 0;
         };
@@ -24,7 +27,8 @@ class GetSetTraitTest extends TestCase
 
     protected function createDynamicObject()
     {
-        return new class() extends AbstractBasicEntity implements DynamicEntity {
+        return new class() implements DynamicEntity {
+            use EntityTraits;
             public $foo;
             public $num = 0;
         };
@@ -39,8 +43,8 @@ class GetSetTraitTest extends TestCase
         $object = $this->createObject();
         $object->set('foo', 'bar');
 
-        $this->assertAttributeSame('bar', 'foo', $object);
-        $this->assertAttributeSame(0, 'num', $object);
+        $this->assertEquals('bar', $object->foo);
+        $this->assertEquals(0, $object->num);
     }
 
     /**
@@ -51,8 +55,8 @@ class GetSetTraitTest extends TestCase
         $object = $this->createObject();
         $object->set('num', null);
 
-        $this->assertAttributeSame(null, 'foo', $object);
-        $this->assertAttributeSame(null, 'num', $object);
+        $this->assertEquals(null, $object->foo);
+        $this->assertEquals(null, $object->num);
     }
 
     /**
@@ -63,8 +67,8 @@ class GetSetTraitTest extends TestCase
         $object = $this->createObject();
         $object->set(['foo' => 'bar', 'num' => 100, 'dyn' => 'woof']);
 
-        $this->assertAttributeSame('bar', 'foo', $object);
-        $this->assertAttributeSame(100, 'num', $object);
+        $this->assertEquals('bar', $object->foo);
+        $this->assertEquals(100, $object->num);
         $this->assertObjectNotHasAttribute('dyn', $object);
     }
 
@@ -76,16 +80,16 @@ class GetSetTraitTest extends TestCase
         $object = $this->createDynamicObject();
         $object->set(['foo' => 'bar', 'num' => 100, 'dyn' => 'woof']);
 
-        $this->assertAttributeSame('bar', 'foo', $object);
-        $this->assertAttributeSame(100, 'num', $object);
-        $this->assertAttributeSame('woof', 'dyn', $object);
+        $this->assertEquals('bar', $object->foo);
+        $this->assertEquals(100, $object->num);
+        $this->assertEquals('woof', $object->dyn);
     }
 
     /**
      * Test 'set' method with invalid argument
      *
      * @expectedException \BadMethodCallException
-     * @expectedExceptionMessage if first argument is a string, a second argument is required
+     * @expectedExceptionMessage If first argument is a string, a second argument is required
      */
     public function testSetValueInvalidArgument()
     {

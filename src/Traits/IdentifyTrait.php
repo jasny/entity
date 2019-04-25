@@ -2,6 +2,8 @@
 
 namespace Jasny\Entity\Traits;
 
+use LogicException;
+
 /**
  * Entity identifiable implementation
  */
@@ -16,7 +18,7 @@ trait IdentifyTrait
     protected static function getIdProperty(): ?string
     {
         if (!property_exists(get_called_class(), 'id')) {
-            throw new \LogicException("Unknown id property for " . get_called_class() . " entity");
+            throw new LogicException("Unknown id property for " . get_called_class() . " entity");
         }
 
         return 'id';

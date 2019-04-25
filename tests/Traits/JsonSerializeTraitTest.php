@@ -4,10 +4,12 @@ namespace Jasny\Entity\Tests\Traits;
 
 use Jasny\Entity\AbstractBasicEntity;
 use Jasny\Entity\DynamicEntity;
+use Jasny\Entity\Entity;
+use Jasny\Entity\EntityTraits;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Jasny\Entity\Traits\JsonSerializeTrait
+ * @covers \Jasny\Entity\Traits\ToJsonTrait
  */
 class JsonSerializeTraitTest extends TestCase
 {
@@ -18,20 +20,11 @@ class JsonSerializeTraitTest extends TestCase
 
     public function setUp()
     {
-        $this->entity = new class() extends AbstractBasicEntity {
+        $this->entity = new class() implements Entity {
+            use EntityTraits;
+
             public $foo;
             public $color;
-
-            protected $event;
-
-            public function trigger(string $event, $payload = null)
-            {
-                if (!isset($this->event)) {
-                    $this->event = $event;
-                }
-
-                return $payload;
-            }
         };
     }
 
@@ -48,8 +41,6 @@ class JsonSerializeTraitTest extends TestCase
         $result = $this->entity->jsonSerialize();
 
         $this->assertEquals($expected, $result);
-
-        $this->assertAttributeEquals('jsonSerialize', 'event', $this->entity);
     }
 
     /**
@@ -57,7 +48,8 @@ class JsonSerializeTraitTest extends TestCase
      */
     public function testJsonSerializeDynamic()
     {
-        $this->entity = new class() extends AbstractBasicEntity implements DynamicEntity {
+        $this->entity = new class() implements DynamicEntity {
+            use EntityTraits;
         };
 
         $this->entity->foo = 'bar';

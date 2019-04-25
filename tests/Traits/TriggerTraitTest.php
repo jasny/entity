@@ -2,7 +2,7 @@
 
 namespace Jasny\Entity\Tests\Traits;
 
-use Jasny\Entity\Traits\TriggerTrait;
+use Jasny\Entity\Traits\DispatchEventTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -20,7 +20,7 @@ class TriggerTraitTest extends TestCase
         $processedValues1 = ['foo' => 'zoo'];
         $processedValues2 = ['foo' => 'bla'];
 
-        $entity = $this->getMockForTrait(TriggerTrait::class);
+        $entity = $this->getMockForTrait(DispatchEventTrait::class);
         $tester = $this;
         $count = (object)['value' => 0];
 
@@ -60,7 +60,7 @@ class TriggerTraitTest extends TestCase
     public function testTriggerNoCallbacks()
     {
         $values = ['foo' => 'bar'];
-        $entity = $this->getMockForTrait(TriggerTrait::class);
+        $entity = $this->getMockForTrait(DispatchEventTrait::class);
 
         $result = $entity->trigger('foo_event', $values);
 

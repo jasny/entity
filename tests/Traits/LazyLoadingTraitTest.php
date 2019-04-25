@@ -3,7 +3,8 @@
 namespace Jasny\Entity\Tests\Traits;
 
 use Jasny\Entity\AbstractBasicEntity;
-use Jasny\Entity\AbstractIdentifiableEntity;
+use Jasny\Entity\IdentifiableEntity;
+use Jasny\Entity\IdentifiableEntityTraits;
 use Jasny\Entity\DynamicEntity;
 use PHPUnit\Framework\TestCase;
 
@@ -13,13 +14,15 @@ use PHPUnit\Framework\TestCase;
 class LazyLoadingTraitTest extends TestCase
 {
     /**
-     * @var AbstractIdentifiableEntity
+     * @var IdentifiableEntityTraits
      */
     protected $entity;
 
     public function setUp()
     {
-        $this->entity = new class() extends AbstractIdentifiableEntity {
+        $this->entity = new class() implements IdentifiableEntity {
+            use IdentifiableEntityTraits;
+
             public $id;
             public $bar = 10;
         };
