@@ -2,22 +2,15 @@
 
 namespace Jasny\Entity\Tests\Traits;
 
-use Jasny\Entity\BasicEntityTraits;
 use Jasny\Entity\Event\AfterRefresh;
 use Jasny\Entity\Event\BeforeRefresh;
-use Jasny\Entity\IdentifiableEntityTraits;
-use Jasny\Entity\DynamicEntity;
-use Jasny\Entity\Entity;
-use Jasny\Entity\IdentifiableEntity;
 use Jasny\Entity\Tests\CreateEntityTrait;
-use Jasny\Entity\Traits\FromDataTrait;
 use Jasny\TestHelper;
-use PHPUnit\Framework\MockObject\Builder\InvocationMocker;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
- * @covers \Jasny\Entity\Traits\FromDataTrait
+ * @covers \Jasny\Entity\Traits\RefreshTrait
  */
 class RefreshTraitTest extends TestCase
 {
@@ -34,6 +27,7 @@ class RefreshTraitTest extends TestCase
         $entity->bar = 22;
 
         $replacement = clone $entity;
+        $replacement->markAsPersisted();
         $replacement->foo = 'kazan';
         $replacement->bar = 99;
         $replacement->dyn = 'dynamic';

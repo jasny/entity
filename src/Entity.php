@@ -77,6 +77,11 @@ interface Entity extends JsonSerializable
      */
     public function refresh($replacement): void;
 
+    /**
+     * Mark entity as persisted.
+     */
+    public function markAsPersisted(): void;
+
 
     /**
      * Set the event dispatcher

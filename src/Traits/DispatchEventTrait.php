@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Jasny\Entity\Traits;
 
 use BadMethodCallException;
+use LogicException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
