@@ -3,6 +3,8 @@
 namespace Jasny\Entity\Tests\Traits;
 
 use Jasny\Entity\BasicEntityTraits;
+use Jasny\Entity\Event\AfterRefresh;
+use Jasny\Entity\Event\BeforeRefresh;
 use Jasny\Entity\IdentifiableEntityTraits;
 use Jasny\Entity\DynamicEntity;
 use Jasny\Entity\Entity;
@@ -12,6 +14,7 @@ use Jasny\Entity\Traits\FromDataTrait;
 use Jasny\TestHelper;
 use PHPUnit\Framework\MockObject\Builder\InvocationMocker;
 use PHPUnit\Framework\TestCase;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @covers \Jasny\Entity\Traits\FromDataTrait
@@ -64,41 +67,71 @@ class RefreshTraitTest extends TestCase
     }
 
     /**
-     * Test trigger for 'refresh' method
+     * Test events for 'refresh' method
      */
-    public function testRefreshTrigger()
+    public function testRefreshEvent()
     {
-        $this->markTestIncomplete();
-
-        $entity = $this->createBasicEntityWithTrigger();
+        $entity = $this->createBasicEntity();
         $entity->foo = 'loo';
         $entity->bar = 22;
 
         $replacement = clone $entity;
         $replacement->foo = 'kazan';
         $replacement->bar = 99;
-        $replacement->bar = 'dynamic';
+        $replacement->dyn = 'dynamic';
 
-        $data = ['foo' => 'kaz', 'loo' => 'dyn']; // bar remains unchanged
+        $dispatcher = $this->createMock(EventDispatcherInterface::class);
+        $dispatcher->expects($this->exactly(2))
+            ->method('dispatch')
+            ->withConsecutive(
+                [new BeforeRefresh($entity, $replacement)],
+                [new AfterRefresh($entity, ['foo' => 'kazan', 'bar' => 99])]
+            );
 
-        $trigger = $this->createCallbackMock(
-            $this->atLeast(2),
-            function(InvocationMocker $invoke) use ($replacement, $data) {
-                $invoke->withConsecutive(
-                    ['refresh.before', $this->identicalTo($replacement)],
-                    ['refresh.after', $this->identicalTo($data)],
-                    [$this->anything()]
-                );
-                $invoke->willReturnOnConsecutiveCalls($data, null);
-            }
-        );
-        $entity->setTrigger($trigger);
+        $entity->setEventDispatcher($dispatcher);
 
-        $noTrigger = $this->createCallbackMock($this->any(), function(InvocationMocker $invoke) {
-            $invoke->with($this->logicalNot($this->stringStartsWith('refresh')));
-            $invoke->willReturn(null);
-        });
-        $replacement->setTrigger($noTrigger);
+        $entity->refresh($replacement);
+
+        $this->assertEquals('kazan', $entity->foo);
+        $this->assertEquals(99, $entity->bar);
+        $this->assertObjectNotHasAttribute('dyn', $entity);
+    }
+
+    /**
+     * Test events for 'refresh' method, modifying the data in the event listener.
+     */
+    public function testRefreshEventModifyData()
+    {
+        $entity = $this->createBasicEntity();
+        $entity->foo = 'loo';
+        $entity->bar = 22;
+
+        $replacement = clone $entity;
+        $replacement->foo = 'kazan';
+        $replacement->bar = 99;
+        $replacement->dyn = 'dynamic';
+
+        $dispatcher = $this->createMock(EventDispatcherInterface::class);
+        $dispatcher->expects($this->exactly(2))
+            ->method('dispatch')
+            ->withConsecutive(
+                [$this->isInstanceOf(BeforeRefresh::class)],
+                [$this->isInstanceOf(AfterRefresh::class)]
+            )
+            ->willReturnCallback(function($event) use ($entity, $replacement) {
+                $this->assertSame($entity, $event->getEntity());
+
+                if ($event instanceof BeforeRefresh) {
+                    $this->assertSame($replacement, $event->getPayload());
+                    $event->setPayload(['foo' => 'kaz', 'dyn' => 'wut']); // 'bar' remains unchanged
+                }
+
+                if ($event instanceof AfterRefresh) {
+                    $this->assertEquals(['foo' => 'kaz', 'dyn' => 'wut'], $event->getPayload());
+                }
+            });
+
+        $entity->setEventDispatcher($dispatcher);
 
         $entity->refresh($replacement);
 

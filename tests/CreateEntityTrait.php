@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Jasny\Entity\Tests;
 
+use ArrayIterator;
 use Jasny\Entity\BasicEntityTraits;
 use Jasny\Entity\DynamicEntity;
 use Jasny\Entity\Entity;
@@ -66,4 +67,37 @@ trait CreateEntityTrait
         };
     }
 
+    protected function createNestedEntity(): Entity
+    {
+        $entity = $this->createBasicEntity();
+
+        $foo = $this->createIdentifiableEntity(42);
+        $foo->foo = 'Foo Foo';
+        $foo->bar = $entity;
+
+        $uno = $this->createIdentifiableEntity(1);
+        $dos = $this->createIdentifiableEntity(2);
+
+        $entity->foo = $foo;
+        $entity->bar = (object)[
+            'uno' => $uno,
+            'dos' => [
+                $dos,
+                $foo,
+            ],
+            'tres' => new ArrayIterator([
+                'hello',
+                $uno,
+                $entity,
+                'plus',
+                $dos,
+            ]),
+            'more' => [
+                'like' => 'this',
+                'entity' => $entity,
+            ],
+        ];
+
+        return $entity;
+    }
 }

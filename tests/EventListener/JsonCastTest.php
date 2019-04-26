@@ -3,8 +3,9 @@
 namespace Jasny\Entity\Tests\EventListener;
 
 use Jasny\Entity\Entity;
-use Jasny\Entity\Event\ToJson;
+use Jasny\Entity\Event;
 use Jasny\Entity\EventListener\JsonCast;
+use Jasny\Entity\Tests\CreateEntityTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -12,20 +13,25 @@ use PHPUnit\Framework\TestCase;
  */
 class JsonCastTest extends TestCase
 {
+    use CreateEntityTrait;
+
     /**
      * Test 'cast' method for DateTime value
      */
     public function testCastDateTime()
     {
         $entity = $this->createMock(Entity::class);
+        $entity->expects($this->never())->method($this->anything());
 
         $data = (object)['foo' => new \DateTime('2013-03-01 16:04:00 +01:00'), 'color' => 'pink'];
         $expected = (object)['foo' => '2013-03-01T16:04:00+0100', 'color' => 'pink'];
 
-        $handler = new JsonCast();
-        $result = $handler(new ToJson($entity, $data));
+        $event = new Event\ToJson($entity, $data);
 
-        $this->assertEquals($expected, $result);
+        $listener = new JsonCast();
+        $listener($event);
+
+        $this->assertEquals($expected, $event->getPayload());
     }
 
     /**
@@ -34,6 +40,7 @@ class JsonCastTest extends TestCase
     public function testCastJsonSerializable()
     {
         $entity = $this->createMock(Entity::class);
+        $entity->expects($this->never())->method($this->anything());
 
         $data = (object)['color' => null];
         $data->foo = $this->getMockForAbstractClass(\JsonSerializable::class);
@@ -41,10 +48,12 @@ class JsonCastTest extends TestCase
 
         $expected = (object)['foo' => 'bar', 'color' => null];
 
-        $handler = new JsonCast();
-        $result = $handler(new ToJson($entity, $data));
+        $event = new Event\ToJson($entity, $data);
 
-        $this->assertEquals($expected, $result);
+        $listener = new JsonCast();
+        $listener($event);
+
+        $this->assertEquals($expected, $event->getPayload());
     }
 
     /**
@@ -53,6 +62,7 @@ class JsonCastTest extends TestCase
     public function testCastToArray()
     {
         $entity = $this->createMock(Entity::class);
+        $entity->expects($this->never())->method($this->anything());
 
         $foo = new \SplFixedArray(2);
         $foo[0] = 'zoo';
@@ -61,10 +71,12 @@ class JsonCastTest extends TestCase
         $data = (object)['foo' => $foo, 'color' => null];
         $expected = (object)['foo' => ['zoo', 'two'], 'color' => null];
 
-        $handler = new JsonCast();
-        $result = $handler(new ToJson($entity, $data));
+        $event = new Event\ToJson($entity, $data);
 
-        $this->assertEquals($expected, $result);
+        $listener = new JsonCast();
+        $listener($event);
+
+        $this->assertEquals($expected, $event->getPayload());
     }
 
     /**
@@ -72,17 +84,18 @@ class JsonCastTest extends TestCase
      */
     public function testCastGetArrayCopy()
     {
-        $this->markTestIncomplete();
-
         $entity = $this->createMock(Entity::class);
+        $entity->expects($this->never())->method($this->anything());
 
         $data = (object)['foo' => new \ArrayObject(['zoo' => 'bar', 'one' => 'two']), 'color' => null];
         $expected = (object)['foo' => ['zoo' => 'bar', 'one' => 'two'], 'color' => null];
 
-        $handler = new JsonCast();
-        $result = $handler(new ToJson($entity, $data));
+        $event = new Event\ToJson($entity, $data);
 
-        $this->assertEquals($expected, $result);
+        $listener = new JsonCast();
+        $listener($event);
+
+        $this->assertEquals($expected, $event->getPayload());
     }
 
     protected function generator(): \Generator
@@ -97,17 +110,18 @@ class JsonCastTest extends TestCase
      */
     public function testCastTraversable()
     {
-        $this->markTestIncomplete();
-
         $entity = $this->createMock(Entity::class);
+        $entity->expects($this->never())->method($this->anything());
 
         $data = (object)['foo' => $this->generator(), 'color' => null];
         $expected = (object)['foo' => ['zoo' => 'bar', 'one' => 'two'], 'color' => null];
 
-        $handler = new JsonCast();
-        $result = $handler(new ToJson($entity, $data));
+        $event = new Event\ToJson($entity, $data);
 
-        $this->assertEquals($expected, $result);
+        $listener = new JsonCast();
+        $listener($event);
+
+        $this->assertEquals($expected, $event->getPayload());
     }
 
     /**
@@ -115,9 +129,8 @@ class JsonCastTest extends TestCase
      */
     public function testCastRecursive()
     {
-        $this->markTestIncomplete();
-
         $entity = $this->createMock(Entity::class);
+        $entity->expects($this->never())->method($this->anything());
 
         $foo = [
             'zoo' => 'bar',
@@ -150,21 +163,66 @@ class JsonCastTest extends TestCase
             'color' => null
         ];
 
-        $handler = new JsonCast();
-        $result = $handler(new ToJson($entity, $data));
+        $event = new Event\ToJson($entity, $data);
 
-        $this->assertEquals($expected, $result);
+        $listener = new JsonCast();
+        $listener($event);
+
+        $this->assertEquals($expected, $event->getPayload());
     }
 
-
-    /**
-     * @expectedException \TypeError
-     */
-    public function testInvokeWithNull()
+    public function testCastNested()
     {
-        $entity = $this->createMock(Entity::class);
+        $entity = $this->createNestedEntity();
 
-        $handler = new JsonCast();
-        $handler($entity, null);
+        $event = new Event\ToJson($entity, $entity->jsonSerialize());
+
+        $listener = new JsonCast();
+        $listener($event);
+
+        $expected = (object)[
+            'foo' => (object)[
+                'id' => 42,
+                'foo' => 'Foo Foo',
+            ],
+            'bar' => (object)[
+                'uno' => (object)[
+                    'id' => 1,
+                    'foo' => null,
+                    'bar' => 0,
+                ],
+                'dos' => [
+                    (object)[
+                        'id' => 2,
+                        'foo' => null,
+                        'bar' => 0,
+                    ],
+                    (object)[
+                        'id' => 42,
+                        'foo' => 'Foo Foo',
+                    ],
+                ],
+                'tres' => [
+                    'hello',
+                    (object)[
+                        'id' => 1,
+                        'foo' => null,
+                        'bar' => 0,
+                    ],
+                    null,
+                    'plus',
+                    (object)[
+                        'id' => 2,
+                        'foo' => null,
+                        'bar' => 0,
+                    ],
+                ],
+                'more' => [
+                    'like' => 'this',
+                ],
+            ],
+        ];
+
+        $this->assertEquals($expected, $event->getPayload());
     }
 }

@@ -27,22 +27,19 @@ trait DispatchEventTrait
      */
     final public function setEventDispatcher(EventDispatcherInterface $dispatcher): void
     {
-        if (isset($this->i__dispatcher)) {
-            throw new BadMethodCallException("Event dispatcher already set for this entity");
-        }
-
         $this->i__dispatcher = $dispatcher;
     }
 
     /**
-     * Get trigger for an event
+     * Get the event dispatcher
      *
      * @return EventDispatcherInterface
+     * @throws LogicException if event dispatcher isn't set
      */
     final public function getEventDispatcher(): EventDispatcherInterface
     {
         if (!isset($this->i__dispatcher)) {
-            throw new BadMethodCallException("Event dispatcher has not been set for this entity");
+            throw new LogicException("Event dispatcher has not been set for this entity");
         }
 
         return $this->i__dispatcher;

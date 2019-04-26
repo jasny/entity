@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Jasny\Entity\Traits;
 
 use Jasny\Entity\DynamicEntity;
+use Jasny\Entity\Event;
 use function Jasny\object_set_properties;
 
 /**
@@ -82,5 +83,6 @@ trait FromDataTrait
     public function markAsPersisted(): void
     {
         $this->markNew(false);
+        $this->dispatchEvent(new Event\Persisted($this));
     }
 }

@@ -26,6 +26,6 @@ trait AssertGhostTrait
         $id = $this->getId();
         $class = get_class($this);
 
-        throw new LogicException(sprintf('Trying to use ghost object as full object of %s entity "%s"', $class, $id));
+        throw new LogicException(sprintf('Trying to use ghost object of %s "%s" as full object', $class, $id));
     }
 }

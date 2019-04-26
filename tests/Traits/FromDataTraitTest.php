@@ -2,16 +2,13 @@
 
 namespace Jasny\Entity\Tests\Traits;
 
-use Jasny\Entity\BasicEntityTraits;
 use Jasny\Entity\IdentifiableEntityTraits;
-use Jasny\Entity\DynamicEntity;
-use Jasny\Entity\Entity;
+use Jasny\Entity\Event;
 use Jasny\Entity\IdentifiableEntity;
 use Jasny\Entity\Tests\CreateEntityTrait;
-use Jasny\Entity\Traits\FromDataTrait;
 use Jasny\TestHelper;
-use PHPUnit\Framework\MockObject\Builder\InvocationMocker;
 use PHPUnit\Framework\TestCase;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @covers \Jasny\Entity\Traits\FromDataTrait
@@ -37,16 +34,26 @@ class FromDataTraitTest extends TestCase
         };
     }
 
+    public function methodProvider()
+    {
+        return [
+            ['fromData'],
+            ['__set_state']
+        ];
+    }
 
     /**
      * Test 'fromData' method for non-dynamic entity
+     *
+     * @dataProvider methodProvider
      */
-    public function testFromData()
+    public function testFromData(string $method)
     {
         $source = $this->createBasicEntity();
         $class = get_class($source);
+        $fn = [$class, $method];
 
-        $entity = $class::fromData(['foo' => 'loo', 'bar' => 22, 'dyn' => 'woof']);
+        $entity = $fn(['foo' => 'loo', 'bar' => 22, 'dyn' => 'woof']);
 
         $this->assertInstanceOf($class, $entity);
 
@@ -96,7 +103,15 @@ class FromDataTraitTest extends TestCase
         $entity = $this->createBasicEntity();
         $this->assertTrue($entity->isNew());
 
+        $dispatcher = $this->createMock(EventDispatcherInterface::class);
+        $dispatcher->expects($this->once())->method('dispatch')
+            ->with(new Event\Persisted($entity));
+
+        $entity->setEventDispatcher($dispatcher);
+
         $entity->markAsPersisted();
         $this->assertFalse($entity->isNew());
     }
+
+
 }

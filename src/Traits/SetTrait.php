@@ -12,7 +12,7 @@ use function Jasny\object_set_properties;
 use LogicException;
 
 /**
- * Get and set entity properties
+ * Set entity properties.
  */
 trait SetTrait
 {

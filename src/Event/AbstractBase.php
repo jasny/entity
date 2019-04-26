@@ -46,7 +46,7 @@ abstract class AbstractBase implements StoppableEventInterface
      */
     public function getEntity(): Entity
     {
-        return $this->subject;
+        return $this->entity;
     }
 
     /**

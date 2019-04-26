@@ -3,12 +3,15 @@
 namespace Jasny\Entity\Tests\Traits;
 
 use Jasny\Entity\AbstractBasicEntity;
+use Jasny\Entity\Entity;
 use Jasny\Entity\Tests\CreateEntityTrait;
 use Jasny\TestHelper;
+use LogicException;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Jasny\Entity\Traits\SetTrait
+ * @covers \Jasny\Entity\Traits\AssertGhostTrait
  */
 class SetTraitTest extends TestCase
 {
@@ -78,19 +81,15 @@ class SetTraitTest extends TestCase
     }
 
     /**
-     * Test 'toAssoc' method
+     * @expectedException LogicException
+     * @expectedExceptionMessage Trying to use ghost object
      */
-    public function testToAssoc()
+    public function testSetAsGhost()
     {
-        $expected = ['foo' => 'bar', 'bar' => 23];
+        $class = get_class($this->createIdentifiableEntity(''));
+        /** @var Entity $entity */
+        $entity = $class::fromId(12);
 
-        $object = $this->createDynamicEntity();
-
-        $object->foo = 'bar';
-        $object->bar = 23;
-
-        $result = $object->toAssoc();
-
-        $this->assertSame($expected, $result);
+        $entity->set('foo', 10);
     }
 }

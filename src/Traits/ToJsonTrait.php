@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace Jasny\Entity\Traits;
 
+use DateTime;
+use DateTimeInterface;
 use Improved as i;
 use Jasny\Entity\DynamicEntity;
+use Jasny\Entity\Entity;
 use Jasny\Entity\Event;
+use JsonSerializable;
+use SplObjectStorage;
 use stdClass;
 use UnexpectedValueException;
 use function Jasny\object_get_properties;

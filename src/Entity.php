@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Jasny\Entity;
 
-use BadMethodCallException;
+use JsonSerializable;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * An entity is an object with a (persistent) data representation.
  */
-interface Entity extends \JsonSerializable
+interface Entity extends JsonSerializable
 {
     /**
      * Set a value or multiple values.
@@ -51,8 +51,17 @@ interface Entity extends \JsonSerializable
      */
     public function isNew(): bool;
 
+
     /**
      * Create an entity from persisted data.
+     *
+     * @param array $data
+     * @return static
+     */
+    public static function fromData(array $data);
+
+    /**
+     * Must be an alias of `Entity::fromData()`
      * @internal
      *
      * @param array $data
@@ -78,9 +87,10 @@ interface Entity extends \JsonSerializable
     public function setEventDispatcher(EventDispatcherInterface $dispatcher): void;
 
     /**
-     * Get trigger for an event
+     * Get the event dispatcher
      *
      * @return EventDispatcherInterface
+     * @throws LogicException if event dispatcher isn't set
      */
     public function getEventDispatcher(): EventDispatcherInterface;
 

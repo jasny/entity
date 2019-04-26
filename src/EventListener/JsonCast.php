@@ -9,6 +9,7 @@ use DateTimeInterface;
 use Improved as i;
 use Jasny\Entity\Event;
 use JsonSerializable;
+use SplObjectStorage;
 use stdClass;
 
 /**
@@ -20,74 +21,78 @@ class JsonCast
      * Invoke the handler as callback.
      *
      * @param Event\ToJson $event
-     * @return \stdClass
-     * @throws \RuntimeException if there is a circular reference
      */
-    public function __invoke(Event\ToJson $event)
+    public function __invoke(Event\ToJson $event): void
     {
-        $data = $event->getPayload();
+        $payload = $event->getPayload();
 
-        return $this->cast($data);
+        $list = new SplObjectStorage();
+        $list[$event->getEntity()] = null;
+
+        $data = $this->cast($payload, $list);
+
+        $event->setPayload($data);
     }
+
 
     /**
      * Cast value for json serialization.
      *
-     * @param mixed $value
-     * @param int   $deep
+     * @param mixed            $input
+     * @param SplObjectStorage $list   Entity / assoc map for entities that already have been converted
      * @return mixed
-     * @throws \RuntimeException if there is a circular reference
      */
-    protected function cast($value, int $deep = 0)
+    protected function cast($input, SplObjectStorage $list)
     {
-        if ($deep >= 100) {
-            throw new \RuntimeException("Maximum recursion nesting level of '100' reached");
+        $value = $input instanceof JsonSerializable
+            ? $input->jsonSerialize()
+            : $input;
+
+        if ($value instanceof DateTimeInterface) {
+            $value = $value->format(DateTime::ISO8601);
         }
 
-        switch (true) {
-            case $value instanceof DateTimeInterface:
-                return $value->format(DateTime::ISO8601);
-            case $value instanceof JsonSerializable:
-                return $value->jsonSerialize();
-            case is_iterable($value):
-                return $this->castIterable($value, $deep);
-            case $value instanceof stdClass:
-                return $this->castObject($value, $deep);
-            default:
-                return $value;
-        }
-    }
-
-    /**
-     * Cast iterable or object
-     *
-     * @param iterable $value
-     * @param int      $deep
-     * @return mixed
-     */
-    protected function castIterable(iterable $value, int $deep)
-    {
-        $mapped = i\iterable_map($value, function($value) use ($deep) {
-            return $this->cast($value, $deep + 1);
-        });
-
-        return i\iterable_to_array($mapped);
-    }
-
-    /**
-     * Cast stdClass object
-     *
-     * @param \stdClass $value
-     * @param int       $deep
-     * @return mixed
-     * @throws \RuntimeException if there is a circular reference
-     */
-    protected function castObject(\stdClass $value, int $deep)
-    {
-        foreach ($value as &$prop) {
-            $prop = $this->cast($prop, $deep + 1); // Recursion
+        if (is_iterable($value) || $value instanceof stdClass) {
+            $value = $this->castRecursive(
+                $input,
+                is_iterable($value) ? i\iterable_to_array($value, true) : $value,
+                $list
+            );
         }
 
         return $value;
+    }
+
+    /**
+     * Cast value recursively.
+     *
+     * @param mixed            $source
+     * @param array|stdClass   $values
+     * @param SplObjectStorage $list    Entity / assoc map for entities that already have been converted
+     * @return array|stdClass
+     */
+    protected function castRecursive($source, $values, SplObjectStorage $list)
+    {
+        if (is_object($source)) {
+            $list[$source] = null;
+        }
+
+        foreach ($values as $key => &$value) {
+            if (!is_object($value) || !$list->contains($value)) {
+                $value = $this->cast($value, $list); // Recursion
+            } elseif ($list[$value] === null && is_object($values)) {
+                unset($values->$key);
+            } elseif ($list[$value] === null && is_array($values) && !is_int($key)) {
+                unset($values[$key]);
+            } else {
+                $value = $list[$value];
+            }
+        }
+
+        if (is_object($source)) {
+            $list[$source] = $values;
+        }
+
+        return $values;
     }
 }

@@ -8,10 +8,12 @@ use Jasny\Entity\BasicEntityTraits;
 use Jasny\Entity\IdentifiableEntity;
 use Jasny\Entity\IdentifiableEntityTraits;
 use Jasny\Entity\Tests\CreateEntityTrait;
+use LogicException;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Jasny\Entity\Traits\CompareTrait
+ * @covers \Jasny\Entity\Traits\AssertGhostTrait
  */
 class CompareTraitTest extends TestCase
 {
@@ -116,5 +118,39 @@ class CompareTraitTest extends TestCase
         $entity->foo = 10;
 
         $this->assertTrue($entity->is(['foo' => "10"]));
+    }
+
+
+    public function testCompareAsGhost()
+    {
+        $fullEntity = $this->createIdentifiableEntity(12);
+        $class = get_class($fullEntity);
+        /** @var Entity $entity */
+        $entity = $class::fromId(12);
+
+        $this->assertTrue($entity->is($fullEntity));
+    }
+
+    public function testCompareAsGhostWithId()
+    {
+        $class = get_class($this->createIdentifiableEntity(''));
+        /** @var Entity $entity */
+        $entity = $class::fromId(12);
+
+        $this->assertTrue($entity->is(12));
+        $this->assertFalse($entity->is(10));
+    }
+
+    /**
+     * @expectedException LogicException
+     * @expectedExceptionMessage Trying to use ghost object
+     */
+    public function testCompareAsGhostWithFilter()
+    {
+        $class = get_class($this->createIdentifiableEntity(''));
+        /** @var Entity $entity */
+        $entity = $class::fromId(12);
+
+        $entity->is(['foo' => 10]);
     }
 }
