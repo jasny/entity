@@ -3,9 +3,7 @@
 namespace Jasny\Entity\Tests\Traits;
 
 use Jasny\Entity\AbstractBasicEntity;
-use Jasny\Entity\DynamicEntity;
-use Jasny\Entity\Entity;
-use Jasny\Entity\BasicEntityTraits;
+use Jasny\Entity\Event;
 use Jasny\Entity\Tests\CreateEntityTrait;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -63,6 +61,6 @@ class JsonSerializeTraitTest extends TestCase
 
         $result = $entity->jsonSerialize();
 
-        $this->assertSame((object)['foo' => 'kuz23', 'own' => 'me'], $result);
+        $this->assertEquals((object)['foo' => 'kuz23', 'own' => 'me'], $result);
     }
 }
