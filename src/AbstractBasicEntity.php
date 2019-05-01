@@ -9,7 +9,7 @@ use Jasny\Entity\Traits;
 /**
  * All required traits an entity.
  */
-trait BasicEntityTraits
+trait AbstractBasicEntity
 {
     use Traits\AssertGhostTrait;
     use Traits\CompareTrait;

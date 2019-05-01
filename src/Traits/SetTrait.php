@@ -17,13 +17,6 @@ use LogicException;
 trait SetTrait
 {
     /**
-     * Assert that the object isn't a ghost.
-     *
-     * @throws LogicException if object is a ghost
-     */
-    abstract protected function assertNotGhost(): void;
-
-    /**
      * Dispatch an event.
      *
      * @param object $event
@@ -55,8 +48,6 @@ trait SetTrait
                 __FUNCTION__
             ));
         }
-
-        $this->assertNotGhost();
 
         $input = func_num_args() === 1 ? (array)$key : [$key => $value];
         $data = $this->dispatchEvent(new Event\BeforeSet($this, $input))->getPayload();

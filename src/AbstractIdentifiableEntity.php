@@ -9,9 +9,8 @@ use Jasny\Entity\Traits;
 /**
  * All identifiable entity traits.
  */
-trait IdentifiableEntityTraits
+trait AbstractIdentifiableEntity
 {
-    use BasicEntityTraits;
+    use AbstractBasicEntity;
     use Traits\IdentifyTrait;
-    use Traits\LazyLoadingTrait;
 }

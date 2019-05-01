@@ -4,9 +4,9 @@ namespace Jasny\Entity\Tests\Traits;
 
 use Jasny\Entity\AbstractBasicEntity;
 use Jasny\Entity\Entity;
-use Jasny\Entity\BasicEntityTraits;
+use Jasny\Entity\AbstractBasicEntity;
 use Jasny\Entity\IdentifiableEntity;
-use Jasny\Entity\IdentifiableEntityTraits;
+use Jasny\Entity\AbstractIdentifiableEntity;
 use Jasny\Entity\Tests\CreateEntityTrait;
 use LogicException;
 use PHPUnit\Framework\TestCase;
@@ -91,7 +91,7 @@ class CompareTraitTest extends TestCase
     {
         $entity = $this->createIdentifiableEntity(42);
         $other = new class implements IdentifiableEntity {
-            use IdentifiableEntityTraits;
+            use AbstractIdentifiableEntity;
             public $id = 42;
         };
 

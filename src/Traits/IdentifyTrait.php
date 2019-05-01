@@ -12,10 +12,10 @@ trait IdentifyTrait
     /**
      * Get the id property of the entity.
      *
-     * @return string|null
+     * @return string
      * @throws \LogicException if id property is unknown
      */
-    protected static function getIdProperty(): ?string
+    protected static function getIdProperty(): string
     {
         if (!property_exists(get_called_class(), 'id')) {
             throw new LogicException("Unknown id property for " . get_called_class() . " entity");

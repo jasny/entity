@@ -27,10 +27,8 @@ use Jasny\Entity\IdentifiableEntityTraits;
 /**
  * A user in our system
  */
-class User implements IdentifiableEntity
+class User extends AbstractIdentifiableEntity
 {
-    use IdentifiableEntityTraits;
-    
     /** @var string */
     public $id;
     
@@ -49,85 +47,341 @@ A quick and dirty script to create and output the JSON of a `User` entity could 
 
 ```php
 use App\User;
+use Jasny\Entity\Event;
 
 $data = $db->prepare("SELECT * FROM user WHERE id = ?")->execute($id)->fetch(PDO::FETCH_ASSOC);
 $user = User::fromData($data);
+
+$user->addEventListener(function(Event\ToJson $event): void {
+    $data = $event->getPayload();
+    unset($data['password_hash']);
+
+    $event->setPaypload($data);
+});
 
 header('Content-Type: application\json');
 echo json_serialize($user);
 ```
 
-> _In this example you could just as well json serialize the data directly :-s, but you get the idea._
+> _In this example you could just as well json serialize the data directly. The layer helps in adding abstraction to
+applications that are beyond simple scripts._
 
 ## Documentation
 
-### New entity
-Using the `new` keyword is reserved for creating a new entity.
+### Basic entity
 
-### Existing entity
-When the data of an entity is fetched, the `fromData()` method is used to create the entity. This method sets the
-properties of the entity object before calling the constructor.
+The `Entity` interface defines the methods all entities need to implement. To implement an entity you may extend the
+`AbstractBasicEntity` base class. Alternatively you can use the [traits](#traits) of this library.
+
+It's recommended to define properties as public, however only use them to get values and not to set. For setting values
+use the `set()` method. This isn't enforced at runtime, but may be checked by a static code analyser like PHPStan.
 
 ```php
-$data = fetch_user_from_db($id);
+class Color extends AbstractBasicEntity
+{
+    /** @var int */
+    public $red;
+    
+    /** @var int */
+    public $green;
+    
+    /** @var int */
+    public $blue;
+}
+```
+
+### Identifiable entity
+
+If an entity has a unique identifier, the class should implement `IdentifiableEntity`.
+
+```php
+class User extends AbstractIdentifiableEntity
+{
+    /** @var int */
+    public $id;
+    
+    /** @var string */
+    public $name;
+    
+    /** @var string */
+    public $email;
+    
+    /** @var string */
+    public $password_hash;
+}
+```
+
+It's assumed you're using property `id` as a surrogate key. If you're using a differently property, make sure to
+overwrite the static `getIdProperty()` method.  
+
+```php
+class Invoice extends AbstractIdentifiableEntity
+{
+    /** @var string */
+    public $number;
+    
+    // ...
+    
+    protected static function getIdProperty(): string
+    {
+        return 'number';
+    }
+}
+```
+
+### Dynamic entity
+
+By default entities should only have the properties that are specified by the class. The `set()` method will ignore
+all values that don't correspond with any property. If for some reason additional properties are added, the `toAssoc()`
+and `jsonSerialize()` methods, also ignore properties that aren't defined in the class.
+
+In some cases an entity might be dynamic; it can have properties that are added at runtime. Some data stores like
+`MongoDB` have dynamic schemas, which don't have to be defined at forehand, to support this.
+
+To indicate that an entity may have dynamic properties it should implement the `DynamicEntity` interface. 
+
+```php
+class User extends AbstractIdentifiableEntity implements DynamicEntity
+{
+    // ...
+}
+```
+
+### New entity
+
+Using the `new` keyword is reserved for creating a new entity.
+
+```php
+$user = new User(); // This represents a new user in the system
+```
+
+If you set the identified (`id` property) of a new entity, it will either overwrite it or throw an duplicate id error,
+depending on the data storage implementation. However it will (or rather should) not update the existing record.
+
+The `isNew()` method will tell if it's a new user or if it's loaded from data.
+
+### Existing entity
+
+When the data of an entity is fetched, the static `fromData()` method is used to create the entity.
+
+```php
+$data = $db->prepare("SELECT * FROM user WHERE id = ?")->execute($id)->fetch(PDO::FETCH_ASSOC);
 $user = User::fromData($data);
 ```
 
-The `__set_state()` method is an alias of `fromData()`. 
+The `fromData()` method sets the properties of the entity object, _before_ calling the constructor.
 
-#### Stubs
-Entities supports [lazy loading](http://en.wikipedia.org/wiki/Lazy_loading) of entities by allowing them to be created
-as stub that only holds the `id` of the entity using the static `fromId()` method.
-
-The `refresh` method can be used to update/expand the stub entities from fetched data.
+##### var_export
+The `__set_state()` method is set as alias of `fromData()`, allowing entities to be serialized via
+[`var_export`](https://php.net/var_export) and stored as PHP script. Other libraries like
+[Jasny Typecast](https://github.com/jasny/typecast), rely on the `__set_state()` method as well.
 
 ### Set values
-The `set()` method is a a helper function for setting all the properties from an array and works like a
-[fluent interface](http://en.wikipedia.org/wiki/Fluent_interface).
+
+The `set()` method is a a helper function for setting all the properties from an array.
 
 ```php
 $foo = new Foo();
 $foo->set('answer', 42);
 $foo->set(['red' => 10, 'green' => 20, 'blue' => 30]);
-
-$foo
-  ->set('destination', 'unknown')
-  ->doSomething();
 ```
 
-#### Dynamic
-By default, values that are not defined in the entity class are ignored when setting the properties of the entity.
-Override the `isDynamic()` method to return `true` for the entity to allow undefined properties.  
+It can be use as [fluent interface](http://en.wikipedia.org/wiki/Fluent_interface).
 
-### Get values
-Properties SHOULD be declared public and may be accessed directly, especially for reading.
+```php
+$adventure = (new Adventure)
+  ->set('destination', 'unknown')
+  ->set('duration', '1 year')
+  ->go();
+```
 
-#### toAssoc
-To cast an entity to an associated array, use the `toAssoc()` method.
+The `set()` method triggers 2 events; [`BeforeSet`](#entity-events) and [`AfterSet`](#entity-events).  
 
-#### jsonSerialize
-Entities implement the `JsonSerializable` interface. When calling `json_serialize($entity)`, the `jsonSerialize()`
-method is automatically called. If will create a `stdClass` object with casted properties.
+### Same entities
 
-#### Identifiable
-An entity class is marked as identifiable if it has an identifier property. By default we assume this property is
-called `id`. In order to select another property, overwrite the static `getIdProperty()` method.
+Check if two entities are the same using the `is()` method which returns a boolean. The method always returns `true` in
+case the objects are the same object (similar to `===`).
 
-You cat get the identity of the entity with the `getId()` method.  
+For identifiable objects, the method will also return `true` is the entity class and the `id` value are the same. The
+value of other properties are disregarded.
+
+### Cast to associative array
+
+Cast an entity to an associative array with the `toAssoc()` method. By default this method will return the values of all
+public properties.
+
+```php
+$data = $user->toAssoc();
+```
+
+The [`ToAssoc`](#entity-events) event is available to modify the result of this method. The library comes with the
+`ToAssocRecursive` event listener, which will also turn child entities into associative arrays.
+
+```php
+$user->addEventListener(function(Event\ToAssoc $event): void {
+    $assoc = $event->getPayload();
+    
+    if (isset($assoc['password'])) {
+        $assoc['password_hashed'] = password_hash($assoc['password'], PASSWORD_DEFAULT);
+        unset($assoc['password_hashed']);
+    }
+    
+    $event->setPayload($assoc);
+});
+```
+
+> _The `toAssoc()` method can be used in farious places. It's not recommended to create event listeners to handle a
+specific use case. Instead create a new type of event for that specific use._
+
+### Cast to JSON
+
+Entities must implement `JsonSerializable`, meaning they can be casted to JSON via
+[`json_encode()`](https://php.net/json_encode). By default, the result is an object with all the public properties of
+the entity.
+
+The `jsonSerialize` method can be overwritten in the entity class. Alternatively the [`ToJson`](#entity-events) event
+can be used to modify the result before it's serialized to a json string.  
+
+```php
+$user->addEventListener(function(Event\ToJson $event): void {
+    $assoc = $event->getPayload();
+    unset($assoc['password_hashed']);
+    
+    $event->setPayload($assoc);
+});
+```
+
+The library contains the `JsonCast` event listener that will convert `DateTime` objects to a date string and will
+convert any (child) object that implements `JsonSerializable`.
+
+### Persisting entities
+
+This library **does not** have any methods for saving entities into persistent storage (like a database).
+
+It recommended to implement data gateway services for this (and not adopt Active Record pattern).
+
+```php
+class UserGateway
+{
+    /** @var \PDO */
+    protected $db;
+
+    public function __construct(\PDO $db)
+    {
+        $this->db = $db;
+    }
+
+    public function load(string $id): User
+    {
+        $data = $db->prepare("SELECT * FROM user WHERE id = ?")->execute($id)->fetch(PDO::FETCH_ASSOC);
+        
+        if ($data === null) {
+            throw new RuntimeException("User `$id` not found");
+        }
+        
+        return User::fromData($data);
+    }
+    
+    public function save(User $user): void
+    {
+        $data = $user->toAssoc();
+        
+        $columns = join(', ', array_keys($data));             // "id, name, email, password_hash"
+        $placeholders = ':' . join(', :', array_keys($data)); // ":id, :name, :email, :password_hash"
+        
+        $db->prepare("REPLACE INTO users ($columns) VALUES ($placeholders)")->execute();
+        
+        $user->markAsPersisted();
+    }
+}
+```
+
+> _The example always does a `REPLACE` query, but you could do an `UPDATE` query if `isNew()` returns `false` instead._
+
+After an entity is saved, the gateway should call the `markAsPersisted` method, which will trigger an event and mark the
+entity as no longer being new (for `isNew()`).
+
+If you're using a auto-generated identifier, you should retrieve it from the db layer and directly set the `id` property
+prior to calling `marktAsPersisted()`.
 
 ### Events
 
-Entities have a method to register handlers for a specific trigger. Triggers may be called from methods of the entity or
-from outside services.
+Entities may support events through a [PSR-14 compatible](https://www.php-fig.org/psr/psr-14/) event dispatcher. This
+allows additional abstraction for different services and is important when 
+ 
+Before you can add event listener, you need to register an event dispatcher. The entity doesn't create one itself.
 
-To call a trigger, specify the event type and (optionally) a payload. Events are typically named after the method that
-triggers them. If there is a before and after event use the syntax `before:event` and `after:event`.
+```php
+use Jasny\Entity\Event;
+use Jasny\Entity\EventListener\JsonCast;
+use Jasny\EventDispatcher\EventDispatcher;
 
-A handler must be a callback with the following signature:
+$listener = (new ListenerProvider)
+    ->withListener(function(Event\ToAssoc $event): void {
+        $assoc = $event->getPayload();
+        
+        if (isset($assoc['password'])) {
+            $assoc['password_hashed'] = password_hash($assoc['password'], PASSWORD_DEFAULT);
+            unset($assoc['password_hashed']);
+        }
+        
+        $event->setPayload($assoc);
+    })
+    ->withListener(new JsonCast());
+    
+$dispatcher = new EventDispatcher($listener);
 
-    handler(EntityInterface $entity, mixed $payload): mixed
+$user = new User;
+$user->setEventDispatcher($dispatcher);
+```
 
-The handlers are executed in the order they are specified. The return value will be the payload for the subsequent
-handler.
+Typically the event dispatcher is added to an entity by the gateway. This means that the gateway should also be used
+when creating a new entity.
 
-Entities have the following internal events
+To add an event listener to an existing entity use the `addEventListener()` method of the entity.
+
+```php
+$user->addEventListener(function(Event\ToJson $event): void {
+    $assoc = $event->getPayload();
+    unset($assoc['password_hashed']);
+    
+    $event->setPayload($assoc);
+});
+```
+
+> _Note that since adding event listeners isn't defined by the PSR-14 standard, the `addEventListener()` method only
+works with [Jasny Event Dispatcher](https://github.com/jasny/event-dispatcher)._
+
+The `dispatchEvent()` method takes an event and dispatches it to the listeners. It will return the passed event object,
+which may be modified by the event listeners.
+
+```php
+$event = $user->dispatchEvent(new CustomEvent($user, $someData));
+```
+
+#### Event objects
+
+An event can be any object. The event lister are filtered on the object class.
+
+Event classes of this library take the `$entity` and `$payload` as constructor arguments. The `getEntity()` method will
+return the emitting entity. You can get the payload using `getPayload()` and update it with `setPayload()`. The modified
+event is passed to subsequent listeners and used by the method triggering the event.
+
+#### Entity events
+
+The library has the following events
+
+* **BeforeSet** - Called by `set()`. Modifying the payload will effect the values that are set. This method
+  can be used for casting the values to the correct type or filtering out properties that are not allowed to be changed
+  manually.
+* **AfterSet** - Called by `set()`, after updating the entity object. Modifying the payload has no effect.
+* **Persisted** - Called by `markAsPersisted()`, which in turn should be called whenever the entity is saved to
+  persistent storage like a DB.
+* **ToAssoc** - Called by `toAssoc()`. Modifying the payload will affect the return value of this method.
+* **ToJson** - Called by `jsonSerialize()`. Modifying the payload will affect the return value of this method.
+
+#### Event listeners
+
+* **ToAssocRecursive** - Recursively loop through all properties, also turning sub-entities into associative arrays. 
+* **JsonCast** - Recursively loop through all properties, casting `DateTime` objects to date/time strings and
+  getting the json data for `JsonSerializable` objects.

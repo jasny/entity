@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Jasny\Entity\Tests;
 
 use ArrayIterator;
-use Jasny\Entity\BasicEntityTraits;
+use Jasny\Entity\AbstractBasicEntity;
 use Jasny\Entity\DynamicEntity;
 use Jasny\Entity\Entity;
 use Jasny\Entity\IdentifiableEntity;
-use Jasny\Entity\IdentifiableEntityTraits;
+use Jasny\Entity\AbstractIdentifiableEntity;
 
 /**
  * Trait for unit tests to create entities
@@ -19,7 +19,7 @@ trait CreateEntityTrait
     protected function createBasicEntity(): Entity
     {
         return new class() implements Entity {
-            use BasicEntityTraits;
+            use AbstractBasicEntity;
 
             public $foo;
             public $bar = 0;
@@ -29,7 +29,7 @@ trait CreateEntityTrait
     protected function createIdentifiableEntity($id): IdentifiableEntity
     {
         return new class($id) implements IdentifiableEntity {
-            use IdentifiableEntityTraits;
+            use AbstractIdentifiableEntity;
 
             public $id;
             public $foo;
@@ -45,7 +45,7 @@ trait CreateEntityTrait
     protected function createDynamicEntity(): DynamicEntity
     {
         return new class() implements DynamicEntity {
-            use BasicEntityTraits;
+            use AbstractBasicEntity;
 
             public $foo;
             public $bar = 0;
@@ -55,7 +55,7 @@ trait CreateEntityTrait
     protected function createEntityWithConstructor(): Entity
     {
         return new class() implements Entity {
-            use BasicEntityTraits;
+            use AbstractBasicEntity;
 
             public $foo;
             public $bar;

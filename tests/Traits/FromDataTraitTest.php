@@ -2,7 +2,7 @@
 
 namespace Jasny\Entity\Tests\Traits;
 
-use Jasny\Entity\IdentifiableEntityTraits;
+use Jasny\Entity\AbstractIdentifiableEntity;
 use Jasny\Entity\Event;
 use Jasny\Entity\IdentifiableEntity;
 use Jasny\Entity\Tests\CreateEntityTrait;
@@ -21,7 +21,7 @@ class FromDataTraitTest extends TestCase
     protected function createIdentifiableEntity(): IdentifiableEntity
     {
         return new class() implements IdentifiableEntity {
-            use IdentifiableEntityTraits;
+            use AbstractIdentifiableEntity;
 
             public $id;
             public $foo;
