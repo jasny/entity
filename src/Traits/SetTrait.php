@@ -9,7 +9,6 @@ use BadMethodCallException;
 use Jasny\Entity\DynamicEntity;
 use Jasny\Entity\Event;
 use function Jasny\object_set_properties;
-use LogicException;
 
 /**
  * Set entity properties.
@@ -33,8 +32,8 @@ trait SetTrait
      *   $entity->set(['qux' => 100, 'clr' => 'red']);
      * </code>
      *
-     * @param string|array $key Property or set of values
-     * @param mixed $value
+     * @param string|array $key    Property or set of values
+     * @param mixed        $value
      * @return $this
      */
     public function set($key, $value = null)
@@ -50,7 +49,10 @@ trait SetTrait
         }
 
         $input = func_num_args() === 1 ? (array)$key : [$key => $value];
-        $data = $this->dispatchEvent(new Event\BeforeSet($this, $input))->getPayload();
+
+        /** @var Event\BeforeSet $event */
+        $event = $this->dispatchEvent(new Event\BeforeSet($this, $input));
+        $data = $event->getPayload();
 
         object_set_properties($this, $data, $this instanceof DynamicEntity);
 

@@ -52,12 +52,12 @@ class JsonCast
             $value = $value->format(DateTime::ISO8601);
         }
 
-        if (is_iterable($value) || $value instanceof stdClass) {
-            $value = $this->castRecursive(
-                $input,
-                is_iterable($value) ? i\iterable_to_array($value, true) : $value,
-                $list
-            );
+        if (is_iterable($value)) {
+            $value = i\iterable_to_array($value, true);
+        }
+
+        if (is_array($value) || $value instanceof stdClass) {
+            $value = $this->castRecursive($input, $value, $list);
         }
 
         return $value;

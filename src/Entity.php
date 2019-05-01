@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Jasny\Entity;
 
 use JsonSerializable;
+use LogicException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -95,6 +96,7 @@ interface Entity extends JsonSerializable
      * Add an event listener to the entity's event dispatcher.
      *
      * @param callable $listener
+     * @throws LogicException if event dispatcher isn't set or is of an unknown type
      */
     public function addEventListener(callable $listener): void;
 

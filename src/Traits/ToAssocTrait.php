@@ -30,6 +30,10 @@ trait ToAssocTrait
     {
         $assoc = object_get_properties($this, $this instanceof DynamicEntity);
 
-        return $this->dispatchEvent(new Event\ToAssoc($this, $assoc))->getPayload();
+        /** @var Event\ToAssoc $event */
+        $event = $this->dispatchEvent(new Event\ToAssoc($this, $assoc));
+        $updatedAssoc = $event->getPayload();
+
+        return $updatedAssoc;
     }
 }

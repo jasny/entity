@@ -30,8 +30,7 @@
         "jasny/event-dispatcher": "^1.0",
         "jasny/meta": "^3.0",
         "jasny/php-code-quality": "^2.3.5",
-        "jasny/typecast": "dev-master as 2.1.0",
-        "phpstan/phpstan": "0.9.2"
+        "jasny/typecast": "dev-master as 2.1.0"
     },
     "suggest": {
         "jasny/entity-collection": "Data structures for entities",

@@ -40,7 +40,7 @@ class ToAssocRecursive
      *
      * @param Entity           $entity
      * @param SplObjectStorage $list    Entity / assoc map for entities that already have been converted
-     * @return array|null
+     * @return array
      */
     protected function toAssocEntity(Entity $entity, SplObjectStorage $list): array
     {
