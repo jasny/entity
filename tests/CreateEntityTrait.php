@@ -18,9 +18,7 @@ trait CreateEntityTrait
 {
     protected function createBasicEntity(): Entity
     {
-        return new class() implements Entity {
-            use AbstractBasicEntity;
-
+        return new class() extends AbstractBasicEntity {
             public $foo;
             public $bar = 0;
         };
@@ -28,9 +26,7 @@ trait CreateEntityTrait
 
     protected function createIdentifiableEntity($id): IdentifiableEntity
     {
-        return new class($id) implements IdentifiableEntity {
-            use AbstractIdentifiableEntity;
-
+        return new class($id) extends AbstractIdentifiableEntity {
             public $id;
             public $foo;
             public $bar = 0;
@@ -44,9 +40,7 @@ trait CreateEntityTrait
 
     protected function createDynamicEntity(): DynamicEntity
     {
-        return new class() implements DynamicEntity {
-            use AbstractBasicEntity;
-
+        return new class() extends AbstractBasicEntity implements DynamicEntity {
             public $foo;
             public $bar = 0;
         };
@@ -54,9 +48,7 @@ trait CreateEntityTrait
 
     protected function createEntityWithConstructor(): Entity
     {
-        return new class() implements Entity {
-            use AbstractBasicEntity;
-
+        return new class() extends AbstractBasicEntity {
             public $foo;
             public $bar;
 

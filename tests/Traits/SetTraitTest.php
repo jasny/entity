@@ -11,7 +11,6 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Jasny\Entity\Traits\SetTrait
- * @covers \Jasny\Entity\Traits\AssertGhostTrait
  */
 class SetTraitTest extends TestCase
 {
@@ -78,18 +77,5 @@ class SetTraitTest extends TestCase
     {
         $object = $this->createDynamicEntity();
         $object->set('foo');
-    }
-
-    /**
-     * @expectedException LogicException
-     * @expectedExceptionMessage Trying to use ghost object
-     */
-    public function testSetAsGhost()
-    {
-        $class = get_class($this->createIdentifiableEntity(''));
-        /** @var Entity $entity */
-        $entity = $class::fromId(12);
-
-        $entity->set('foo', 10);
     }
 }

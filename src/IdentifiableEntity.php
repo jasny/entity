@@ -15,20 +15,4 @@ interface IdentifiableEntity extends Entity
      * @return mixed
      */
     public function getId();
-
-
-    /**
-     * Check if the object is a ghost.
-     *
-     * @return bool
-     */
-    public function isGhost(): bool;
-
-    /**
-     * Lazy load an entity, only the id is known.
-     *
-     * @param mixed $id
-     * @return static
-     */
-    public static function fromId($id);
 }

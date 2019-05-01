@@ -70,14 +70,6 @@ interface Entity extends JsonSerializable
     public static function __set_state(array $data);
 
     /**
-     * Refresh with data from persisted storage.
-     *
-     * @param static|array $replacement
-     * @return void
-     */
-    public function refresh($replacement): void;
-
-    /**
      * Mark entity as persisted.
      */
     public function markAsPersisted(): void;
@@ -98,6 +90,13 @@ interface Entity extends JsonSerializable
      * @throws LogicException if event dispatcher isn't set
      */
     public function getEventDispatcher(): EventDispatcherInterface;
+
+    /**
+     * Add an event listener to the entity's event dispatcher.
+     *
+     * @param callable $listener
+     */
+    public function addEventListener(callable $listener): void;
 
     /**
      * Dispatch an event.

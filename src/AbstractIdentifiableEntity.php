@@ -9,8 +9,7 @@ use Jasny\Entity\Traits;
 /**
  * All identifiable entity traits.
  */
-trait AbstractIdentifiableEntity
+abstract class AbstractIdentifiableEntity extends AbstractBasicEntity implements IdentifiableEntity
 {
-    use AbstractBasicEntity;
     use Traits\IdentifyTrait;
 }

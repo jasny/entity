@@ -9,14 +9,13 @@ use Jasny\Entity\Traits;
 /**
  * All required traits an entity.
  */
-trait AbstractBasicEntity
+abstract class AbstractBasicEntity implements Entity
 {
-    use Traits\AssertGhostTrait;
     use Traits\CompareTrait;
     use Traits\ToAssocTrait;
     use Traits\ToJsonTrait;
     use Traits\FromDataTrait;
     use Traits\SetTrait;
-    use Traits\RefreshTrait;
     use Traits\DispatchEventTrait;
+    use Traits\EventListenerTrait;
 }
