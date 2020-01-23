@@ -7,6 +7,6 @@ namespace Jasny\Entity\Event;
 /**
  * Event that's called before values are set.
  */
-class BeforeSet extends AbstractBase
+class BeforeSet extends AbstractEvent
 {
 }

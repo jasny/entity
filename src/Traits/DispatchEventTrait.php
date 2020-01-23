@@ -1,21 +1,22 @@
-<?php
+<?php /** @noinspection PhpPropertyNamingConventionInspection */
 
 declare(strict_types=1);
 
 namespace Jasny\Entity\Traits;
 
-use BadMethodCallException;
-use LogicException;
+use Jasny\Entity\Entity;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Dispatch events emitted by the entity.
+ *
+ * @implements Entity
  */
 trait DispatchEventTrait
 {
     /**
-     * @ignore
      * @var EventDispatcherInterface
+     * @ignore
      */
     private $i__dispatcher;
 
@@ -35,12 +36,12 @@ trait DispatchEventTrait
      * Get the event dispatcher
      *
      * @return EventDispatcherInterface
-     * @throws LogicException if event dispatcher isn't set
+     * @throws \LogicException if event dispatcher isn't set
      */
     final public function getEventDispatcher(): EventDispatcherInterface
     {
         if (!isset($this->i__dispatcher)) {
-            throw new LogicException("Event dispatcher has not been set for this entity");
+            throw new \LogicException("Event dispatcher has not been set for this entity");
         }
 
         return $this->i__dispatcher;
@@ -51,6 +52,10 @@ trait DispatchEventTrait
      *
      * @param object $event
      * @return object  The event.
+     *
+     * @template T
+     * @phpstan-param T $event
+     * @phpstan-return T
      */
     public function dispatchEvent(object $event): object
     {

@@ -2,10 +2,8 @@
 
 namespace Jasny\Entity\Tests\Traits;
 
-use Jasny\Entity\Entity;
 use Jasny\Entity\AbstractIdentifiableEntity;
 use Jasny\Entity\Tests\CreateEntityTrait;
-use LogicException;
 use PHPUnit\Framework\TestCase;
 
 /**

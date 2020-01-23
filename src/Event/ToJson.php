@@ -7,6 +7,6 @@ namespace Jasny\Entity\Event;
 /**
  * Event that's cast when casting an entity to JSON.
  */
-class ToJson extends AbstractBase
+class ToJson extends AbstractEvent
 {
 }

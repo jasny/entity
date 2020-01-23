@@ -7,6 +7,6 @@ namespace Jasny\Entity\Event;
 /**
  * Event that's cast when casting an entity to an associated array.
  */
-class ToAssoc extends AbstractBase
+class Unserialize extends AbstractEvent
 {
 }

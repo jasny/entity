@@ -21,6 +21,7 @@ trait CreateEntityTrait
         return new class() extends AbstractBasicEntity {
             public $foo;
             public $bar = 0;
+            protected $unseen = 3.14;
         };
     }
 
@@ -30,6 +31,7 @@ trait CreateEntityTrait
             public $id;
             public $foo;
             public $bar = 0;
+            protected $unseen = 3.14;
 
             public function __construct($id)
             {
@@ -43,6 +45,7 @@ trait CreateEntityTrait
         return new class() extends AbstractBasicEntity implements DynamicEntity {
             public $foo;
             public $bar = 0;
+            protected $unseen = 3.14;
         };
     }
 
@@ -51,10 +54,11 @@ trait CreateEntityTrait
         return new class() extends AbstractBasicEntity {
             public $foo;
             public $bar;
+            protected $unseen = 3.14;
 
             public function __construct()
             {
-                $this->num = 0;
+                $this->bar = 0;
             }
         };
     }

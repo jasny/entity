@@ -21,7 +21,7 @@ class ToAssocRecursiveTest extends TestCase
     {
         $entity = $this->createNestedEntity();
 
-        $event = new Event\ToAssoc($entity, $entity->toAssoc());
+        $event = new Event\Serialize($entity, $entity->__serialize());
 
         $listener = new ToAssocRecursive();
         $listener($event);

@@ -10,6 +10,8 @@ use function Jasny\is_associative_array;
 
 /**
  * Check if two entities are the same.
+ *
+ * @implements Entity
  */
 trait CompareTrait
 {

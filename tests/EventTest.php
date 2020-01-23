@@ -9,7 +9,7 @@ use Jasny\Entity\Event\AfterSet;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Jasny\Entity\Event\AbstractBase
+ * @covers \Jasny\Entity\Event\AbstractEvent
  */
 class EventTest extends TestCase
 {
@@ -32,16 +32,5 @@ class EventTest extends TestCase
 
         $event->setPayload('hello');
         $this->assertEquals('hello', $event->getPayload());
-    }
-
-    public function testStopPropagation()
-    {
-        $entity = $this->createMock(Entity::class);
-        $event = new AfterSet($entity);
-
-        $this->assertFalse($event->isPropagationStopped());
-
-        $event->stopPropagation();
-        $this->assertTrue($event->isPropagationStopped());
     }
 }

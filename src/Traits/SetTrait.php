@@ -12,6 +12,8 @@ use function Jasny\object_set_properties;
 
 /**
  * Set entity properties.
+ *
+ * @implements Entity
  */
 trait SetTrait
 {

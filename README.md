@@ -317,7 +317,7 @@ use Jasny\Entity\EventListener\JsonCast;
 use Jasny\EventDispatcher\EventDispatcher;
 
 $listener = (new ListenerProvider)
-    ->withListener(function(Event\ToAssoc $event): void {
+    ->withListener(function(Event\Serialize $event): void {
         $assoc = $event->getPayload();
         
         if (isset($assoc['password'])) {

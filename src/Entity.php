@@ -28,13 +28,6 @@ interface Entity extends JsonSerializable
      */
     public function set($key, $value = null);
 
-    /**
-     * Cast the entity to an associative array.
-     *
-     * @return array
-     */
-    public function toAssoc(): array;
-
 
     /**
      * Check if entity is the same as the provided entity or matches id or filter.
@@ -52,6 +45,19 @@ interface Entity extends JsonSerializable
      */
     public function isNew(): bool;
 
+    /**
+     * Cast an entity to an associative array.
+     *
+     * @return array<string,mixed>
+     */
+    public function __serialize(): array;
+
+    /**
+     * Load persisted data into an entity
+     *
+     * @param array<string,mixed> $data
+     */
+    public function __unserialize(array $data): void;
 
     /**
      * Create an entity from persisted data.
@@ -59,21 +65,7 @@ interface Entity extends JsonSerializable
      * @param array $data
      * @return static
      */
-    public static function fromData(array $data);
-
-    /**
-     * Must be an alias of `Entity::fromData()`
-     * @internal
-     *
-     * @param array $data
-     * @return static
-     */
     public static function __set_state(array $data);
-
-    /**
-     * Mark entity as persisted.
-     */
-    public function markAsPersisted(): void;
 
 
     /**
@@ -93,18 +85,14 @@ interface Entity extends JsonSerializable
     public function getEventDispatcher(): EventDispatcherInterface;
 
     /**
-     * Add an event listener to the entity's event dispatcher.
-     *
-     * @param callable $listener
-     * @throws LogicException if event dispatcher isn't set or is of an unknown type
-     */
-    public function addEventListener(callable $listener): void;
-
-    /**
      * Dispatch an event.
      *
      * @param object $event
      * @return object  The event.
+     *
+     * @template T
+     * @phpstan-param T $event
+     * @phpstan-return T
      */
     public function dispatchEvent(object $event): object;
 }

@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Jasny\Entity\Event;
 
 use Jasny\Entity\Entity;
-use Psr\EventDispatcher\StoppableEventInterface;
 
 /**
  * Base class for all entity events.
  */
-abstract class AbstractBase implements StoppableEventInterface
+abstract class AbstractEvent
 {
     /**
      * @var Entity
@@ -21,11 +20,6 @@ abstract class AbstractBase implements StoppableEventInterface
      * @var mixed
      */
     protected $payload;
-
-    /**
-     * @var bool
-     */
-    protected $propagationStopped = false;
 
     /**
      * Class constructor.
@@ -67,23 +61,5 @@ abstract class AbstractBase implements StoppableEventInterface
     public function getPayload()
     {
         return $this->payload;
-    }
-
-    /**
-     * Don't execute any listeners after this one.
-     */
-    public function stopPropagation(): void
-    {
-        $this->propagationStopped = true;
-    }
-
-    /**
-     * Is propagation stopped?
-     *
-     * @return bool
-     */
-    public function isPropagationStopped(): bool
-    {
-        return $this->propagationStopped;
     }
 }

@@ -21,9 +21,9 @@ class ToAssocRecursive
     /**
      * Invoke the listener.
      *
-     * @param Event\ToAssoc $event
+     * @param Event\Serialize $event
      */
-    public function __invoke(Event\ToAssoc $event): void
+    public function __invoke(Event\Serialize $event): void
     {
         $payload = $event->getPayload();
 
@@ -46,7 +46,7 @@ class ToAssocRecursive
     {
         $list[$entity] = null;
 
-        $assoc = $this->toAssocRecursive($entity->toAssoc(), $list);
+        $assoc = $this->toAssocRecursive($entity->__serialize(), $list);
         $list[$entity] = $assoc;
 
         return $assoc;
