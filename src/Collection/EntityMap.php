@@ -2,32 +2,30 @@
 
 declare(strict_types=1);
 
-namespace Jasny\EntityCollection;
+namespace Jasny\Entity\Collection;
 
-use Jasny\Entity\Entity;
-use function Jasny\expect_type;
+use Improved as i;
+use Jasny\Entity\EntityInterface;
 
 /**
- * An entity collection that works as a map, so a key/value pairs.
+ * An entity collection that works as a map, so with key/value pairs.
  * @see https://en.wikipedia.org/wiki/Associative_array
+ *
+ * @template TEntity of EntityInterface
+ * @extends AbstractCollection<string,TEntity>
+ * @implements \ArrayAccess<string,TEntity>
  */
-class EntityMap extends EntityCollection implements \ArrayAccess
+class EntityMap extends AbstractCollection implements \ArrayAccess
 {
     /**
      * Create a new collection.
      *
-     * @param Entity[]|iterable $entities  Array of entities
+     * @param iterable<EntityInterface> $entities
      * @return void
      */
     protected function setEntities(iterable $entities): void
     {
-        $this->entities = [];
-        $entityClass = $this->getEntityClass();
-
-        foreach ($entities as $key => $entity) {
-            expect_type($entity, $entityClass, "Expected {$entityClass} for item '{$key}', %s given");
-            $this->entities[$key] = $entity;
-        }
+        $this->entities = i\iterable_to_array($entities, true);
     }
 
 
@@ -39,22 +37,21 @@ class EntityMap extends EntityCollection implements \ArrayAccess
      */
     public function offsetExists($index)
     {
-        expect_type($index, 'string');
-
         return isset($this->entities[$index]);
     }
 
     /**
-     * Get the entity of a specific index or find entity in set
+     * Get the entity of a specific index or find entity in set.
      *
      * @param string $index
-     * @return Entity
+     * @return EntityInterface
      * @throws \OutOfBoundsException
+     *
+     * @phpstan-param string $index
+     * @phpstan-return TEntity
      */
     public function offsetGet($index)
     {
-        expect_type($index, 'string', \InvalidArgumentException::class, 'Key must be a string, %s given');
-
         if (!isset($this->entities[$index])) {
             throw new \OutOfBoundsException("Key '$index' does not exist in map");
         }
@@ -66,15 +63,15 @@ class EntityMap extends EntityCollection implements \ArrayAccess
      * Replace the entity of a specific index
      *
      * @param string          $index
-     * @param Entity $entity  Entity or data representation of entity
+     * @param EntityInterface $entity  Entity or data representation of entity
      * @return void
+     *
+     * @phpstan-param string  $index
+     * @phpstan-param TEntity $entity
      */
     public function offsetSet($index, $entity)
     {
-        expect_type($index, 'string', \InvalidArgumentException::class, 'Key must be a string, %s given');
-        expect_type($entity, $this->getEntityClass());
-
-        $this->entities[$index] = $entity;
+        $this->entities[$index] = i\type_check($entity, $this->getType());
     }
 
     /**
@@ -85,7 +82,6 @@ class EntityMap extends EntityCollection implements \ArrayAccess
      */
     public function offsetUnset($index)
     {
-        expect_type($index, 'string', \InvalidArgumentException::class, 'Key must be a string, %s given');
         unset($this->entities[$index]);
     }
 }

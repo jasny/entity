@@ -12,8 +12,6 @@ use function Jasny\object_set_properties;
 
 /**
  * Set entity properties.
- *
- * @implements EntityInterface
  */
 trait SetTrait
 {
@@ -34,8 +32,8 @@ trait SetTrait
      *   $entity->set(['qux' => 100, 'clr' => 'red']);
      * </code>
      *
-     * @param string|array $key    Property or set of values
-     * @param mixed        $value
+     * @param string|array<string,mixed> $key
+     * @param mixed                      $value
      * @return $this
      */
     public function set($key, $value = null)

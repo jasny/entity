@@ -17,26 +17,17 @@
         "source": "https://github.com/jasny/entity"
     },
     "require": {
-        "php": ">=7.2.0",
+        "php": ">=7.4.0",
         "ext-json": "*",
         "improved/improved": "^0.1.0",
         "jasny/php-functions": "^4.1",
         "psr/event-dispatcher": "^1.0"
     },
-    "conflicts": {
-        "jasny/meta": "< 3.0 || >= 4.0",
-        "jasny/typecast": "< 2.1 || >= 4.0"
-    },
     "require-dev": {
         "jasny/event-dispatcher": "^1.0",
-        "jasny/meta": "^3.0",
-        "jasny/php-code-quality": "^2.3.5",
-        "jasny/typecast": "dev-master as 2.1.0"
+        "jasny/php-code-quality": "2.6.*"
     },
     "suggest": {
-        "jasny/entity-collection": "Data structures for entities",
-        "jasny/meta": "Use annotations",
-        "jasny/typecast": "Cast values based on entity metadata",
         "jasny/event-dispatcher": "PSR-14 compatible event dispatcher"
     },
     "autoload": {
@@ -51,8 +42,8 @@
     },
     "scripts": {
         "test": [
-            "phpstan analyse src",
-            "phpunit",
+            "phpstan analyse",
+            "phpunit --testdox --colors=always",
             "phpcs -p src"
         ]
     },

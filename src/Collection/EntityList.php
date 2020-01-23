@@ -2,51 +2,52 @@
 
 declare(strict_types=1);
 
-namespace Jasny\EntityCollection;
+namespace Jasny\Entity\Collection;
 
-use Jasny\Entity\Entity;
-use Jasny\EntityCollection\Traits;
-use function Jasny\expect_type;
+use Improved as i;
+use Improved\IteratorPipeline\Pipeline;
+use Jasny\Entity\EntityInterface;
 
 /**
  * An entity collection that works as an ordered list.
  * @see https://en.wikipedia.org/wiki/List_(abstract_data_type)
+ *
+ * @template TEntity of EntityInterface
+ * @extends AbstractCollection<int,TEntity>
  */
-class EntityList extends EntityCollection
+class EntityList extends AbstractCollection
 {
-    use Traits\SortTrait;
-
     /**
-     * Add an entity to the set
+     * Set the entities of the collection.
      *
-     * @param Entity $entity
-     * @return void
+     * @param iterable<EntityInterface> $entities
      */
-    public function add(Entity $entity): void
+    protected function setEntities(iterable $entities): void
     {
-        expect_type($entity, $this->getEntityClass());
-
-        $this->entities[] = $entity;
+        $this->entities = i\iterable_to_array($entities, false);
     }
 
     /**
-     * Remove an entity from the set
+     * Add an entity to the set.
      *
-     * @param mixed|Entity $entity  Entity id or entity
+     * @phpstan-param TEntity $entity
+     */
+    public function add(EntityInterface $entity): void
+    {
+        $this->entities[] = i\type_check($entity, $this->getType());
+    }
+
+    /**
+     * Remove an entity from the set.
+     *
+     * @param mixed|EntityInterface $find  Entity id or entity
      * @return void
      */
-    public function remove($entity): void
+    public function remove($find): void
     {
-        $remove = $this->findEntity($entity);
-
-        if (!$remove->valid()) {
-            return;
-        }
-
-        foreach ($remove as $index => $cur) {
-            unset($this->entities[$index]);
-        }
-
-        $this->entities = array_values($this->entities);
+        $this->entities = Pipeline::with($this->entities)
+            ->filter(fn(EntityInterface $entity) => !$entity->is($find))
+            ->values()
+            ->toArray();
     }
 }

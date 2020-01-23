@@ -6,87 +6,44 @@ namespace Jasny\Entity\Traits;
 
 use Jasny\Entity\EntityInterface;
 use Jasny\Entity\IdentifiableEntityInterface;
-use function Jasny\is_associative_array;
 
 /**
  * Check if two entities are the same.
- *
- * @implements EntityInterface
  */
 trait CompareTrait
 {
     /**
-     * Check if this entity is the same as another entity
+     * Check if entity is the same as the provided entity or id.
      *
-     * @param EntityInterface $entity
+     * @param EntityInterface|mixed $compare
      * @return bool
      */
-    protected function isSameAsEntity(EntityInterface $entity): bool
+    public function is($compare): bool
     {
+        return $this === $compare || $this->hasId($compare) || $this->hasSameId($compare);
+    }
+
+    /**
+     * @param mixed $compare
+     * @return bool
+     */
+    private function hasId($compare): bool
+    {
+        /** @noinspection PhpUndefinedMethodInspection */
+        return $this instanceof IdentifiableEntityInterface && $this->getId() === $compare;
+    }
+
+    /**
+     * @param EntityInterface|mixed $compare
+     * @return bool
+     */
+    private function hasSameId($compare): bool
+    {
+        /** @noinspection PhpUndefinedMethodInspection */
         return
-            $this === $entity ||
-            (
-                $this instanceof IdentifiableEntityInterface &&
-                $entity instanceof IdentifiableEntityInterface &&
-                get_class($this) === get_class($entity) &&
-                $this->getId() === $entity->getId()
-            );
-    }
-
-    /**
-     * Check if entity matches given values.
-     *
-     * @param array $filter
-     * @return bool
-     */
-    protected function matchesFilter(array $filter): bool
-    {
-        foreach ($filter as $key => $comp) {
-            $value = ($this->$key ?? null);
-            $match = is_scalar($value) && is_scalar($comp) ? (string)$value === (string)$comp : $value === $comp;
-
-            if (!$match) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Check if entity matches given id.
-     *
-     * @param mixed $filter
-     * @return bool
-     */
-    protected function matchedId($filter): bool
-    {
-        if (!$this instanceof IdentifiableEntityInterface) {
-            return false;
-        }
-
-        $id = $this->getId();
-
-        return is_scalar($id) && is_scalar($filter) ? (string)$id === (string)$filter : $id === $filter;
-    }
-
-    /**
-     * Check if entity is the same as the provided entity or matches id or filter.
-     * For a filter, scalars are compared as string.
-     *
-     * @param EntityInterface|array|mixed $filter
-     * @return bool
-     */
-    public function is($filter): bool
-    {
-        if ($filter instanceof EntityInterface) {
-            return $this->isSameAsEntity($filter);
-        }
-
-        if (is_associative_array($filter)) {
-            return $this->matchesFilter($filter);
-        }
-
-        return $this->matchedId($filter);
+            $this instanceof IdentifiableEntityInterface &&
+            $compare instanceof IdentifiableEntityInterface &&
+            get_class($this) === get_class($compare) &&
+            $this->getId() === $compare->getId();
     }
 }

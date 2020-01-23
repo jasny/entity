@@ -2,99 +2,81 @@
 
 declare(strict_types=1);
 
-namespace Jasny\EntityCollection;
+namespace Jasny\Entity\Collection;
 
-use Jasny\Entity\Entity;
-use Jasny\Entity\IdentifiableEntity;
-use function Jasny\expect_type;
+use Improved as i;
+use Improved\IteratorPipeline\Pipeline;
+use Jasny\Entity\IdentifiableEntityInterface;
 
 /**
  * An entity collection that works as an ordered set, so with unique items.
  * @see https://en.wikipedia.org/wiki/Set_(abstract_data_type)
+ *
+ * @template TEntity of IdentifiableEntityInterface
+ * @extends AbstractCollection<int,TEntity>
  */
-class EntitySet extends EntityCollection
+class EntitySet extends AbstractCollection
 {
-    use Traits\SortTrait;
-
     /**
      * Class constructor
      *
-     * @param string  $entityClass  Class name of entities in the collection
+     * @param string|null $type  Class name of entities in the collection
      * @throws \InvalidArgumentException if entity class is not an identifiable entity
+     *
+     * @phpstan-param class-string<TEntity> $type
      */
-    public function __construct(string $entityClass)
+    public function __construct(string $type = IdentifiableEntityInterface::class)
     {
-        if (!is_a($entityClass, IdentifiableEntity::class, true)) {
-            $identifiable = IdentifiableEntity::class;
-            throw new \InvalidArgumentException("$entityClass does not implement $identifiable");
+        if (!is_a($type, IdentifiableEntityInterface::class, true)) {
+            throw new \InvalidArgumentException("$type does not implement " . IdentifiableEntityInterface::class);
         }
 
-        parent::__construct($entityClass);
+        parent::__construct($type);
     }
 
     /**
      * Set the (unique) entities.
      *
-     * @param Entity[]|iterable $entities
-     * @return void
+     * @param iterable<IdentifiableEntityInterface> $entities
+     *
+     * @phpstan-param iterable<TEntity> $entities
      */
     protected function setEntities(iterable $entities): void
     {
-        $this->entities = [];
-        $ids = [];
-
-        foreach ($entities as $entity) {
-            expect_type($entity, $this->getEntityClass());
-
-            $id = $entity->getId();
-
-            if ((isset($id) && in_array($id, $ids)) || in_array($entity, $this->entities, true)) {
-                continue;
-            }
-
-            $this->entities[] = $entity;
-            $ids[] = $id;
-        }
+        $this->entities = Pipeline::with($entities)
+            ->unique(fn(IdentifiableEntityInterface $entity) => $entity->getId())
+            ->values()
+            ->toArray();
     }
 
     /**
-     * Return a unique set of entities.
+     * Add an entity to the set.
      *
-     * @return $this
+     * @phpstan-param TEntity $entity
      */
-    public function unique(): self
+    public function add(IdentifiableEntityInterface $entity): void
     {
-        return $this;
+        i\type_check($entity, $this->getType());
+
+        if ($this->contains($entity)) {
+            return;
+        }
+
+        $this->entities[] = $entity;
     }
 
     /**
-     * Add an entity to the set
+     * Remove an entity from the set.
      *
-     * @param Entity $entity
-     * @return void
-     */
-    public function add(Entity $entity): void
-    {
-        expect_type($entity, $this->getEntityClass());
-
-        if (!$this->findEntity($entity)->valid()) {
-            $this->entities[] = $entity;
-        }
-    }
-
-    /**
-     * Remove an entity from the set
+     * @param mixed|IdentifiableEntityInterface $find  Entity id or entity
      *
-     * @param mixed|Entity $entity  Entity id or entity
-     * @return void
+     * @phpstan-param mixed|TEntity $find
      */
-    public function remove($entity): void
+    public function remove($find): void
     {
-        $index = $this->findEntity($entity)->key();
-
-        if (isset($index)) {
-            unset($this->entities[$index]);
-            $this->entities = array_values($this->entities);
-        }
+        $this->entities = Pipeline::with($this->entities)
+            ->filter(fn(IdentifiableEntityInterface $entity) => !$entity->is($find))
+            ->values()
+            ->toArray();
     }
 }

@@ -9,8 +9,6 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Dispatch events emitted by the entity.
- *
- * @implements EntityInterface
  */
 trait DispatchEventTrait
 {
@@ -53,9 +51,9 @@ trait DispatchEventTrait
      * @param object $event
      * @return object  The event.
      *
-     * @template T
-     * @phpstan-param T $event
-     * @phpstan-return T
+     * @template TEvent of object
+     * @phpstan-param TEvent $event
+     * @phpstan-return TEvent
      */
     public function dispatchEvent(object $event): object
     {

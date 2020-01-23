@@ -12,8 +12,6 @@ use function Jasny\object_set_properties;
 
 /**
  * Serialization and unserialization magic methods.
- *
- * @implements EntityInterface
  */
 trait SerializeTrait
 {
@@ -53,7 +51,7 @@ trait SerializeTrait
     {
         $data = object_get_properties($this, $this instanceof DynamicEntityInterface);
 
-        /** @var EntityInterface $this */
+        /** @var static&EntityInterface $this */
         return $this->dispatchEvent(new Event\Serialize($this, $data))->getPayload();
     }
 
@@ -64,7 +62,7 @@ trait SerializeTrait
      */
     public function __unserialize(array $data): void
     {
-        /** @var EntityInterface $this */
+        /** @var static&EntityInterface $this */
         $data = $this->dispatchEvent(new Event\Unserialize($this, $data))->getPayload();
         object_set_properties($this, $data, $this instanceof DynamicEntityInterface);
 
@@ -74,8 +72,8 @@ trait SerializeTrait
     /**
      * Create a new entity and call __unserialize().
      *
-     * @param array $data
-     * @return static
+     * @param array<string,mixed> $data
+     * @return static&EntityInterface
      * @throws \ReflectionException
      */
     final public static function __set_state(array $data)
@@ -87,5 +85,18 @@ trait SerializeTrait
         $entity->__unserialize($data);
 
         return $entity;
+    }
+
+    /**
+     * Prepare entity for JsonSerialize encoding
+     *
+     * @return \stdClass
+     */
+    public function jsonSerialize(): \stdClass
+    {
+        $data = (object)object_get_properties($this, $this instanceof DynamicEntityInterface);
+
+        /** @var static&EntityInterface $this */
+        return $this->dispatchEvent(new Event\ToJson($this, $data))->getPayload();
     }
 }

@@ -15,5 +15,4 @@ class AbstractEntity implements EntityInterface
     use Traits\DispatchEventTrait;
     use Traits\SerializeTrait;
     use Traits\SetTrait;
-    use Traits\ToJsonTrait;
 }

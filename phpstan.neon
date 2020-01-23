@@ -1,6 +1,13 @@
 parameters:
-    level: 5
+    level: 7
     paths:
         - src
+    reportUnmatchedIgnoredErrors: false
     ignoreErrors:
-        - '#Call to function property_exists\(\) with string and .+ will always evaluate to false#'
+        - /^Variable property access/
+        - /^Unsafe usage of new static/
+        -
+            message: "/^Possibly invalid array key type array<string, mixed>\\|string/"
+            path: src/Traits/SetTrait.php
+includes:
+  	- vendor/phpstan/phpstan-strict-rules/rules.neon

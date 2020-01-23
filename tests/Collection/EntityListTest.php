@@ -9,8 +9,8 @@ use Jasny\Entity\Entity;
 use Jasny\EntityCollection\EntityList;
 
 /**
- * @covers \Jasny\EntityCollection\EntityList
- * @covers \Jasny\EntityCollection\EntityCollection
+ * @covers \Jasny\AbstractEntityCollection\EntityList
+ * @covers \Jasny\AbstractEntityCollection\AbstractEntityCollection
  */
 class EntityListTest extends TestCase
 {

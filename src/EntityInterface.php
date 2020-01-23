@@ -22,8 +22,8 @@ interface EntityInterface extends JsonSerializable
      *   $entity->set(['qux' => 100, 'clr' => 'red']);
      * </code>
      *
-     * @param string|array|object $key
-     * @param mixed               $value
+     * @param string|array<string,mixed> $key
+     * @param mixed                      $value  Omit when passing an array
      * @return $this
      */
     public function set($key, $value = null);
@@ -32,7 +32,7 @@ interface EntityInterface extends JsonSerializable
     /**
      * Check if entity is the same as the provided entity or matches id or filter.
      *
-     * @param EntityInterface|array|mixed $filter
+     * @param static|mixed $filter
      * @return bool
      */
     public function is($filter): bool;
@@ -62,7 +62,7 @@ interface EntityInterface extends JsonSerializable
     /**
      * Create an entity from persisted data.
      *
-     * @param array $data
+     * @param array<string,mixed> $data
      * @return static
      */
     public static function __set_state(array $data);
@@ -90,9 +90,9 @@ interface EntityInterface extends JsonSerializable
      * @param object $event
      * @return object  The event.
      *
-     * @template T
-     * @phpstan-param T $event
-     * @phpstan-return T
+     * @template TEvent of object
+     * @phpstan-param TEvent $event
+     * @phpstan-return TEvent
      */
     public function dispatchEvent(object $event): object;
 }
