@@ -16,7 +16,7 @@ charset: auto
 main: Jasny\
 
 # Title of generated documentation
-title: 'Jasny Entity · API documentation'
+title: 'Jasny EntityInterface · API documentation'
 # Documentation base URL
 baseUrl: 
 # Google Custom Search ID

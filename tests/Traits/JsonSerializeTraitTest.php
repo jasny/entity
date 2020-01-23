@@ -2,7 +2,7 @@
 
 namespace Jasny\Entity\Tests\Traits;
 
-use Jasny\Entity\AbstractBasicEntity;
+use Jasny\Entity\AbstractEntity;
 use Jasny\Entity\Event;
 use Jasny\Entity\Tests\CreateEntityTrait;
 use PHPUnit\Framework\TestCase;

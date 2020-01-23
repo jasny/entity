@@ -6,14 +6,14 @@ namespace Jasny\Entity\Traits;
 
 use Improved as i;
 use BadMethodCallException;
-use Jasny\Entity\DynamicEntity;
+use Jasny\Entity\DynamicEntityInterface;
 use Jasny\Entity\Event;
 use function Jasny\object_set_properties;
 
 /**
  * Set entity properties.
  *
- * @implements Entity
+ * @implements EntityInterface
  */
 trait SetTrait
 {
@@ -56,7 +56,7 @@ trait SetTrait
         $event = $this->dispatchEvent(new Event\BeforeSet($this, $input));
         $data = $event->getPayload();
 
-        object_set_properties($this, $data, $this instanceof DynamicEntity);
+        object_set_properties($this, $data, $this instanceof DynamicEntityInterface);
 
         $this->dispatchEvent(new Event\AfterSet($this, $data));
 

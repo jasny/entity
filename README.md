@@ -21,7 +21,7 @@ The properties of an entity object is a representation of persisted data.
 ```php
 namespace App;
 
-use Jasny\Entity\IdentifiableEntity;
+use Jasny\Entity\IdentifiableEntityInterface;
 use Jasny\Entity\IdentifiableEntityTraits;
 
 /**

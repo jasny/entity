@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Jasny\Entity\Tests;
 
 use ArrayIterator;
-use Jasny\Entity\AbstractBasicEntity;
-use Jasny\Entity\DynamicEntity;
-use Jasny\Entity\Entity;
-use Jasny\Entity\IdentifiableEntity;
+use Jasny\Entity\AbstractEntity;
+use Jasny\Entity\DynamicEntityInterface;
+use Jasny\Entity\EntityInterface;
+use Jasny\Entity\IdentifiableEntityInterface;
 use Jasny\Entity\AbstractIdentifiableEntity;
 
 /**
@@ -16,16 +16,16 @@ use Jasny\Entity\AbstractIdentifiableEntity;
  */
 trait CreateEntityTrait
 {
-    protected function createBasicEntity(): Entity
+    protected function createBasicEntity(): EntityInterface
     {
-        return new class() extends AbstractBasicEntity {
+        return new class() extends AbstractEntity {
             public $foo;
             public $bar = 0;
             protected $unseen = 3.14;
         };
     }
 
-    protected function createIdentifiableEntity($id): IdentifiableEntity
+    protected function createIdentifiableEntity($id): IdentifiableEntityInterface
     {
         return new class($id) extends AbstractIdentifiableEntity {
             public $id;
@@ -40,18 +40,18 @@ trait CreateEntityTrait
         };
     }
 
-    protected function createDynamicEntity(): DynamicEntity
+    protected function createDynamicEntity(): DynamicEntityInterface
     {
-        return new class() extends AbstractBasicEntity implements DynamicEntity {
+        return new class() extends AbstractEntity implements DynamicEntityInterface {
             public $foo;
             public $bar = 0;
             protected $unseen = 3.14;
         };
     }
 
-    protected function createEntityWithConstructor(): Entity
+    protected function createEntityWithConstructor(): EntityInterface
     {
-        return new class() extends AbstractBasicEntity {
+        return new class() extends AbstractEntity {
             public $foo;
             public $bar;
             protected $unseen = 3.14;
@@ -63,7 +63,7 @@ trait CreateEntityTrait
         };
     }
 
-    protected function createNestedEntity(): Entity
+    protected function createNestedEntity(): EntityInterface
     {
         $entity = $this->createBasicEntity();
 

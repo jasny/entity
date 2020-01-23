@@ -3,9 +3,9 @@
 namespace Jasny\Entity\Traits;
 
 /**
- * Entity identifiable implementation.
+ * EntityInterface identifiable implementation.
  *
- * @implements IdentifiableEntity
+ * @implements IdentifiableEntityInterface
  */
 trait IdentifyTrait
 {

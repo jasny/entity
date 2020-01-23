@@ -11,7 +11,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 /**
  * An entity is an object with a (persistent) data representation.
  */
-interface Entity extends JsonSerializable
+interface EntityInterface extends JsonSerializable
 {
     /**
      * Set a value or multiple values.
@@ -32,7 +32,7 @@ interface Entity extends JsonSerializable
     /**
      * Check if entity is the same as the provided entity or matches id or filter.
      *
-     * @param Entity|array|mixed $filter
+     * @param EntityInterface|array|mixed $filter
      * @return bool
      */
     public function is($filter): bool;

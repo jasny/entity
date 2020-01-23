@@ -9,7 +9,7 @@ use Jasny\Entity\Traits;
 /**
  * All required traits an entity.
  */
-class AbstractBasicEntity implements Entity
+class AbstractEntity implements EntityInterface
 {
     use Traits\CompareTrait;
     use Traits\DispatchEventTrait;

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Jasny\Entity\Traits;
 
-use Jasny\Entity\Entity;
-use Jasny\Entity\DynamicEntity;
+use Jasny\Entity\EntityInterface;
+use Jasny\Entity\DynamicEntityInterface;
 use Jasny\Entity\Event;
 use function Jasny\object_get_properties;
 use function Jasny\object_set_properties;
@@ -13,7 +13,7 @@ use function Jasny\object_set_properties;
 /**
  * Serialization and unserialization magic methods.
  *
- * @implements Entity
+ * @implements EntityInterface
  */
 trait SerializeTrait
 {
@@ -51,9 +51,9 @@ trait SerializeTrait
      */
     public function __serialize(): array
     {
-        $data = object_get_properties($this, $this instanceof DynamicEntity);
+        $data = object_get_properties($this, $this instanceof DynamicEntityInterface);
 
-        /** @var Entity $this */
+        /** @var EntityInterface $this */
         return $this->dispatchEvent(new Event\Serialize($this, $data))->getPayload();
     }
 
@@ -64,9 +64,9 @@ trait SerializeTrait
      */
     public function __unserialize(array $data): void
     {
-        /** @var Entity $this */
+        /** @var EntityInterface $this */
         $data = $this->dispatchEvent(new Event\Unserialize($this, $data))->getPayload();
-        object_set_properties($this, $data, $this instanceof DynamicEntity);
+        object_set_properties($this, $data, $this instanceof DynamicEntityInterface);
 
         $this->markNew(false);
     }
@@ -82,7 +82,7 @@ trait SerializeTrait
     {
         $refl = new \ReflectionClass(get_called_class());
 
-        /** @var static&Entity $entity */
+        /** @var static&EntityInterface $entity */
         $entity = $refl->newInstanceWithoutConstructor();
         $entity->__unserialize($data);
 

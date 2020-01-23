@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Jasny\Entity\Event;
 
-use Jasny\Entity\Entity;
+use Jasny\Entity\EntityInterface;
 
 /**
  * Base class for all entity events.
@@ -12,7 +12,7 @@ use Jasny\Entity\Entity;
 abstract class AbstractEvent
 {
     /**
-     * @var Entity
+     * @var EntityInterface
      */
     protected $entity;
 
@@ -24,10 +24,10 @@ abstract class AbstractEvent
     /**
      * Class constructor.
      *
-     * @param Entity $entity   Entity that emitted the event
+     * @param EntityInterface $entity   EntityInterface that emitted the event
      * @param mixed  $payload  Initial payload
      */
-    public function __construct(Entity $entity, $payload = null)
+    public function __construct(EntityInterface $entity, $payload = null)
     {
         $this->entity = $entity;
         $this->payload = $payload;
@@ -36,9 +36,9 @@ abstract class AbstractEvent
     /**
      * Get the entity that emitted the event.
      *
-     * @return Entity
+     * @return EntityInterface
      */
-    public function getEntity(): Entity
+    public function getEntity(): EntityInterface
     {
         return $this->entity;
     }

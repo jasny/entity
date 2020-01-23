@@ -2,8 +2,8 @@
 
 namespace Jasny\Entity\Tests\Traits;
 
-use Jasny\Entity\AbstractBasicEntity;
-use Jasny\Entity\Entity;
+use Jasny\Entity\AbstractEntity;
+use Jasny\Entity\EntityInterface;
 use Jasny\Entity\Tests\CreateEntityTrait;
 use Jasny\TestHelper;
 use LogicException;

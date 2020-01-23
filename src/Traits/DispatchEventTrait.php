@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Jasny\Entity\Traits;
 
-use Jasny\Entity\Entity;
+use Jasny\Entity\EntityInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Dispatch events emitted by the entity.
  *
- * @implements Entity
+ * @implements EntityInterface
  */
 trait DispatchEventTrait
 {

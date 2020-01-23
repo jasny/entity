@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Jasny\Entity\Traits;
 
-use Jasny\Entity\Entity;
-use Jasny\Entity\DynamicEntity;
+use Jasny\Entity\EntityInterface;
+use Jasny\Entity\DynamicEntityInterface;
 use Jasny\Entity\Event;
 use function Jasny\object_get_properties;
 
 /**
- * Entity json serialize implementation.
+ * EntityInterface json serialize implementation.
  *
- * @implements Entity
+ * @implements EntityInterface
  */
 trait ToJsonTrait
 {
@@ -35,9 +35,9 @@ trait ToJsonTrait
      */
     public function jsonSerialize(): \stdClass
     {
-        $object = (object)object_get_properties($this, $this instanceof DynamicEntity);
+        $object = (object)object_get_properties($this, $this instanceof DynamicEntityInterface);
 
-        /** @var Entity $this */
+        /** @var EntityInterface $this */
         return $this->dispatchEvent(new Event\ToJson($this, $object))->getPayload();
     }
 }
