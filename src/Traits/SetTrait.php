@@ -7,6 +7,7 @@ namespace Jasny\Entity\Traits;
 use Improved as i;
 use BadMethodCallException;
 use Jasny\Entity\DynamicEntityInterface;
+use Jasny\Entity\EntityInterface;
 use Jasny\Entity\Event;
 use function Jasny\object_set_properties;
 
@@ -40,24 +41,44 @@ trait SetTrait
     {
         i\type_check($key, ['array', 'string']);
 
-        if (func_num_args() === 1 && is_string($key)) {
-            throw new BadMethodCallException(sprintf(
-                "Too few arguments to method %s::%s(). If first argument is a string, a second argument is required",
+        if (func_num_args() < 2 && is_string($key)) {
+            throw new \ArgumentCountError(sprintf(
+                "Too few arguments to method %s::%s(). If first argument is a string, second argument is required",
                 __CLASS__,
                 __FUNCTION__
             ));
         }
 
-        $input = func_num_args() === 1 ? (array)$key : [$key => $value];
+        if (func_num_args() > 2 && is_array($key)) {
+            throw new \ArgumentCountError(sprintf(
+                "Too many arguments to method %s::%s(). If first argument is an array, second argument must be omitted",
+                __CLASS__,
+                __FUNCTION__
+            ));
+        }
 
+        /** @var array<string,mixed> $data */
+        $data = func_num_args() < 2 ? (array)$key : [$key => $value];
+        $this->setProperties($data);
+
+        return $this;
+    }
+
+    /**
+     * @param array<string,mixed> $input
+     */
+    private function setProperties(array $input): void
+    {
         /** @var Event\BeforeSet $event */
+        /** @var self&EntityInterface $this */
         $event = $this->dispatchEvent(new Event\BeforeSet($this, $input));
-        $data = $event->getPayload();
+
+        /** @var array<string,mixed> $data */
+        $data = i\type_check($event->getPayload(), 'array');
 
         object_set_properties($this, $data, $this instanceof DynamicEntityInterface);
 
+        /** @var self&EntityInterface $this */
         $this->dispatchEvent(new Event\AfterSet($this, $data));
-
-        return $this;
     }
 }

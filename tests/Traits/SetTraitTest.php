@@ -2,11 +2,7 @@
 
 namespace Jasny\Entity\Tests\Traits;
 
-use Jasny\Entity\AbstractEntity;
-use Jasny\Entity\EntityInterface;
-use Jasny\Entity\Tests\CreateEntityTrait;
-use Jasny\TestHelper;
-use LogicException;
+use Jasny\Entity\Tests\_Support\CreateEntityTrait;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -14,7 +10,6 @@ use PHPUnit\Framework\TestCase;
  */
 class SetTraitTest extends TestCase
 {
-    use TestHelper;
     use CreateEntityTrait;
 
     /**
@@ -67,15 +62,23 @@ class SetTraitTest extends TestCase
         $this->assertEquals('woof', $object->dyn);
     }
 
-    /**
-     * Test 'set' method with invalid argument
-     *
-     * @expectedException \BadMethodCallException
-     * @expectedExceptionMessage If first argument is a string, a second argument is required
-     */
-    public function testSetValueInvalidArgument()
+    public function testSetValueWithOnlyKey()
     {
         $object = $this->createDynamicEntity();
+
+        $this->expectException(\BadMethodCallException::class);
+        $this->expectExceptionMessage("If first argument is a string, a second argument is required");
+
         $object->set('foo');
+    }
+
+    public function testSetValueWithKeyAndArray()
+    {
+        $object = $this->createDynamicEntity();
+
+        $this->expectException(\BadMethodCallException::class);
+        $this->expectExceptionMessage("If first argument is an array, the second argument must be omitted");
+
+        $object->set(['foo' => 'bar'], 42);
     }
 }

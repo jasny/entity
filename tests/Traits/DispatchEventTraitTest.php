@@ -2,8 +2,7 @@
 
 namespace Jasny\Entity\Tests\Traits;
 
-use Jasny\Entity\AbstractEntity;
-use Jasny\Entity\Tests\CreateEntityTrait;
+use Jasny\Entity\Tests\_Support\CreateEntityTrait;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;

@@ -3,7 +3,7 @@
 namespace Jasny\Entity\Tests\Traits;
 
 use Jasny\Entity\AbstractIdentifiableEntity;
-use Jasny\Entity\Tests\CreateEntityTrait;
+use Jasny\Entity\Tests\_Support\CreateEntityTrait;
 use PHPUnit\Framework\TestCase;
 
 /**

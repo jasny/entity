@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Jasny\Entity\Tests;
+namespace Jasny\Entity\Tests\_Support;
 
 use ArrayIterator;
 use Jasny\Entity\AbstractEntity;
