@@ -32,16 +32,14 @@ interface EntityInterface extends JsonSerializable
     /**
      * Check if entity is the same as the provided entity or matches id or filter.
      *
-     * @param static|mixed $filter
+     * @param static|mixed $compare  Entity or entity id
      * @return bool
      */
-    public function is($filter): bool;
+    public function is($compare): bool;
 
 
     /**
      * Check if the entity is not persisted yet.
-     *
-     * @return bool
      */
     public function isNew(): bool;
 
@@ -72,7 +70,6 @@ interface EntityInterface extends JsonSerializable
      * Set the event dispatcher
      *
      * @param EventDispatcherInterface $dispatcher
-     * @return void
      */
     public function setEventDispatcher(EventDispatcherInterface $dispatcher): void;
 
@@ -86,9 +83,6 @@ interface EntityInterface extends JsonSerializable
 
     /**
      * Dispatch an event.
-     *
-     * @param object $event
-     * @return object  The event.
      *
      * @template TEvent of object
      * @phpstan-param TEvent $event

@@ -3,7 +3,6 @@
 namespace Jasny\Entity\Tests\Traits;
 
 use Jasny\Entity\Tests\_Support\CreateEntityTrait;
-use LogicException;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
@@ -25,12 +24,12 @@ class DispatchEventTraitTest extends TestCase
         $this->assertSame($dispatcher, $entity->getEventDispatcher());
     }
 
-    /**
-     * @expectedException LogicException
-     */
     public function testGetEventDispatcherNotSet()
     {
         $entity = $this->createBasicEntity();
+
+        $this->expectException(\LogicException::class);
+
         $entity->getEventDispatcher();
     }
 

@@ -59,6 +59,8 @@ class SetTraitTest extends TestCase
 
         $this->assertEquals('bar', $object->foo);
         $this->assertEquals(100, $object->bar);
+
+        /** @noinspection PhpUndefinedFieldInspection */
         $this->assertEquals('woof', $object->dyn);
     }
 
@@ -66,8 +68,8 @@ class SetTraitTest extends TestCase
     {
         $object = $this->createDynamicEntity();
 
-        $this->expectException(\BadMethodCallException::class);
-        $this->expectExceptionMessage("If first argument is a string, a second argument is required");
+        $this->expectException(\ArgumentCountError::class);
+        $this->expectExceptionMessage("If first argument is a string, second argument is required");
 
         $object->set('foo');
     }
@@ -76,8 +78,8 @@ class SetTraitTest extends TestCase
     {
         $object = $this->createDynamicEntity();
 
-        $this->expectException(\BadMethodCallException::class);
-        $this->expectExceptionMessage("If first argument is an array, the second argument must be omitted");
+        $this->expectException(\ArgumentCountError::class);
+        $this->expectExceptionMessage("If first argument is an array, second argument must be omitted");
 
         $object->set(['foo' => 'bar'], 42);
     }

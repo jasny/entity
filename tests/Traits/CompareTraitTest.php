@@ -92,24 +92,19 @@ class CompareTraitTest extends TestCase
     }
 
 
-    public function testIsWithFilter()
+    public function testIsWithArrayId()
     {
-        $entity = $this->createBasicEntity();
-        $entity->foo = 10;
-        $entity->bar = 99;
+        $entity = $this->createIdentifiableEntity(['foo' => 10, 'bar' => 99]);
 
-        $this->assertTrue($entity->is(['foo' => 10]));
         $this->assertTrue($entity->is(['foo' => 10, 'bar' => 99]));
-
-        $this->assertFalse($entity->is(['foo' => 21]));
         $this->assertFalse($entity->is(['foo' => 21, 'bar' => 99]));
     }
 
-    public function testIsWithFilterNotStrict()
+    public function testIsWithArrayIdNoStrict()
     {
-        $entity = $this->createBasicEntity();
-        $entity->foo = 10;
+        $entity = $this->createIdentifiableEntity(['foo' => 10, 'bar' => 99]);
 
-        $this->assertTrue($entity->is(['foo' => "10"]));
+        $this->assertTrue($entity->is(['foo' => 10, 'bar' => '99']));
+        $this->assertFalse($entity->is(['foo' => 21, 'bar' => '99']));
     }
 }

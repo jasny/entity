@@ -29,8 +29,12 @@ trait CompareTrait
      */
     private function hasId($compare): bool
     {
+        if (!$this instanceof IdentifiableEntityInterface) {
+            return false;
+        }
+
         /** @noinspection PhpUndefinedMethodInspection */
-        return $this instanceof IdentifiableEntityInterface && $this->getId() === $compare;
+        return $this->scalarToString($this->getId()) === $this->scalarToString($compare);
     }
 
     /**
@@ -39,11 +43,28 @@ trait CompareTrait
      */
     private function hasSameId($compare): bool
     {
-        /** @noinspection PhpUndefinedMethodInspection */
-        return
-            $this instanceof IdentifiableEntityInterface &&
-            $compare instanceof IdentifiableEntityInterface &&
-            get_class($this) === get_class($compare) &&
-            $this->getId() === $compare->getId();
+        return is_object($compare) && get_class($this) === get_class($compare) &&
+            $compare instanceof IdentifiableEntityInterface && $this->hasId($compare->getId());
+    }
+
+    /**
+     * Cast any scalar to a string (for non-strict comparison).
+     *
+     * @param mixed $value
+     * @return mixed
+     */
+    private function scalarToString($value)
+    {
+        if (is_scalar($value)) {
+            return (string)$value;
+        }
+
+        if (is_array($value)) {
+            foreach ($value as &$item) {
+                $item = $this->scalarToString($item);
+            }
+        }
+
+        return $value;
     }
 }

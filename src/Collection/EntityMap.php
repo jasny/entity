@@ -62,15 +62,19 @@ class EntityMap extends AbstractCollection implements \ArrayAccess
     /**
      * Replace the entity of a specific index
      *
-     * @param string          $index
+     * @param string|null     $index
      * @param EntityInterface $entity  Entity or data representation of entity
      * @return void
      *
-     * @phpstan-param string  $index
-     * @phpstan-param TEntity $entity
+     * @phpstan-param string|null $index
+     * @phpstan-param TEntity     $entity
      */
     public function offsetSet($index, $entity)
     {
+        if ($index === null) {
+            throw new \LogicException("Key must be specified when adding an entity to a map");
+        }
+
         $this->entities[$index] = i\type_check($entity, $this->getType());
     }
 

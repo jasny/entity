@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Jasny\Entity\Traits;
 
 use Improved as i;
-use BadMethodCallException;
 use Jasny\Entity\DynamicEntityInterface;
 use Jasny\Entity\EntityInterface;
 use Jasny\Entity\Event;
@@ -49,7 +48,7 @@ trait SetTrait
             ));
         }
 
-        if (func_num_args() > 2 && is_array($key)) {
+        if (func_num_args() >= 2 && is_array($key)) {
             throw new \ArgumentCountError(sprintf(
                 "Too many arguments to method %s::%s(). If first argument is an array, second argument must be omitted",
                 __CLASS__,

@@ -1,89 +1,75 @@
 <?php
 
-namespace Jasny\EntityCollection\Tests;
+namespace Jasny\Entity\Tests\Collection;
 
+use Jasny\Entity\Collection\EntityMap;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Jasny\EntityCollection\EntityMap;
-use Jasny\Entity\Entity;
+use Jasny\Entity\EntityInterface;
 
 /**
- * @covers \Jasny\EntityCollection\EntityMap
+ * @covers \Jasny\Entity\Collection\EntityMap
+ * {@internal AbstractCollection is covered by EntityMapTest}
  */
 class EntityMapTest extends TestCase
 {
-    use \Jasny\TestHelper;
-
     /**
      * @var EntityMap
      */
     protected $collection;
 
     /**
-     * @var Entity[]
+     * @var EntityInterface[]|MockObject[]
      */
     protected $entities;
 
     /**
      * Set up dependencies
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->entities = [
-            'one' => $this->createMock(Entity::class),
-            'two' => $this->createMock(Entity::class),
-            'three' => $this->createMock(Entity::class)
+            'one' => $this->createMock(EntityInterface::class),
+            'two' => $this->createMock(EntityInterface::class),
+            'three' => $this->createMock(EntityInterface::class)
         ];
 
-        $this->collection = (new EntityMap(Entity::class))
-            ->withEntities($this->entities);
+        $this->collection = (new EntityMap())->withEntities($this->entities);
     }
 
-    /**
-     * Test 'offsetExists' method
-     */
+
+    public function testCreate()
+    {
+        $this->assertEquals(EntityInterface::class, $this->collection->getType());
+
+        $this->assertSame($this->entities, $this->collection->toArray());
+        $this->assertSame($this->entities, iterator_to_array($this->collection));
+    }
+
+
     public function testOffsetExists()
     {
         $this->assertTrue(isset($this->collection['one']));
         $this->assertFalse(isset($this->collection['not_exist']));
     }
 
-    /**
-     * Test 'offsetGet' method
-     */
     public function testOffsetGet()
     {
         $this->assertSame($this->entities['two'], $this->collection['two']);
     }
 
-    /**
-     * Test 'offsetGet' method, in case when index does not exists in collection
-     *
-     * @expectedException \OutOfBoundsException
-     * @expectedExceptionMessage Key 'not_exist' does not exist in map
-     */
     public function testOffsetGetIndexNotExists()
     {
+        $this->expectException(\OutOfBoundsException::class);
+        $this->expectExceptionMessage("Key 'not_exist' does not exist in map");
+
         $this->collection['not_exist'];
     }
 
-    /**
-     * Test 'offsetGet' method, in case when index is not a string
-     *
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Key must be a string, integer given
-     */
-    public function testOffsetGetIntIndex()
-    {
-        $foo = $this->collection[42];
-    }
 
-
-    /**
-     * Test 'offsetSet' method
-     */
     public function testOffsetSet()
     {
-        $entity = $this->createMock(Entity::class);
+        $entity = $this->createMock(EntityInterface::class);
         $this->collection['foo'] = $entity;
 
         $this->assertCount(4, $this->collection->toArray());
@@ -91,12 +77,9 @@ class EntityMapTest extends TestCase
         $this->assertSame($entity, $this->collection['foo']);
     }
 
-    /**
-     * Test 'offsetSet' method
-     */
     public function testOffsetSetOverwrite()
     {
-        $entity = $this->createMock(Entity::class);
+        $entity = $this->createMock(EntityInterface::class);
         $this->collection['two'] = $entity;
 
         $this->assertCount(3, $this->collection->toArray());
@@ -105,31 +88,14 @@ class EntityMapTest extends TestCase
         $this->assertSame($entity, $this->collection['two']);
     }
 
-    /**
-     * Test 'offsetSet' method, in case when index is null
-     *
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Key must be a string, integer given
-     */
-    public function testOffsetSetIntIndex()
+    public function testOffsetSetNoIndex()
     {
-        $this->collection[42] = $this->createMock(Entity::class);
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage("Key must be specified when adding an entity to a map");
+
+        $this->collection[] = $this->createMock(EntityInterface::class);
     }
 
-    /**
-     * Test 'offsetSet' method, in case when index is null
-     *
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Key must be a string, NULL given
-     */
-    public function testOffsetSetNullIndex()
-    {
-        $this->collection[] = $this->createMock(Entity::class);
-    }
-
-    /**
-     * Test 'offsetUnset' method
-     */
     public function testOffsetUnset()
     {
         unset($this->collection['two']);
@@ -138,24 +104,10 @@ class EntityMapTest extends TestCase
         $this->assertNotContains($this->entities['two'], $this->collection->toArray());
     }
 
-    /**
-     * Test 'offsetUnset' method
-     */
     public function testOffsetUnsetIndexNotExist()
     {
         unset($this->collection['foo']);
 
         $this->assertCount(3, $this->collection->toArray());
-    }
-
-    /**
-     * Test 'offsetUnset' method, in case when index does not exists in collection
-     *
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Key must be a string, integer given
-     */
-    public function testOffsetUnsetIntIndex()
-    {
-        unset($this->collection[42]);
     }
 }

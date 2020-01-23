@@ -67,11 +67,12 @@ abstract class AbstractCollection implements \IteratorAggregate, \Countable, \Js
 
     /**
      * Return a copy of the collection with a different class name for type checking.
+     * You can only narrow the scope, not broaden it; the new type must be an instance of the current type.
      *
      * @param string $type
      * @return static
      *
-     * @template TNew of EntityInterface
+     * @template TNew of TEntity
      * @phpstan-param class-string<TNew> $type
      * @phpstan-return static<TKey,TNew>
      */
@@ -86,7 +87,7 @@ abstract class AbstractCollection implements \IteratorAggregate, \Countable, \Js
         }
 
         Pipeline::with($this->entities)
-            ->typeCheck($type, new \UnexpectedValueException("Not all entities are of type $type"))
+            ->typeCheck($type, new \InvalidArgumentException("Not all entities are of type $type"))
             ->walk();
 
         $clone = clone $this;
@@ -165,9 +166,9 @@ abstract class AbstractCollection implements \IteratorAggregate, \Countable, \Js
     /**
      * Cast entity collection to data.
      *
-     * @return EntityInterface[]
+     * @return array<EntityInterface|array>
      *
-     * @phpstan-return array<TEntity>
+     * @phpstan-return array<TEntity|array>
      */
     public function __serialize(): array
     {
@@ -193,7 +194,7 @@ abstract class AbstractCollection implements \IteratorAggregate, \Countable, \Js
         if (is_callable($setState)) {
             $pipe->map(fn($entity) => is_array($entity) ? $setState($entity) : $entity);
         }
-        $pipe->typeCheck($this->type);
+        $pipe->typeCheck($this->type, new \UnexpectedValueException("Expected array of {$this->type} objects, got %s"));
 
         $this->setEntities($pipe);
     }
